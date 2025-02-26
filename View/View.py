@@ -28,9 +28,8 @@ class MainWindow(QMainWindow):
         titleText.setFont(font)
         titleText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
-        #introImage = QLabel().setPixmap(QPixmap('folder.png'))
-        introImage = QLabel("Stuff")
-        introText = QLabel("INTRO")
+        introImage = QLabel()
+        introImage.setPixmap(QPixmap('/View/Images/documents.png'))
 
         aboutButton = QPushButton("About")
         aboutButton.setStyleSheet(self.buttonStyle())
@@ -43,18 +42,14 @@ class MainWindow(QMainWindow):
         acknowlegementsButton.setStyleSheet(self.buttonStyle())
 
         settingImage = QLabel().setPixmap(QPixmap('setting.png'))
-        settingText = QLabel("SETTING")
 
         paramSetButton = QPushButton("Parameter Setting")
         paramSetButton.setStyleSheet(self.buttonStyle())
 
         computerImage = QLabel().setPixmap(QPixmap('computer.png'))
-        cleaningText = QLabel("CLEANING")
 
         cleaningButton = QPushButton("Hybrid Data Cleaning System")
         cleaningButton.setStyleSheet(self.buttonStyle())
-
-        resultsText = QLabel("RESULTS")
 
         datasetInteractionButton = QPushButton("Dataset Interaction")
         datasetInteractionButton.setStyleSheet(self.buttonStyle())
@@ -74,16 +69,12 @@ class MainWindow(QMainWindow):
         pageLayout.addWidget(container)
 
         introLayout.addWidget(introImage)
-        introLayout.addWidget(introText)
 
         settingLayout.addWidget(settingImage)
-        settingLayout.addWidget(settingText)
 
         cleaningLayout.addWidget(computerImage)
-        cleaningLayout.addWidget(cleaningText)
 
         resultsLayout.addWidget(computerImage)
-        resultsLayout.addWidget(resultsText)
 
         #Layout settings for left side layouts for tabs
         tabLayout.setSpacing(2)
