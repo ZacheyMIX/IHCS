@@ -13,91 +13,140 @@ from PyQt6.QtWidgets import (
     QTimeEdit,
     QVBoxLayout,
     QHBoxLayout,
+    QStackedLayout,
+    QGridLayout,
     QWidget,
 )
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("IHCS")
-        self.setFixedSize(900, 600)
+        self.setFixedSize(800, 500)
 
+        # Tab UI Elements
         titleText = QLabel("IHCS")
         font = titleText.font()
         font.setPointSize(30)
         titleText.setFont(font)
         titleText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
-        introImage = QLabel()
-        introImage.setPixmap(QPixmap('/View/Images/documents.png'))
+        introLabel = QLabel()
+        introLabel.setPixmap(QPixmap('Images/intro.png'))
 
         aboutButton = QPushButton("About")
-        aboutButton.setStyleSheet(self.buttonStyle())
-        aboutButton.clicked.connect(self.the_button_was_clicked)
+        aboutButton.setStyleSheet(self.enabledButtonStyle())
+        aboutButton.clicked.connect(self.about_button_clicked)
 
         helpButton = QPushButton("Help")
-        helpButton.setStyleSheet(self.buttonStyle())
+        helpButton.setStyleSheet(self.enabledButtonStyle())
+        helpButton.clicked.connect(self.help_button_clicked)
 
-        acknowlegementsButton = QPushButton("Acknowledgements")
-        acknowlegementsButton.setStyleSheet(self.buttonStyle())
+        acknowledgementButton = QPushButton("Acknowledgements")
+        acknowledgementButton.setStyleSheet(self.enabledButtonStyle())
+        acknowledgementButton.clicked.connect(self.acknowledgement_button_clicked)
 
-        settingImage = QLabel().setPixmap(QPixmap('setting.png'))
+        settingsLabel = QLabel()
+        settingsLabel.setPixmap(QPixmap('Images/settings.png'))
 
         paramSetButton = QPushButton("Parameter Setting")
-        paramSetButton.setStyleSheet(self.buttonStyle())
+        paramSetButton.setStyleSheet(self.enabledButtonStyle())
 
-        computerImage = QLabel().setPixmap(QPixmap('computer.png'))
+        cleaningLabel = QLabel()
+        cleaningLabel.setPixmap(QPixmap('Images/cleaning.png'))
 
         cleaningButton = QPushButton("Hybrid Data Cleaning System")
-        cleaningButton.setStyleSheet(self.buttonStyle())
+        cleaningButton.setEnabled(False)
+        cleaningButton.setStyleSheet(self.disabledButtonStyle())
+
+        resultsLabel = QLabel()
+        resultsLabel.setPixmap(QPixmap('Images/results.png'))
 
         datasetInteractionButton = QPushButton("Dataset Interaction")
-        datasetInteractionButton.setStyleSheet(self.buttonStyle())
+        datasetInteractionButton.setEnabled(False)
+        datasetInteractionButton.setStyleSheet(self.disabledButtonStyle())
         resultButton = QPushButton("Result Evaluation")
-        resultButton.setStyleSheet(self.buttonStyle())
+        resultButton.setEnabled(False)
+        resultButton.setStyleSheet(self.disabledButtonStyle())
 
+        # About UI Elements
+        aboutText = QLabel("Here's what the project is about")
+        aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        # Help UI Elements
+        helpText = QLabel("Here's how to use the project")
+        helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        # Acknowledge UI Elements
+        acknowledgementText = QLabel("Here's the people that helped bring this together")
+        acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        # Param UI Elements
+
+        # Cleaning UI Elements
+
+        # Interaction UI Elements
+
+        # Results UI Elements
+
+        # Main layouts displayed at all times
         mainLayout = QHBoxLayout()
-        tabLayout = QVBoxLayout()
-        introLayout = QHBoxLayout()
-        settingLayout = QHBoxLayout()
-        cleaningLayout = QHBoxLayout()
-        resultsLayout = QHBoxLayout()
-        pageLayout = QVBoxLayout()
+        tabLayout = QGridLayout()
+        self.pageLayout = QStackedLayout()
 
-        container = QWidget()
-        container.setStyleSheet("background-color: white")
-        pageLayout.addWidget(container)
-
-        introLayout.addWidget(introImage)
-
-        settingLayout.addWidget(settingImage)
-
-        cleaningLayout.addWidget(computerImage)
-
-        resultsLayout.addWidget(computerImage)
-
-        #Layout settings for left side layouts for tabs
-        tabLayout.setSpacing(2)
-        tabLayout.setContentsMargins(0,0,0,0)
+        # tab layout set up
         tabLayout.addWidget(titleText)
-        tabLayout.addLayout(introLayout)
+        tabLayout.addWidget(introLabel)
         tabLayout.addWidget(aboutButton)
         tabLayout.addWidget(helpButton)
-        tabLayout.addWidget(acknowlegementsButton)
-        tabLayout.addLayout(settingLayout)
+        tabLayout.addWidget(acknowledgementButton)
+        tabLayout.addWidget(settingsLabel)
         tabLayout.addWidget(paramSetButton)
-        tabLayout.addLayout(cleaningLayout)
+        tabLayout.addWidget(cleaningLabel)
         tabLayout.addWidget(cleaningButton)
-        tabLayout.addLayout(resultsLayout)
+        tabLayout.addWidget(resultsLabel)
         tabLayout.addWidget(datasetInteractionButton)
         tabLayout.addWidget(resultButton)
 
+        # Page based layouts setup
+        aboutWidget = QWidget()
+        aboutWidget.setStyleSheet("background-color: white")
+        helpWidget = QWidget()
+        helpWidget.setStyleSheet("background-color: white")
+        acknowledgementWidget = QWidget()
+        acknowledgementWidget.setStyleSheet("background-color: white")
+        paramWidget = QWidget()
+        paramWidget.setStyleSheet("background-color: white")
+        cleaningWidget = QWidget()
+        cleaningWidget.setStyleSheet("background-color: white")
+        interactWidget = QWidget()
+        interactWidget.setStyleSheet("background-color: white")
+        resultsWidget = QWidget()
+        resultsWidget.setStyleSheet("background-color: white")
+
+        # About Page Setup
+        aboutLayout = QGridLayout(aboutWidget)
+        aboutLayout.addWidget(aboutText)
+
+        # Info Page Setup
+        infoLayout = QGridLayout(helpWidget)
+        infoLayout.addWidget(helpText)
+
+        # Acknowledgement Page Setup
+        acknowledgementLayout = QGridLayout(acknowledgementWidget)
+        acknowledgementLayout.addWidget(acknowledgementText)
+
+        # Adding all pages to pageLayout
+        self.pageLayout.addWidget(aboutWidget)
+        self.pageLayout.addWidget(helpWidget)
+        self.pageLayout.addWidget(acknowledgementWidget)
+
         mainLayout.addLayout(tabLayout, 1)
-        mainLayout.addLayout(pageLayout, 4)
+        mainLayout.addLayout(self.pageLayout, 4)
 
-
-
-
+        datasetTextBox = QLineEdit()
+        rulesTextBox = QLineEdit()
         generateRuleCheckBox = QCheckBox()
 
         generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
@@ -106,10 +155,6 @@ class MainWindow(QMainWindow):
 
         keepDuplicatesCheckBox = QCheckBox()
 
-        datasetTextBox = QLineEdit()
-
-        rulesTextBox = QLineEdit()
-
         datasetCompareTextBox = QLineEdit()
 
         widget = QWidget()
@@ -117,23 +162,41 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(widget)
 
-    def the_button_was_clicked(self):
-        print("Clicked!")
+    def about_button_clicked(self):
+        self.pageLayout.setCurrentIndex(0)
 
-    def buttonStyle(self):
+    def help_button_clicked(self):
+        self.pageLayout.setCurrentIndex(1)
+
+    def acknowledgement_button_clicked(self):
+        self.pageLayout.setCurrentIndex(2)
+
+    def enabledButtonStyle(self):
         return """
             QPushButton {
                 background-color: transparent;
-                border: 2px solid transparent;
                 color: black;
                 font-size: 16px;
-                padding: 2px;
             }
             QPushButton:hover {
                 background-color: rgba(100, 100, 255, 100);  /* Semi-transparent blue */
                 border-radius: 10px;
             }
         """
+
+    def disabledButtonStyle(self):
+        return """
+                    QPushButton {
+                        background-color: transparent;
+                        color: grey;
+                        font-size: 16px;
+                    }
+                    QPushButton:hover {
+                        background-color: rgba(100, 100, 255, 100);  /* Semi-transparent blue */
+                        border-radius: 10px;
+                    }
+                """
+
 
 class Color(QWidget):
     def __init__(self, color):
