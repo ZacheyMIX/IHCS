@@ -1,16 +1,14 @@
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtGui import QAction, QPixmap, QPalette, QColor
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap, QPalette, QColor
 import sys
 from PyQt6.QtWidgets import (
     QApplication,
     QCheckBox,
-    QComboBox,
     QLabel,
     QLineEdit,
     QMainWindow,
     QProgressBar,
     QPushButton,
-    QTimeEdit,
     QVBoxLayout,
     QHBoxLayout,
     QStackedLayout,
@@ -52,6 +50,7 @@ class MainWindow(QMainWindow):
 
         paramSetButton = QPushButton("Parameter Setting")
         paramSetButton.setStyleSheet(self.enabledButtonStyle())
+        paramSetButton.clicked.connect(self.param_button_clicked)
 
         cleaningLabel = QLabel()
         cleaningLabel.setPixmap(QPixmap('Images/cleaning.png'))
@@ -83,6 +82,26 @@ class MainWindow(QMainWindow):
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Param UI Elements
+        parameterSettingLabel = QLabel()
+        parameterSettingLabel.setPixmap(QPixmap('Images/parameter setting.png'))
+        chooseText = QLabel("Choose the Files")
+        paramWidget = QWidget()
+        paramWidget.setStyleSheet("background-color: grey")
+        paramLayout = QHBoxLayout(paramWidget)
+        paramInfoText = QLabel("Select a dataset that you want to clean and input its corresponding data quality rules")
+        datasetText = QLabel("Dataset:")
+        datasetTextBox = QLineEdit()
+        browseDatasetButton = QPushButton("Browse...")
+        rulesText = QLabel("Rules:")
+        rulesTextBox = QLineEdit()
+        browseRulesButton = QPushButton("Browse...")
+        generateRuleCheckBox = QCheckBox()
+        generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
+        generateRuleCheckBox.setText("This is a checkbox")
+        cleanButton = QPushButton("Next")
+
+
+
 
         # Cleaning UI Elements
 
@@ -137,21 +156,18 @@ class MainWindow(QMainWindow):
         acknowledgementLayout = QGridLayout(acknowledgementWidget)
         acknowledgementLayout.addWidget(acknowledgementText)
 
+        # Param Page Setup
+
         # Adding all pages to pageLayout
         self.pageLayout.addWidget(aboutWidget)
         self.pageLayout.addWidget(helpWidget)
         self.pageLayout.addWidget(acknowledgementWidget)
+        self.pageLayout.addWidget(paramWidget)
 
         mainLayout.addLayout(tabLayout, 1)
         mainLayout.addLayout(self.pageLayout, 4)
 
-        datasetTextBox = QLineEdit()
-        rulesTextBox = QLineEdit()
-        generateRuleCheckBox = QCheckBox()
 
-        generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
-
-        generateRuleCheckBox.setText("This is a checkbox")
 
         keepDuplicatesCheckBox = QCheckBox()
 
@@ -171,6 +187,10 @@ class MainWindow(QMainWindow):
     def acknowledgement_button_clicked(self):
         self.pageLayout.setCurrentIndex(2)
 
+    def param_button_clicked(self):
+        self.pageLayout.setCurrentIndex(3)
+
+    # Style for enabled button
     def enabledButtonStyle(self):
         return """
             QPushButton {
@@ -184,6 +204,7 @@ class MainWindow(QMainWindow):
             }
         """
 
+    # Style for disabled buttons
     def disabledButtonStyle(self):
         return """
                     QPushButton {
@@ -196,16 +217,6 @@ class MainWindow(QMainWindow):
                         border-radius: 10px;
                     }
                 """
-
-
-class Color(QWidget):
-    def __init__(self, color):
-        super().__init__()
-        self.setAutoFillBackground(True)
-
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.Window, QColor(color))
-        self.setPalette(palette)
 
 
 app = QApplication(sys.argv)
