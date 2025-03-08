@@ -1,5 +1,5 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap, QPalette, QColor
+from PyQt6.QtGui import QPixmap
 import sys
 from PyQt6.QtWidgets import (
     QApplication,
@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QWidget,
 )
+from Spacers import Spacer
 
 
 class MainWindow(QMainWindow):
@@ -70,24 +71,34 @@ class MainWindow(QMainWindow):
         resultButton.setStyleSheet(self.disabledButtonStyle())
 
         # About UI Elements
-        aboutText = QLabel("Here's what the project is about")
+        welcomeText = QLabel("Welcome to IHCS!")
+        welcomeText.setFont(font)
+        welcomeText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        aboutText = QLabel(self.outputFile("Text/About.txt"))
+        aboutText.setWordWrap(True)
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Help UI Elements
-        helpText = QLabel("Here's how to use the project")
+        helpText = QLabel(self.outputFile("Text/Help.txt"))
+        helpText.setWordWrap(True)
         helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Acknowledge UI Elements
-        acknowledgementText = QLabel("Here's the people that helped bring this together")
+        acknowledgementText = QLabel(self.outputFile("Text/Acknowledgements.txt"))
+        acknowledgementText.setWordWrap(True)
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Param UI Elements
+        chooseWidget = QWidget()
+        chooseLayout = QVBoxLayout()
         parameterSettingLabel = QLabel()
         parameterSettingLabel.setPixmap(QPixmap('Images/parameter setting.png'))
         chooseText = QLabel("Choose the Files")
-        paramWidget = QWidget()
-        paramWidget.setStyleSheet("background-color: grey")
-        paramLayout = QHBoxLayout(paramWidget)
+        chooseText.setStyleSheet("color: blue")
+        browseWidget = QWidget()
+        browseWidget.setStyleSheet("background-color: lightgrey")
+        browseLayout = QVBoxLayout(browseWidget)
+        browseWidget2 = QWidget()
         paramInfoText = QLabel("Select a dataset that you want to clean and input its corresponding data quality rules")
         datasetText = QLabel("Dataset:")
         datasetTextBox = QLineEdit()
@@ -98,7 +109,15 @@ class MainWindow(QMainWindow):
         generateRuleCheckBox = QCheckBox()
         generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
         generateRuleCheckBox.setText("This is a checkbox")
-        cleanButton = QPushButton("Next")
+        cleanLayout = QVBoxLayout()
+        cleanWidget = QWidget()
+        cleanButton = QPushButton("Clean")
+        cleanButton.setStyleSheet(self.pageButtonStyle())
+        cleanButton.setFixedWidth(100)
+        #cleanButton.setAlignment(Qt.AlignmentFlag.AlignRight)
+
+        #List of spacers
+        spacers = Spacer()
 
 
 
@@ -146,7 +165,9 @@ class MainWindow(QMainWindow):
 
         # About Page Setup
         aboutLayout = QGridLayout(aboutWidget)
+        aboutLayout.addWidget(welcomeText)
         aboutLayout.addWidget(aboutText)
+        aboutLayout.addWidget(spacers.s1)
 
         # Info Page Setup
         infoLayout = QGridLayout(helpWidget)
@@ -157,6 +178,20 @@ class MainWindow(QMainWindow):
         acknowledgementLayout.addWidget(acknowledgementText)
 
         # Param Page Setup
+        paramLayout = QVBoxLayout(paramWidget)
+        chooseWidget.setLayout(chooseLayout)
+        browseWidget.setLayout(browseLayout)
+        cleanWidget.setLayout(cleanLayout)
+        chooseLayout.addWidget(parameterSettingLabel)
+        chooseLayout.addWidget(chooseText)
+        browseLayout.addWidget(paramInfoText)
+        cleanLayout.addWidget(cleanButton)
+        paramLayout.addWidget(chooseWidget)
+        paramLayout.addWidget(browseWidget)
+        paramLayout.addWidget(spacers.s2)
+        paramLayout.addWidget(cleanWidget)
+        paramLayout.addWidget(spacers.s3)
+
 
         # Adding all pages to pageLayout
         self.pageLayout.addWidget(aboutWidget)
@@ -199,7 +234,7 @@ class MainWindow(QMainWindow):
                 font-size: 16px;
             }
             QPushButton:hover {
-                background-color: rgba(100, 100, 255, 100);  /* Semi-transparent blue */
+                background-color: rgba(100, 100, 255, 100);
                 border-radius: 10px;
             }
         """
@@ -212,11 +247,27 @@ class MainWindow(QMainWindow):
                         color: grey;
                         font-size: 16px;
                     }
-                    QPushButton:hover {
-                        background-color: rgba(100, 100, 255, 100);  /* Semi-transparent blue */
-                        border-radius: 10px;
-                    }
                 """
+
+    def pageButtonStyle(self):
+        return """
+            QPushButton {
+                background-color: transparent;
+                border-style: outset;
+                border-width: 2px;
+                border-color: blue;
+                border-radius: 5px;
+                color: blue;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: rgba(100, 100, 255, 100); 
+            }
+        """
+
+    def outputFile(self, file):
+        f = open(file, "r")
+        return f.read()
 
 
 app = QApplication(sys.argv)
