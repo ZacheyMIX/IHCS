@@ -12,7 +12,7 @@ class Spacer(QWidget):
         # Create Widgets
         self.s1 = QWidget()
         self.s2 = QWidget()
-        self.s2.setFixedHeight(10)
+        self.s2.setFixedHeight(1)
         self.s3 = QWidget()
         self.s3.setFixedHeight(40)
         self.s4 = QWidget()

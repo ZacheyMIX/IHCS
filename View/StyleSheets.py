@@ -47,7 +47,7 @@ class StyleSheet():
                     border-style: outset;
                     border-width: 1px;
                     border-color: blue;
-                    border-radius: 5px;
+                    border-radius: 2px;
                     color: blue;
                     font-size: 16px;
                 }

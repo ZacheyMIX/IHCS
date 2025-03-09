@@ -112,11 +112,13 @@ class MainWindow(QMainWindow):
         datasetText = QLabel("Dataset:")
         datasetTextBox = QLineEdit()
         datasetTextBox.setStyleSheet("background-color: white")
+        datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(ss.browseButtonStyle())
         rulesText = QLabel("Rules:")
         rulesTextBox = QLineEdit()
         rulesTextBox.setStyleSheet("background-color: white")
+        rulesTextBox.setMaximumWidth(370)
         browseRulesButton = QPushButton("Browse...")
         browseRulesButton.setStyleSheet(ss.browseButtonStyle())
         generateRuleCheckBox = QCheckBox()
@@ -124,10 +126,11 @@ class MainWindow(QMainWindow):
         generateRuleCheckBox.setText("Generate rules automatically")
         generateRuleCheckBox.setStyleSheet("background-color: transparent")
         cleanLayout = QHBoxLayout()
+        cleanLayout.setSpacing(0)
         cleanWidget = QWidget()
         cleanButton = QPushButton("Clean")
         cleanButton.setStyleSheet(ss.pageButtonStyle())
-        cleanButton.setFixedWidth(100)
+        cleanButton.setFixedSize(100, 30)
 
 
 
