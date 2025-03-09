@@ -98,6 +98,7 @@ class MainWindow(QMainWindow):
         parameterSettingLabel.setPixmap(QPixmap('Images/parameter setting.png'))
         chooseText = QLabel("Choose the Files")
         chooseText.setStyleSheet("color: blue")
+        chooseText.setFixedHeight(20)
         browseWidget = QWidget()
         browseWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
         browseLayout = QVBoxLayout(browseWidget)
@@ -115,6 +116,7 @@ class MainWindow(QMainWindow):
         datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(ss.browseButtonStyle())
+        browseDatasetButton.clicked.connect(self.button_was_clicked)
         rulesText = QLabel("Rules:")
         rulesTextBox = QLineEdit()
         rulesTextBox.setStyleSheet("background-color: white")
@@ -250,6 +252,9 @@ class MainWindow(QMainWindow):
 
     def param_button_clicked(self):
         self.pageLayout.setCurrentIndex(3)
+
+    def button_was_clicked(self):
+        print("button was clicked")
 
 
 

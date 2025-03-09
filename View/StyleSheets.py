@@ -53,9 +53,11 @@ class StyleSheet():
                 }
                 QPushButton:hover {
                     background-color: rgba(100, 100, 255, 100); 
+                    color: rgba(30, 30, 30, 255)
                 }
                 QPushButton:pressed {
-                    background-color: rgba(80, 80, 255, 100);
+                    background-color: rgba(0, 0, 255, 155);
+                    color: white
                 }
             """
 
