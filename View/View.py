@@ -16,6 +16,7 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 from Spacers import Spacer
+from StyleSheets import StyleSheet
 
 
 class MainWindow(QMainWindow):
@@ -23,6 +24,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
+        spacers = Spacer()
+        ss = StyleSheet()
 
         # Tab UI Elements
         titleText = QLabel("IHCS")
@@ -35,22 +38,22 @@ class MainWindow(QMainWindow):
         introLabel.setPixmap(QPixmap('Images/intro.png'))
 
         aboutButton = QPushButton("About")
-        aboutButton.setStyleSheet(self.enabledButtonStyle())
+        aboutButton.setStyleSheet(ss.enabledButtonStyle())
         aboutButton.clicked.connect(self.about_button_clicked)
 
         helpButton = QPushButton("Help")
-        helpButton.setStyleSheet(self.enabledButtonStyle())
+        helpButton.setStyleSheet(ss.enabledButtonStyle())
         helpButton.clicked.connect(self.help_button_clicked)
 
         acknowledgementButton = QPushButton("Acknowledgements")
-        acknowledgementButton.setStyleSheet(self.enabledButtonStyle())
+        acknowledgementButton.setStyleSheet(ss.enabledButtonStyle())
         acknowledgementButton.clicked.connect(self.acknowledgement_button_clicked)
 
         settingsLabel = QLabel()
         settingsLabel.setPixmap(QPixmap('Images/settings.png'))
 
         paramSetButton = QPushButton("Parameter Setting")
-        paramSetButton.setStyleSheet(self.enabledButtonStyle())
+        paramSetButton.setStyleSheet(ss.enabledButtonStyle())
         paramSetButton.clicked.connect(self.param_button_clicked)
 
         cleaningLabel = QLabel()
@@ -58,17 +61,17 @@ class MainWindow(QMainWindow):
 
         cleaningButton = QPushButton("Hybrid Data Cleaning System")
         cleaningButton.setEnabled(False)
-        cleaningButton.setStyleSheet(self.disabledButtonStyle())
+        cleaningButton.setStyleSheet(ss.disabledButtonStyle())
 
         resultsLabel = QLabel()
         resultsLabel.setPixmap(QPixmap('Images/results.png'))
 
         datasetInteractionButton = QPushButton("Dataset Interaction")
         datasetInteractionButton.setEnabled(False)
-        datasetInteractionButton.setStyleSheet(self.disabledButtonStyle())
+        datasetInteractionButton.setStyleSheet(ss.disabledButtonStyle())
         resultButton = QPushButton("Result Evaluation")
         resultButton.setEnabled(False)
-        resultButton.setStyleSheet(self.disabledButtonStyle())
+        resultButton.setStyleSheet(ss.disabledButtonStyle())
 
         # About UI Elements
         welcomeText = QLabel("Welcome to IHCS!")
@@ -96,28 +99,35 @@ class MainWindow(QMainWindow):
         chooseText = QLabel("Choose the Files")
         chooseText.setStyleSheet("color: blue")
         browseWidget = QWidget()
-        browseWidget.setStyleSheet("background-color: lightgrey")
+        browseWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
         browseLayout = QVBoxLayout(browseWidget)
-        browseWidget2 = QWidget()
+        datasetWidget = QWidget()
+        datasetWidget.setStyleSheet("background-color: transparent")
+        datasetLayout = QHBoxLayout(datasetWidget)
+        rulesWidget = QWidget()
+        rulesWidget.setStyleSheet("background-color: transparent")
+        rulesLayout = QHBoxLayout(rulesWidget)
         paramInfoText = QLabel("Select a dataset that you want to clean and input its corresponding data quality rules")
+        paramInfoText.setStyleSheet("background-color: transparent")
         datasetText = QLabel("Dataset:")
         datasetTextBox = QLineEdit()
+        datasetTextBox.setStyleSheet("background-color: white")
         browseDatasetButton = QPushButton("Browse...")
+        browseDatasetButton.setStyleSheet(ss.browseButtonStyle())
         rulesText = QLabel("Rules:")
         rulesTextBox = QLineEdit()
+        rulesTextBox.setStyleSheet("background-color: white")
         browseRulesButton = QPushButton("Browse...")
+        browseRulesButton.setStyleSheet(ss.browseButtonStyle())
         generateRuleCheckBox = QCheckBox()
         generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
-        generateRuleCheckBox.setText("This is a checkbox")
-        cleanLayout = QVBoxLayout()
+        generateRuleCheckBox.setText("Generate rules automatically")
+        generateRuleCheckBox.setStyleSheet("background-color: transparent")
+        cleanLayout = QHBoxLayout()
         cleanWidget = QWidget()
         cleanButton = QPushButton("Clean")
-        cleanButton.setStyleSheet(self.pageButtonStyle())
+        cleanButton.setStyleSheet(ss.pageButtonStyle())
         cleanButton.setFixedWidth(100)
-        #cleanButton.setAlignment(Qt.AlignmentFlag.AlignRight)
-
-        #List of spacers
-        spacers = Spacer()
 
 
 
@@ -184,7 +194,20 @@ class MainWindow(QMainWindow):
         cleanWidget.setLayout(cleanLayout)
         chooseLayout.addWidget(parameterSettingLabel)
         chooseLayout.addWidget(chooseText)
+        datasetLayout.addWidget(datasetText)
+        datasetLayout.addWidget(datasetTextBox)
+        datasetLayout.addWidget(browseDatasetButton)
+        datasetLayout.setSpacing(1)
+        rulesLayout.addWidget(rulesText)
+        rulesLayout.addWidget(rulesTextBox)
+        rulesLayout.addWidget(browseRulesButton)
+        rulesLayout.setSpacing(1)
         browseLayout.addWidget(paramInfoText)
+        browseLayout.addWidget(datasetWidget)
+        browseLayout.addWidget(rulesWidget)
+        browseLayout.addWidget(generateRuleCheckBox)
+        cleanLayout.addWidget(spacers.s4)
+        cleanLayout.addWidget(spacers.s5)
         cleanLayout.addWidget(cleanButton)
         paramLayout.addWidget(chooseWidget)
         paramLayout.addWidget(browseWidget)
@@ -225,45 +248,7 @@ class MainWindow(QMainWindow):
     def param_button_clicked(self):
         self.pageLayout.setCurrentIndex(3)
 
-    # Style for enabled button
-    def enabledButtonStyle(self):
-        return """
-            QPushButton {
-                background-color: transparent;
-                color: black;
-                font-size: 16px;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 100, 255, 100);
-                border-radius: 10px;
-            }
-        """
 
-    # Style for disabled buttons
-    def disabledButtonStyle(self):
-        return """
-                    QPushButton {
-                        background-color: transparent;
-                        color: grey;
-                        font-size: 16px;
-                    }
-                """
-
-    def pageButtonStyle(self):
-        return """
-            QPushButton {
-                background-color: transparent;
-                border-style: outset;
-                border-width: 2px;
-                border-color: blue;
-                border-radius: 5px;
-                color: blue;
-                font-size: 16px;
-            }
-            QPushButton:hover {
-                background-color: rgba(100, 100, 255, 100); 
-            }
-        """
 
     def outputFile(self, file):
         f = open(file, "r")
