@@ -5,7 +5,7 @@ Data cleaning is a prerequisite to subsequent data analysis, and is know to ofte
 This project is made for Data Management and/for Machine Learning at the University of Utah.  All rights reserved to the original creators of IHCS, to learn more find out here: https://www.vldb.org/pvldb/vol12/p1874-ge.pdf
 
 ## Installation
-
+Navigate your working directory to this repo folder (IHCS):
 1. create conda environment using the environment.yml we provided:
 ```
 conda env create -f environment.yml -n ihcs
@@ -15,3 +15,8 @@ conda env create -f environment.yml -n ihcs
 ```
 conda activate ihcs
 ```
+3. add new packages to environment.yml, to update it in conda:
+```
+conda env update --file environment.yml
+```
+and restart your IDE.
