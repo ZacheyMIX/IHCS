@@ -1,0 +1,6 @@
+name: ihcs
+channels:
+  - defaults
+dependencies:
+  - python=3.12.4
+  - anaconda::pyqt
