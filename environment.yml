@@ -1,6 +1,8 @@
 name: ihcs
 channels:
   - defaults
+  - conda-forge
 dependencies:
-  - python=3.12.4
+  - python=3.10.14
   - anaconda::pyqt
+  - dataprep
