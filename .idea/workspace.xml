@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="More Param UI Setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/Spacers.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/Spacers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/StyleSheets.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/StyleSheets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/View.py" afterDir="false" />
     </list>
@@ -32,14 +33,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/austi/OneDrive/Documents/GitHub/IHCS/View/View.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/austi/OneDrive/Documents/GitHub/IHCS/View/View.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -92,7 +93,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/View/View.py</url>
-          <line>36</line>
+          <line>40</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

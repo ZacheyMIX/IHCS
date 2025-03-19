@@ -18,6 +18,7 @@ class StyleSheet():
                     background-color: transparent;
                     color: black;
                     font-size: 16px;
+                    border-radius: 10px
                 }
                 QPushButton:hover {
                     background-color: rgba(100, 100, 255, 100);
@@ -29,6 +30,24 @@ class StyleSheet():
                 }
             """
 
+    def enabledButtonSelectedStyle(self):
+        return """
+                        QPushButton {
+                            background-color: rgba(130, 130, 130, 100);
+                            color: black;
+                            font-size: 16px;
+                            border-radius: 10px;
+                        }
+                        QPushButton:hover {
+                            background-color: rgba(100, 100, 255, 100);
+                            border-radius: 10px;
+                        }
+                        QPushButton:pressed {
+                            background-color: rgba(80, 80, 255, 100);
+                            border-radius: 10px;
+                        }
+                    """
+
     # Style for disabled tab buttons
     def disabledButtonStyle(self):
         return """
@@ -36,6 +55,7 @@ class StyleSheet():
                             background-color: transparent;
                             color: grey;
                             font-size: 16px;
+                            border-radius: 10px;
                         }
                     """
 

@@ -18,6 +18,7 @@ class Spacer(QWidget):
         self.s4 = QWidget()
         self.s5 = QWidget()
         self.s6 = QWidget()
+        self.s6.setFixedWidth(75)
         self.s7 = QWidget()
         self.s8 = QWidget()
         self.s9 = QWidget()

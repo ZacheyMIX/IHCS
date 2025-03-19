@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QProgressBar,
+    QFileDialog,
     QPushButton,
     QVBoxLayout,
     QHBoxLayout,
@@ -20,12 +21,15 @@ from StyleSheets import StyleSheet
 
 
 class MainWindow(QMainWindow):
+
+    currentSelectedPage = 0
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
         spacers = Spacer()
-        ss = StyleSheet()
+        self.ss = StyleSheet()
 
         # Tab UI Elements
         titleText = QLabel("IHCS")
@@ -37,41 +41,51 @@ class MainWindow(QMainWindow):
         introLabel = QLabel()
         introLabel.setPixmap(QPixmap('Images/intro.png'))
 
-        aboutButton = QPushButton("About")
-        aboutButton.setStyleSheet(ss.enabledButtonStyle())
-        aboutButton.clicked.connect(self.about_button_clicked)
+        self.aboutButton = QPushButton("About")
+        self.aboutButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
+        self.aboutButton.setFixedHeight(30)
+        self.aboutButton.clicked.connect(self.about_button_clicked)
 
-        helpButton = QPushButton("Help")
-        helpButton.setStyleSheet(ss.enabledButtonStyle())
-        helpButton.clicked.connect(self.help_button_clicked)
+        self.helpButton = QPushButton("Help")
+        self.helpButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.helpButton.setFixedHeight(30)
+        self.helpButton.clicked.connect(self.help_button_clicked)
 
-        acknowledgementButton = QPushButton("Acknowledgements")
-        acknowledgementButton.setStyleSheet(ss.enabledButtonStyle())
-        acknowledgementButton.clicked.connect(self.acknowledgement_button_clicked)
+        self.acknowledgementButton = QPushButton("Acknowledgements")
+        self.acknowledgementButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.acknowledgementButton.setFixedHeight(30)
+        self.acknowledgementButton.clicked.connect(self.acknowledgement_button_clicked)
 
         settingsLabel = QLabel()
         settingsLabel.setPixmap(QPixmap('Images/settings.png'))
 
-        paramSetButton = QPushButton("Parameter Setting")
-        paramSetButton.setStyleSheet(ss.enabledButtonStyle())
-        paramSetButton.clicked.connect(self.param_button_clicked)
+        self.paramSetButton = QPushButton("Parameter Setting")
+        self.paramSetButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.paramSetButton.setFixedHeight(30)
+        self.paramSetButton.clicked.connect(self.param_button_clicked)
 
         cleaningLabel = QLabel()
         cleaningLabel.setPixmap(QPixmap('Images/cleaning.png'))
 
-        cleaningButton = QPushButton("Hybrid Data Cleaning System")
-        cleaningButton.setEnabled(False)
-        cleaningButton.setStyleSheet(ss.disabledButtonStyle())
+        self.cleaningButton = QPushButton("Hybrid Data Cleaning System")
+        self.cleaningButton.setEnabled(False)
+        self.cleaningButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.cleaningButton.setFixedHeight(30)
+        self.cleaningButton.clicked.connect(self.clean_page_button_clicked)
 
         resultsLabel = QLabel()
         resultsLabel.setPixmap(QPixmap('Images/results.png'))
 
-        datasetInteractionButton = QPushButton("Dataset Interaction")
-        datasetInteractionButton.setEnabled(False)
-        datasetInteractionButton.setStyleSheet(ss.disabledButtonStyle())
-        resultButton = QPushButton("Result Evaluation")
-        resultButton.setEnabled(False)
-        resultButton.setStyleSheet(ss.disabledButtonStyle())
+        self.datasetInteractionButton = QPushButton("Dataset Interaction")
+        self.datasetInteractionButton.setEnabled(False)
+        self.datasetInteractionButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.datasetInteractionButton.setFixedHeight(30)
+        self.datasetInteractionButton.clicked.connect(self.dataset_interaction_page_button_clicked)
+        self.resultButton = QPushButton("Result Evaluation")
+        self.resultButton.setEnabled(False)
+        self.resultButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.resultButton.setFixedHeight(30)
+        self.resultButton.clicked.connect(self.dataset_result_page_button_clicked)
 
         # About UI Elements
         welcomeText = QLabel("Welcome to IHCS!")
@@ -111,28 +125,29 @@ class MainWindow(QMainWindow):
         paramInfoText = QLabel("Select a dataset that you want to clean and input its corresponding data quality rules")
         paramInfoText.setStyleSheet("background-color: transparent")
         datasetText = QLabel("Dataset:")
-        datasetTextBox = QLineEdit()
-        datasetTextBox.setStyleSheet("background-color: white")
-        datasetTextBox.setMaximumWidth(370)
+        self.datasetTextBox = QLineEdit()
+        self.datasetTextBox.setStyleSheet("background-color: white")
+        self.datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
-        browseDatasetButton.setStyleSheet(ss.browseButtonStyle())
+        browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
         browseDatasetButton.clicked.connect(self.button_was_clicked)
         rulesText = QLabel("Rules:")
-        rulesTextBox = QLineEdit()
-        rulesTextBox.setStyleSheet("background-color: white")
-        rulesTextBox.setMaximumWidth(370)
+        self.rulesTextBox = QLineEdit()
+        self.rulesTextBox.setStyleSheet("background-color: white")
+        self.rulesTextBox.setMaximumWidth(370)
         browseRulesButton = QPushButton("Browse...")
-        browseRulesButton.setStyleSheet(ss.browseButtonStyle())
-        generateRuleCheckBox = QCheckBox()
-        generateRuleCheckBox.setCheckState(Qt.CheckState.Checked)
-        generateRuleCheckBox.setText("Generate rules automatically")
-        generateRuleCheckBox.setStyleSheet("background-color: transparent")
+        browseRulesButton.setStyleSheet(self.ss.browseButtonStyle())
+        self.generateRuleCheckBox = QCheckBox()
+        self.generateRuleCheckBox.setText("Generate rules automatically")
+        self.generateRuleCheckBox.setStyleSheet("background-color: transparent")
+        self.generateRuleCheckBox.clicked.connect(self.rules_checkbox_clicked)
         cleanLayout = QHBoxLayout()
         cleanLayout.setSpacing(0)
         cleanWidget = QWidget()
         cleanButton = QPushButton("Clean")
-        cleanButton.setStyleSheet(ss.pageButtonStyle())
+        cleanButton.setStyleSheet(self.ss.pageButtonStyle())
         cleanButton.setFixedSize(100, 30)
+        cleanButton.clicked.connect(self.clean_button_clicked)
 
 
 
@@ -151,16 +166,16 @@ class MainWindow(QMainWindow):
         # tab layout set up
         tabLayout.addWidget(titleText)
         tabLayout.addWidget(introLabel)
-        tabLayout.addWidget(aboutButton)
-        tabLayout.addWidget(helpButton)
-        tabLayout.addWidget(acknowledgementButton)
+        tabLayout.addWidget(self.aboutButton)
+        tabLayout.addWidget(self.helpButton)
+        tabLayout.addWidget(self.acknowledgementButton)
         tabLayout.addWidget(settingsLabel)
-        tabLayout.addWidget(paramSetButton)
+        tabLayout.addWidget(self.paramSetButton)
         tabLayout.addWidget(cleaningLabel)
-        tabLayout.addWidget(cleaningButton)
+        tabLayout.addWidget(self.cleaningButton)
         tabLayout.addWidget(resultsLabel)
-        tabLayout.addWidget(datasetInteractionButton)
-        tabLayout.addWidget(resultButton)
+        tabLayout.addWidget(self.datasetInteractionButton)
+        tabLayout.addWidget(self.resultButton)
 
         # Page based layouts setup
         aboutWidget = QWidget()
@@ -200,17 +215,17 @@ class MainWindow(QMainWindow):
         chooseLayout.addWidget(parameterSettingLabel)
         chooseLayout.addWidget(chooseText)
         datasetLayout.addWidget(datasetText)
-        datasetLayout.addWidget(datasetTextBox)
+        datasetLayout.addWidget(self.datasetTextBox)
         datasetLayout.addWidget(browseDatasetButton)
         datasetLayout.setSpacing(1)
         rulesLayout.addWidget(rulesText)
-        rulesLayout.addWidget(rulesTextBox)
-        rulesLayout.addWidget(browseRulesButton)
+        rulesLayout.addWidget(self.rulesTextBox)
+        rulesLayout.addWidget(spacers.s6)
         rulesLayout.setSpacing(1)
         browseLayout.addWidget(paramInfoText)
         browseLayout.addWidget(datasetWidget)
         browseLayout.addWidget(rulesWidget)
-        browseLayout.addWidget(generateRuleCheckBox)
+        browseLayout.addWidget(self.generateRuleCheckBox)
         cleanLayout.addWidget(spacers.s4)
         cleanLayout.addWidget(spacers.s5)
         cleanLayout.addWidget(cleanButton)
@@ -226,6 +241,7 @@ class MainWindow(QMainWindow):
         self.pageLayout.addWidget(helpWidget)
         self.pageLayout.addWidget(acknowledgementWidget)
         self.pageLayout.addWidget(paramWidget)
+        self.pageLayout.addWidget(cleaningWidget)
 
         mainLayout.addLayout(tabLayout, 1)
         mainLayout.addLayout(self.pageLayout, 4)
@@ -242,16 +258,84 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def about_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 0
+        self.aboutButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
         self.pageLayout.setCurrentIndex(0)
 
     def help_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 1
+        self.helpButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
         self.pageLayout.setCurrentIndex(1)
 
     def acknowledgement_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 2
+        self.acknowledgementButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
         self.pageLayout.setCurrentIndex(2)
 
     def param_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 3
+        self.paramSetButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
         self.pageLayout.setCurrentIndex(3)
+
+    def clean_page_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 4
+        self.cleaningButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
+        self.pageLayout.setCurrentIndex(4)
+
+    def dataset_interaction_page_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 5
+        self.datasetInteractionButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
+        self.pageLayout.setCurrentIndex(5)
+
+    def dataset_result_page_button_clicked(self):
+        self.resetSelectedButton()
+        self.currentSelectedPage = 6
+        self.resultButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
+        self.pageLayout.setCurrentIndex(6)
+
+    def rules_checkbox_clicked(self):
+        if self.generateRuleCheckBox.isChecked():
+            self.rulesTextBox.setEnabled(False)
+            self.rulesTextBox.setText("buncha rules")
+        else:
+            self.rulesTextBox.setEnabled(True)
+            self.rulesTextBox.setText("")
+
+    #Clean button will reset pages for next dataset stuff
+    def clean_button_clicked(self):
+        self.datasetInteractionButton.setEnabled(False)
+        self.datasetInteractionButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.resultButton.setEnabled(False)
+        self.resultButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.cleaningButton.setEnabled(True)
+        self.cleaningButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.resetSelectedButton()
+        self.currentSelectedPage = 4
+        self.cleaningButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
+        self.pageLayout.setCurrentIndex(4)
+
+    def resetSelectedButton(self):
+        if self.currentSelectedPage == 0:
+            self.aboutButton.setStyleSheet(self.ss.enabledButtonStyle())
+        elif self.currentSelectedPage == 1:
+            self.helpButton.setStyleSheet(self.ss.enabledButtonStyle())
+        elif self.currentSelectedPage == 2:
+            self.acknowledgementButton.setStyleSheet(self.ss.enabledButtonStyle())
+        elif self.currentSelectedPage == 3:
+            self.paramSetButton.setStyleSheet(self.ss.enabledButtonStyle())
+        elif self.currentSelectedPage == 4:
+            self.cleaningButton.setStyleSheet(self.ss.enabledButtonStyle())
+        elif self.currentSelectedPage == 5:
+            self.datasetInteractionButton.setStyleSheet(self.ss.enabledButtonStyle())
+        else:
+            self.resultButton.setStyleSheet(self.ss.enabledButtonStyle())
+
 
     def button_was_clicked(self):
         print("button was clicked")
@@ -261,6 +345,16 @@ class MainWindow(QMainWindow):
     def outputFile(self, file):
         f = open(file, "r")
         return f.read()
+
+    def openFileDialog(self):
+        file_dialog = QFileDialog(self)
+        file_dialog.setWindowTitle("Select Datasheet")
+        file_dialog.setFileMode(QFileDialog.FileMode.Directory)
+        file_dialog.setViewMode(QFileDialog.ViewMode.List)
+
+        if file_dialog.exec():
+            selected_directory = file_dialog.selectedFiles()[0]
+            #To be continued
 
 
 app = QApplication(sys.argv)
