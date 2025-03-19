@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Established ViewModel, and file and rule setup connection from the UI">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/StyleSheets.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/StyleSheets.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/View.py" afterDir="false" />
-    </list>
+    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Placed a better error for bad input" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -91,7 +87,14 @@
       <option name="project" value="LOCAL" />
       <updated>1742402838474</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Placed a better error for bad input">
+      <created>1742403415450</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1742403415450</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -101,7 +104,8 @@
     <MESSAGE value="More Param UI Setup" />
     <MESSAGE value="Getting files and rules setup" />
     <MESSAGE value="Established ViewModel, and file and rule setup connection from the UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="Established ViewModel, and file and rule setup connection from the UI" />
+    <MESSAGE value="Placed a better error for bad input" />
+    <option name="LAST_COMMIT_MESSAGE" value="Placed a better error for bad input" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
