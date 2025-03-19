@@ -1,5 +1,8 @@
+import os.path
+
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
+import re
 import sys
 from PyQt6.QtWidgets import (
     QApplication,
@@ -18,18 +21,20 @@ from PyQt6.QtWidgets import (
 )
 from Spacers import Spacer
 from StyleSheets import StyleSheet
+from ViewModel.ViewModel import ViewModel
 
 
 class MainWindow(QMainWindow):
 
     currentSelectedPage = 0
+    ss = StyleSheet()
+    viewModel = ViewModel()
 
     def __init__(self):
         super().__init__()
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
         spacers = Spacer()
-        self.ss = StyleSheet()
 
         # Tab UI Elements
         titleText = QLabel("IHCS")
@@ -130,7 +135,7 @@ class MainWindow(QMainWindow):
         self.datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
-        browseDatasetButton.clicked.connect(self.button_was_clicked)
+        browseDatasetButton.clicked.connect(self.openFileDialog)
         rulesText = QLabel("Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
@@ -301,14 +306,17 @@ class MainWindow(QMainWindow):
 
     def rules_checkbox_clicked(self):
         if self.generateRuleCheckBox.isChecked():
-            self.rulesTextBox.setEnabled(False)
-            self.rulesTextBox.setText("buncha rules")
-        else:
-            self.rulesTextBox.setEnabled(True)
-            self.rulesTextBox.setText("")
+            self.rulesTextBox.setText("Accuracy, Completeness, Conformity, Consistency, Timeliness, Uniqueness")
 
-    #Clean button will reset pages for next dataset stuff
+    #Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
+        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.csv$', self.datasetTextBox.text()):
+            print("Need to input a csv file")
+            return
+        if not re.search(r'^(accuracy|completeness|conformity|consistency|timeliness|uniqueness)(?:, (accuracy|completeness|conformity|consistency|timeliness|uniqueness))*$', self.rulesTextBox.text().lower()):
+            print("Must put in rules and only rules")
+            return
+        self.viewModel.commenseClean(self.datasetTextBox.text(), self.rulesTextBox.text().lower())
         self.datasetInteractionButton.setEnabled(False)
         self.datasetInteractionButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.resultButton.setEnabled(False)
@@ -336,12 +344,6 @@ class MainWindow(QMainWindow):
         else:
             self.resultButton.setStyleSheet(self.ss.enabledButtonStyle())
 
-
-    def button_was_clicked(self):
-        print("button was clicked")
-
-
-
     def outputFile(self, file):
         f = open(file, "r")
         return f.read()
@@ -349,12 +351,11 @@ class MainWindow(QMainWindow):
     def openFileDialog(self):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Select Datasheet")
-        file_dialog.setFileMode(QFileDialog.FileMode.Directory)
-        file_dialog.setViewMode(QFileDialog.ViewMode.List)
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
         if file_dialog.exec():
-            selected_directory = file_dialog.selectedFiles()[0]
-            #To be continued
+            self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
 
 
 app = QApplication(sys.argv)

@@ -1,10 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 import sys
-from PyQt6.QtWidgets import (
-    QWidget,
-)
-
 
 class StyleSheet():
     def __init__(self):
