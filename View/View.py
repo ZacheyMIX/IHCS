@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QProgressBar,
     QFileDialog,
+    QMessageBox,
     QPushButton,
     QVBoxLayout,
     QHBoxLayout,
@@ -311,10 +312,10 @@ class MainWindow(QMainWindow):
     #Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
         if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.csv$', self.datasetTextBox.text()):
-            print("Need to input a csv file")
+            self.errorDialog("Need to input a csv file")
             return
         if not re.search(r'^(accuracy|completeness|conformity|consistency|timeliness|uniqueness)(?:, (accuracy|completeness|conformity|consistency|timeliness|uniqueness))*$', self.rulesTextBox.text().lower()):
-            print("Must put in rules and only rules")
+            self.errorDialog("Must put in rules and only rules")
             return
         self.viewModel.commenseClean(self.datasetTextBox.text(), self.rulesTextBox.text().lower())
         self.datasetInteractionButton.setEnabled(False)
@@ -357,6 +358,11 @@ class MainWindow(QMainWindow):
         if file_dialog.exec():
             self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
 
+    def errorDialog(self, error):
+        msgBox = QMessageBox()
+        msgBox.setWindowTitle("Error")
+        msgBox.setText(error)
+        msgBox.exec()
 
 app = QApplication(sys.argv)
 window = MainWindow()
