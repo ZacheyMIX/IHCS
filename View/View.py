@@ -50,17 +50,17 @@ class MainWindow(QMainWindow):
         self.aboutButton = QPushButton("About")
         self.aboutButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
         self.aboutButton.setFixedHeight(30)
-        self.aboutButton.clicked.connect(self.about_button_clicked)
+        self.aboutButton.clicked.connect(lambda: self.movetopage(0))
 
         self.helpButton = QPushButton("Help")
         self.helpButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.helpButton.setFixedHeight(30)
-        self.helpButton.clicked.connect(self.help_button_clicked)
+        self.helpButton.clicked.connect(lambda: self.movetopage(1))
 
         self.acknowledgementButton = QPushButton("Acknowledgements")
         self.acknowledgementButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.acknowledgementButton.setFixedHeight(30)
-        self.acknowledgementButton.clicked.connect(self.acknowledgement_button_clicked)
+        self.acknowledgementButton.clicked.connect(lambda: self.movetopage(2))
 
         settingsLabel = QLabel()
         settingsLabel.setPixmap(QPixmap('Images/settings.png'))
@@ -68,7 +68,13 @@ class MainWindow(QMainWindow):
         self.paramSetButton = QPushButton("Parameter Setting")
         self.paramSetButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.paramSetButton.setFixedHeight(30)
-        self.paramSetButton.clicked.connect(self.param_button_clicked)
+        self.paramSetButton.clicked.connect(lambda: self.movetopage(2))
+
+        self.formatCorrectionButton = QPushButton("Format Correction")
+        self.formatCorrectionButton.setEnabled(False)
+        self.formatCorrectionButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.formatCorrectionButton.setFixedHeight(30)
+        self.formatCorrectionButton.clicked.connect(lambda: self.movetopage(2))
 
         cleaningLabel = QLabel()
         cleaningLabel.setPixmap(QPixmap('Images/cleaning.png'))
@@ -77,7 +83,7 @@ class MainWindow(QMainWindow):
         self.cleaningButton.setEnabled(False)
         self.cleaningButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.cleaningButton.setFixedHeight(30)
-        self.cleaningButton.clicked.connect(self.clean_page_button_clicked)
+        self.cleaningButton.clicked.connect(lambda: self.movetopage(2))
 
         resultsLabel = QLabel()
         resultsLabel.setPixmap(QPixmap('Images/results.png'))
@@ -86,12 +92,12 @@ class MainWindow(QMainWindow):
         self.datasetInteractionButton.setEnabled(False)
         self.datasetInteractionButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.datasetInteractionButton.setFixedHeight(30)
-        self.datasetInteractionButton.clicked.connect(self.dataset_interaction_page_button_clicked)
+        self.datasetInteractionButton.clicked.connect(lambda: self.movetopage(2))
         self.resultButton = QPushButton("Result Evaluation")
         self.resultButton.setEnabled(False)
         self.resultButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.resultButton.setFixedHeight(30)
-        self.resultButton.clicked.connect(self.dataset_result_page_button_clicked)
+        self.resultButton.clicked.connect(lambda: self.movetopage(2))
 
         # About UI Elements
         welcomeText = QLabel("Welcome to IHCS!")
@@ -150,7 +156,7 @@ class MainWindow(QMainWindow):
         cleanLayout = QHBoxLayout()
         cleanLayout.setSpacing(0)
         cleanWidget = QWidget()
-        cleanButton = QPushButton("Clean")
+        cleanButton = QPushButton("Check")
         cleanButton.setStyleSheet(self.ss.pageButtonStyle())
         cleanButton.setFixedSize(100, 30)
         cleanButton.clicked.connect(self.clean_button_clicked)
@@ -177,6 +183,7 @@ class MainWindow(QMainWindow):
         tabLayout.addWidget(self.acknowledgementButton)
         tabLayout.addWidget(settingsLabel)
         tabLayout.addWidget(self.paramSetButton)
+        tabLayout.addWidget(self.formatConfirmButton)
         tabLayout.addWidget(cleaningLabel)
         tabLayout.addWidget(self.cleaningButton)
         tabLayout.addWidget(resultsLabel)
@@ -192,6 +199,8 @@ class MainWindow(QMainWindow):
         acknowledgementWidget.setStyleSheet("background-color: white")
         paramWidget = QWidget()
         paramWidget.setStyleSheet("background-color: white")
+        formatCorrectionWidget = QWidget()
+        formatCorrectionWidget.setStyleSheet("background-color: white")
         cleaningWidget = QWidget()
         cleaningWidget.setStyleSheet("background-color: white")
         interactWidget = QWidget()
@@ -241,12 +250,15 @@ class MainWindow(QMainWindow):
         paramLayout.addWidget(cleanWidget)
         paramLayout.addWidget(spacers.s3)
 
+        #Format correction layout
+
 
         # Adding all pages to pageLayout
         self.pageLayout.addWidget(aboutWidget)
         self.pageLayout.addWidget(helpWidget)
         self.pageLayout.addWidget(acknowledgementWidget)
         self.pageLayout.addWidget(paramWidget)
+        self.pageLayout.addWidget(formatCorrectionWidget)
         self.pageLayout.addWidget(cleaningWidget)
 
         mainLayout.addLayout(tabLayout, 1)
@@ -263,73 +275,43 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(widget)
 
-    def about_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 0
-        self.aboutButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(0)
+        # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
 
-    def help_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 1
-        self.helpButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(1)
-
-    def acknowledgement_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 2
-        self.acknowledgementButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(2)
-
-    def param_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 3
-        self.paramSetButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(3)
-
-    def clean_page_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 4
-        self.cleaningButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(4)
-
-    def dataset_interaction_page_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 5
-        self.datasetInteractionButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(5)
-
-    def dataset_result_page_button_clicked(self):
-        self.resetSelectedButton()
-        self.currentSelectedPage = 6
-        self.resultButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(6)
-
-    def rules_checkbox_clicked(self):
-        if self.generateRuleCheckBox.isChecked():
-            self.rulesTextBox.setText("Accuracy, Completeness, Conformity, Consistency, Timeliness, Uniqueness")
-
-    #Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
-        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.csv$', self.datasetTextBox.text()):
-            self.errorDialog("Need to input a csv file")
+
+        # Check if file and rules are set correctly
+        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+                         self.datasetTextBox.text()):
+            self.errorDialog("You must input either a csv, xlsx, xls, or json file")
             return
-        if not re.search(r'^(accuracy|completeness|conformity|consistency|timeliness|uniqueness)(?:, (accuracy|completeness|conformity|consistency|timeliness|uniqueness))*$', self.rulesTextBox.text().lower()):
-            self.errorDialog("Must put in rules and only rules")
+        if self.rulesTextBox.text() == "":
+            self.errorDialog("Must put in data quality rules")
             return
+        elif not re.search(
+                r'^(accuracy|completeness|conformity|consistency|timeliness|uniqueness)(?:, (accuracy|completeness|conformity|consistency|timeliness|uniqueness))*$',
+                self.rulesTextBox.text().lower()):
+            self.errorDialog("Only eligible rules are allowed")
+            return
+
+        # Start cleaning sequence
         self.viewModel.commenseClean(self.datasetTextBox.text(), self.rulesTextBox.text().lower())
+
+        # Reset pages
         self.datasetInteractionButton.setEnabled(False)
         self.datasetInteractionButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.resultButton.setEnabled(False)
         self.resultButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.cleaningButton.setEnabled(True)
-        self.cleaningButton.setStyleSheet(self.ss.enabledButtonStyle())
-        self.resetSelectedButton()
-        self.currentSelectedPage = 4
-        self.cleaningButton.setStyleSheet(self.ss.enabledButtonSelectedStyle())
-        self.pageLayout.setCurrentIndex(4)
+        self.movetopage(4)
 
-    def resetSelectedButton(self):
+    def rules_checkbox_clicked(self):
+        if self.generateRuleCheckBox.isChecked():
+            self.rulesTextBox.setText("Accuracy, Completeness, Conformity, Consistency, Timeliness, Uniqueness")
+
+
+
+    #Changes tab button highlight and moves to page selected
+    def movetopage(self, page):
         if self.currentSelectedPage == 0:
             self.aboutButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 1:
@@ -344,11 +326,28 @@ class MainWindow(QMainWindow):
             self.datasetInteractionButton.setStyleSheet(self.ss.enabledButtonStyle())
         else:
             self.resultButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.currentSelectedPage = page
+        if page == 0:
+            self.aboutButton.setStyleSheet(self.ss.selectedButtonStyle())
+            self.pageLayout.setCurrentIndex(0)
+        elif page == 1:
+            self.helpButton.setStyleSheet(self.ss.selectedButtonStyle())
+            self.pageLayout.setCurrentIndex(1)
+        elif page == 2:
+            self.acknowledgementButton.setStyleSheet(self.ss.selectedButtonStyle())
+            self.pageLayout.setCurrentIndex(2)
+        elif page == 3:
+            self.paramSetButton.setStyleSheet(self.ss.selectedButtonStyle())
+            self.pageLayout.setCurrentIndex(3)
+        elif page == 4:
+            self.formatCorrectionButton.setStyleSheet(self.ss.selectedButtonStyle())
 
+    #Reads a file and returns the text
     def outputFile(self, file):
         f = open(file, "r")
         return f.read()
 
+    #Opens filepath
     def openFileDialog(self):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Select Datasheet")
@@ -358,13 +357,15 @@ class MainWindow(QMainWindow):
         if file_dialog.exec():
             self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
 
+    #Provides a popup error given an error message
     def errorDialog(self, error):
         msgBox = QMessageBox()
         msgBox.setWindowTitle("Error")
         msgBox.setText(error)
         msgBox.exec()
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec()
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()

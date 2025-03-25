@@ -26,7 +26,7 @@ class StyleSheet():
                 }
             """
 
-    def enabledButtonSelectedStyle(self):
+    def selectedButtonStyle(self):
         return """
                         QPushButton {
                             background-color: rgba(100, 100, 255, 100);
