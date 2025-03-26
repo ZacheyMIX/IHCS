@@ -8,7 +8,6 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem
                              )
-from Spacers import Spacer
 from StyleSheets import StyleSheet
 from ViewModel.ViewModel import ViewModel
 
@@ -22,7 +21,6 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
-        spacers = Spacer()
 
         # Tab UI Elements
         titleText = QLabel("IHCS")
@@ -75,16 +73,16 @@ class MainWindow(QMainWindow):
         resultsLabel = QLabel()
         resultsLabel.setPixmap(QPixmap('Images/results.png'))
 
-        self.datasetPageButton = QPushButton("Dataset Interaction")
-        self.datasetPageButton.setEnabled(False)
-        self.datasetPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.datasetPageButton.setFixedHeight(30)
-        self.datasetPageButton.clicked.connect(lambda: self.movetopage(6))
-        self.resultPageButton = QPushButton("Result Evaluation")
+        self.resultPageButton = QPushButton("Dataset Interaction")
         self.resultPageButton.setEnabled(False)
         self.resultPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.resultPageButton.setFixedHeight(30)
-        self.resultPageButton.clicked.connect(lambda: self.movetopage(7))
+        self.resultPageButton.clicked.connect(lambda: self.movetopage(6))
+        self.evaluationPageButton = QPushButton("Result Evaluation")
+        self.evaluationPageButton.setEnabled(False)
+        self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.evaluationPageButton.setFixedHeight(30)
+        self.evaluationPageButton.clicked.connect(lambda: self.movetopage(7))
 
         # About UI Elements
         welcomeText = QLabel("Welcome to IHCS!")
@@ -95,11 +93,19 @@ class MainWindow(QMainWindow):
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Help UI Elements
+        helpTitleWidget = QWidget()
+        helpTitleLayout = QVBoxLayout()
+        helpTitle = QLabel()
+        helpTitle.setPixmap(QPixmap('Images/help page.png'))
         helpText = QLabel(self.outputFile("Text/Help.txt"))
         helpText.setWordWrap(True)
         helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # Acknowledge UI Elements
+        acknowlegementTitleWidget = QWidget()
+        acknowlegementTitleLayout = QVBoxLayout()
+        acknowlegementTitle = QLabel()
+        acknowlegementTitle.setPixmap(QPixmap('Images/acknowledgements page.png'))
         acknowledgementText = QLabel(self.outputFile("Text/Acknowledgements.txt"))
         acknowledgementText.setWordWrap(True)
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
@@ -108,7 +114,7 @@ class MainWindow(QMainWindow):
         chooseWidget = QWidget()
         chooseLayout = QVBoxLayout()
         parameterSettingLabel = QLabel()
-        parameterSettingLabel.setPixmap(QPixmap('Images/parameter setting.png'))
+        parameterSettingLabel.setPixmap(QPixmap('Images/parameter page.png'))
         chooseText = QLabel("Choose the Files")
         chooseText.setStyleSheet("color: blue")
         chooseText.setFixedHeight(20)
@@ -141,18 +147,11 @@ class MainWindow(QMainWindow):
         self.generateRuleCheckBox.setStyleSheet("background-color: transparent")
         self.generateRuleCheckBox.clicked.connect(self.rules_checkbox_clicked)
         formatLayout = QHBoxLayout()
-        formatLayout.setSpacing(0)
         formatWidget = QWidget()
         formatButton = QPushButton("Clean")
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
         formatButton.setFixedSize(100, 30)
         formatButton.clicked.connect(self.format_button_clicked)
-
-        # Cleaning UI Elements
-
-        # Interaction UI Elements
-
-        # Results UI Elements
 
         # Main layouts displayed at all times
         mainLayout = QHBoxLayout()
@@ -171,8 +170,8 @@ class MainWindow(QMainWindow):
         tabLayout.addWidget(cleaningLabel)
         tabLayout.addWidget(self.cleaningPageButton)
         tabLayout.addWidget(resultsLabel)
-        tabLayout.addWidget(self.datasetPageButton)
         tabLayout.addWidget(self.resultPageButton)
+        tabLayout.addWidget(self.evaluationPageButton)
 
         # Page based layouts setup
         aboutPageWidget = QWidget()
@@ -187,24 +186,34 @@ class MainWindow(QMainWindow):
         self.formatPageWidget.setStyleSheet("background-color: white")
         self.cleaningPageWidget = QWidget()
         self.cleaningPageWidget.setStyleSheet("background-color: white")
-        self.datasetPageWidget = QWidget()
-        self.datasetPageWidget.setStyleSheet("background-color: white")
-        self.resultsPageWidget = QWidget()
-        self.resultsPageWidget.setStyleSheet("background-color: white")
+        self.resultPageWidget = QWidget()
+        self.resultPageWidget.setStyleSheet("background-color: white")
+        self.evaluationPageWidget = QWidget()
+        self.evaluationPageWidget.setStyleSheet("background-color: white")
 
         # About Page Setup
-        aboutLayout = QGridLayout(aboutPageWidget)
+        aboutLayout = QVBoxLayout(aboutPageWidget)
         aboutLayout.addWidget(welcomeText)
         aboutLayout.addWidget(aboutText)
-        aboutLayout.addWidget(spacers.s1)
+        aboutLayout.addSpacing(150)
 
-        # Info Page Setup
-        infoLayout = QGridLayout(helpPageWidget)
-        infoLayout.addWidget(helpText)
+        # Help Page Setup
+        helpLayout = QVBoxLayout(helpPageWidget)
+        helpTitleWidget.setLayout(helpTitleLayout)
+        helpTitleLayout.addSpacing(20)
+        helpTitleLayout.addWidget(helpTitle)
+        helpTitleLayout.addSpacing(10)
+        helpLayout.addWidget(helpTitleWidget)
+        helpLayout.addWidget(helpText)
 
         # Acknowledgement Page Setup
-        acknowledgementLayout = QGridLayout(acknowledgementPageWidget)
+        acknowledgementLayout = QVBoxLayout(acknowledgementPageWidget)
+        acknowlegementTitleWidget.setLayout(acknowlegementTitleLayout)
+        acknowlegementTitleLayout.addWidget(acknowlegementTitle)
+        acknowlegementTitleLayout.addSpacing(60)
+        acknowledgementLayout.addWidget(acknowlegementTitleWidget)
         acknowledgementLayout.addWidget(acknowledgementText)
+        acknowledgementLayout.addSpacing(150)
 
         # Param Page Setup
         paramLayout = QVBoxLayout(paramPageWidget)
@@ -216,23 +225,20 @@ class MainWindow(QMainWindow):
         datasetLayout.addWidget(datasetText)
         datasetLayout.addWidget(self.datasetTextBox)
         datasetLayout.addWidget(browseDatasetButton)
-        datasetLayout.setSpacing(1)
         rulesLayout.addWidget(rulesText)
         rulesLayout.addWidget(self.rulesTextBox)
-        rulesLayout.addWidget(spacers.s6)
-        rulesLayout.setSpacing(1)
+        rulesLayout.addSpacing(80)
         browseLayout.addWidget(paramInfoText)
         browseLayout.addWidget(datasetWidget)
         browseLayout.addWidget(rulesWidget)
         browseLayout.addWidget(self.generateRuleCheckBox)
-        formatLayout.addWidget(spacers.s4)
-        formatLayout.addWidget(spacers.s5)
+        formatLayout.addSpacing(400)
         formatLayout.addWidget(formatButton)
         paramLayout.addWidget(chooseWidget)
         paramLayout.addWidget(browseWidget)
-        paramLayout.addWidget(spacers.s2)
+        paramLayout.addSpacing(20)
         paramLayout.addWidget(formatWidget)
-        paramLayout.addWidget(spacers.s3)
+        paramLayout.addSpacing(50)
 
         # Adding all pages to pageLayout
         self.pageLayout.addWidget(aboutPageWidget)
@@ -241,8 +247,8 @@ class MainWindow(QMainWindow):
         self.pageLayout.addWidget(paramPageWidget)
         self.pageLayout.addWidget(self.formatPageWidget)
         self.pageLayout.addWidget(self.cleaningPageWidget)
-        self.pageLayout.addWidget(self.datasetPageWidget)
-        self.pageLayout.addWidget(self.resultsPageWidget)
+        self.pageLayout.addWidget(self.resultPageWidget)
+        self.pageLayout.addWidget(self.evaluationPageWidget)
 
         mainLayout.addLayout(tabLayout, 1)
         mainLayout.addLayout(self.pageLayout, 4)
@@ -275,15 +281,18 @@ class MainWindow(QMainWindow):
         # Reset pages
         self.cleaningPageButton.setEnabled(False)
         self.cleaningPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.datasetPageButton.setEnabled(False)
-        self.datasetPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.resultPageButton.setEnabled(False)
         self.resultPageButton.setStyleSheet(self.ss.disabledButtonStyle())
+        self.evaluationPageButton.setEnabled(False)
+        self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
 
         self.formatPageButton.setEnabled(True)
 
         # Format page UI
+        formatSettingLabel = QLabel()
+        formatSettingLabel.setPixmap(QPixmap('Images/format page.png'))
         listWidget = QListWidget()
+        listWidget.setSpacing(1)
         listWidget.setFixedHeight(100)
         self.textBoxes = []
         elements = [1, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
@@ -291,6 +300,7 @@ class MainWindow(QMainWindow):
         for element in elements:
             item = QListWidgetItem(listWidget)
             textBox = QLineEdit(str(element))
+            textBox.setStyleSheet("background-color: white")
             listWidget.setItemWidget(item, textBox)
             self.textBoxes.append(textBox)
 
@@ -299,7 +309,7 @@ class MainWindow(QMainWindow):
 
         # Format page setup
         formatPageLayout = QVBoxLayout(self.formatPageWidget)
-
+        formatPageLayout.addWidget(formatSettingLabel)
         formatPageLayout.addWidget(listWidget)
         formatPageLayout.addWidget(selectButton)
 
@@ -329,9 +339,9 @@ class MainWindow(QMainWindow):
         elif self.currentSelectedPage == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 6:
-            self.datasetPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        else:
             self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
+        else:
+            self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
 
         self.currentSelectedPage = page
         self.pageLayout.setCurrentIndex(page)
@@ -351,7 +361,7 @@ class MainWindow(QMainWindow):
         elif page == 6:
             self.resultPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         else:
-            self.datasetPageButton.setStyleSheet(self.ss.selectedButtonStyle())
+            self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
 
     # Reads a file and returns the text
     def outputFile(self, file):
