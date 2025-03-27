@@ -1,6 +1,6 @@
 import os.path
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPixmap
 import re
 import sys
@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              )
 from StyleSheets import StyleSheet
 from ViewModel.ViewModel import ViewModel
+import time
 
 
 class MainWindow(QMainWindow):
@@ -148,7 +149,7 @@ class MainWindow(QMainWindow):
         self.generateRuleCheckBox.clicked.connect(self.rules_checkbox_clicked)
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
-        formatButton = QPushButton("Clean")
+        formatButton = QPushButton("Next")
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
         formatButton.setFixedSize(100, 30)
         formatButton.clicked.connect(self.format_button_clicked)
@@ -289,35 +290,81 @@ class MainWindow(QMainWindow):
         self.formatPageButton.setEnabled(True)
 
         # Format page UI
+        labelLayout = QVBoxLayout()
+        labelWidget = QWidget()
+        listLayout = QVBoxLayout()
+        listLayoutWidget = QWidget()
+        buttonLayout = QHBoxLayout()
+        buttonWidget = QWidget()
         formatSettingLabel = QLabel()
         formatSettingLabel.setPixmap(QPixmap('Images/format page.png'))
+        instructionLabel = QLabel('Look over the data types of each column and make any changes if needed')
+        instructionLabel.setStyleSheet("color: blue")
+        instructionLabel.setFixedHeight(40)
+
         listWidget = QListWidget()
         listWidget.setSpacing(1)
-        listWidget.setFixedHeight(100)
+        listWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
         self.textBoxes = []
-        elements = [1, 2, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
-        for element in elements:
+        #Add items to list
+        for column, type in self.viewModel.formatList.items():
             item = QListWidgetItem(listWidget)
-            textBox = QLineEdit(str(element))
+            itemWidget = QWidget()
+            itemLayout = QHBoxLayout()
+            itemLayout.setContentsMargins(0, 0, 0, 0)
+
+            text = QLabel(str(column))
+            text.setFixedWidth(100)
+            textBox = QLineEdit(str(type))
+            textBox.setFixedWidth(400)
             textBox.setStyleSheet("background-color: white")
-            listWidget.setItemWidget(item, textBox)
+
+            itemLayout.addWidget(text)
+            itemLayout.addWidget(textBox)
+            itemWidget.setLayout(itemLayout)
+
+            listWidget.setItemWidget(item, itemWidget)
             self.textBoxes.append(textBox)
 
-        selectButton = QPushButton("Get Selected", self)
-        selectButton.clicked.connect(self.get_items)
+        formatButton = QPushButton("Next")
+        formatButton.setFixedSize(100, 30)
+        formatButton.setStyleSheet(self.ss.pageButtonStyle())
+        formatButton.clicked.connect(self.clean_button_clicked)
 
         # Format page setup
         formatPageLayout = QVBoxLayout(self.formatPageWidget)
-        formatPageLayout.addWidget(formatSettingLabel)
-        formatPageLayout.addWidget(listWidget)
-        formatPageLayout.addWidget(selectButton)
+        labelWidget.setLayout(labelLayout)
+        listLayoutWidget.setLayout(listLayout)
+        buttonWidget.setLayout(buttonLayout)
+        labelLayout.addWidget(formatSettingLabel)
+        labelLayout.addWidget(instructionLabel)
+        listLayout.addWidget(listWidget)
+        buttonLayout.addSpacing(400)
+        buttonLayout.addWidget(formatButton)
+        formatPageLayout.addWidget(labelWidget)
+        formatPageLayout.addWidget(listLayoutWidget)
+        formatPageLayout.addSpacing(50)
+        formatPageLayout.addWidget(buttonWidget)
+        formatPageLayout.addSpacing(50)
 
         self.movetopage(4)
 
-    def get_items(self):
-        selected_items = [cb.text() for cb in self.textBoxes]
-        print(f'Selected items: {selected_items}')
+    #Returns new formating changes if any, and continues cleaning process and sets up clean page
+    def clean_button_clicked(self):
+        self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
+        self.formatPageButton.setEnabled(False)
+        self.cleaningPageButton.setEnabled(True)
+        self.movetopage(5)
+        self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
+        QTimer.singleShot(100, self.make_progress)
+
+
+    def make_progress(self):
+        for i in range(4):
+            self.viewModel.beginProgress()
+            time.sleep(.5)
+        print("done")
 
     # Generates rules in rule textbox on param page
     def rules_checkbox_clicked(self):

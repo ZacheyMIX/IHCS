@@ -1,6 +1,9 @@
+import time
+
 class ViewModel():
 
-    formatList = []
+    formatList = {"name": "object", "age": "int", "date": "date/time", "salary": "int"}
+    newFormatList = []
     progress = 0
 
     def __init__(self):
@@ -11,3 +14,6 @@ class ViewModel():
 
     def startClean(self):
         print("stuff")
+
+    def beginProgress(self):
+        self.progress += 25

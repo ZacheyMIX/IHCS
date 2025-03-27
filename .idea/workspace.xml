@@ -6,10 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Placed a better error for bad input">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/Images/format setting.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/Images/parameter setting.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/Text/Help.txt" beforeDir="false" afterPath="$PROJECT_DIR$/View/Text/Help.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/View.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ViewModel/ViewModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ViewModel/ViewModel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
