@@ -1,1 +1,10 @@
-In order to use this program you will need a dirty dataset in the form of a CSV file which you will input into the program.  Then you will decide upon the rules in which how the dataset will be cleaned, or you can allow the program to generate the rules for you.  Afterward you will iniatiate the cleaning process which you can then view in real time.  After the cleaning is finished you can evaluate and interact with the results.  Evaluation allows you to view the runtime and accuracy of the cleaning process.  And the interaction allows you to compare results with the original dataset which you can then decide if you want to keep certain values from the original set. Once you have decided on your new dataset, you can finally download it back as another csv file.  
+Parameter Setting: Input a dataset file in the form of a .csv, .xlsx, xls, and json.  Then input valid data quality rules or let the program generate them automatically for you. Then hit the format button to start the process
+
+Format Setting: Once the format button is pressed, format settings will unlock, here the program will provide you the formated version of your dataset and you will check to see if all the column types are correct.  If they aren't just simply change it to the correct type you want.  After thats done click the clean button to continue the process.
+
+Cleaning: Once the clean button is pressed, this tab will unlock. Here you will get to see the cleaning process in two forms.  A progress bar that shows the current state of the cleaning process. And a progress tab that shows the current task executed and the results produced by each step.  Once the process is done, Dataset Interaction and Result Analysis will unlock.
+
+Dataset Interaction: On this page you will be able to view modifications between the dirty dataset and the final cleaned result. You can then perform value correction using either the tuple-based perspective or attribute-based perspective. And you can decide to keep the changed or old value within the tuple or attribute.  Duplicates will also aggregate, and you can decide to keep those as well.
+
+Result Analysis: On this page you can evalutate the runtime and accuracy of the cleaning result as well as view past results.
+

@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="More Param UI Setup">
+    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Placed a better error for bad input">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/StyleSheets.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/StyleSheets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/View.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ViewModel/ViewModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ViewModel/ViewModel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,14 +32,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/austi/OneDrive/Documents/GitHub/IHCS/View/View.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/austi/OneDrive/Documents/GitHub/IHCS/Main.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -77,7 +77,28 @@
       <option name="project" value="LOCAL" />
       <updated>1741490463204</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Getting files and rules setup">
+      <created>1742347744629</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1742347744630</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Established ViewModel, and file and rule setup connection from the UI">
+      <created>1742402838474</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1742402838474</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Placed a better error for bad input">
+      <created>1742403415450</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1742403415450</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -85,17 +106,9 @@
     <MESSAGE value="Param UI Setup, added spacer file to grab spacers from" />
     <MESSAGE value="More Param UI Setup, almost done" />
     <MESSAGE value="More Param UI Setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="More Param UI Setup" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/View/View.py</url>
-          <line>36</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Getting files and rules setup" />
+    <MESSAGE value="Established ViewModel, and file and rule setup connection from the UI" />
+    <MESSAGE value="Placed a better error for bad input" />
+    <option name="LAST_COMMIT_MESSAGE" value="Placed a better error for bad input" />
   </component>
 </project>

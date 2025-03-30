@@ -1,10 +1,6 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 import sys
-from PyQt6.QtWidgets import (
-    QWidget,
-)
-
 
 class StyleSheet():
     def __init__(self):
@@ -18,16 +14,27 @@ class StyleSheet():
                     background-color: transparent;
                     color: black;
                     font-size: 16px;
+                    border-radius: 10px
                 }
                 QPushButton:hover {
                     background-color: rgba(100, 100, 255, 100);
                     border-radius: 10px;
                 }
                 QPushButton:pressed {
-                    background-color: rgba(80, 80, 255, 100);
+                    background-color: rgba(60, 60, 255, 100);
                     border-radius: 10px;
                 }
             """
+
+    def selectedButtonStyle(self):
+        return """
+                        QPushButton {
+                            background-color: rgba(100, 100, 255, 100);
+                            color: black;
+                            font-size: 16px;
+                            border-radius: 10px;
+                        }
+                    """
 
     # Style for disabled tab buttons
     def disabledButtonStyle(self):
@@ -36,6 +43,7 @@ class StyleSheet():
                             background-color: transparent;
                             color: grey;
                             font-size: 16px;
+                            border-radius: 10px;
                         }
                     """
 
