@@ -1,6 +1,6 @@
 import os.path
 
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QThread, pyqtSignal
 from PyQt6.QtGui import QPixmap
 import re
 import sys
@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem
                              )
 from StyleSheets import StyleSheet
-from ViewModel.ViewModel import ViewModel
+from ViewModel.ViewModel import ViewModel, WorkerThread
 import time
 
 
@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.cleaningThread = None
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
 
@@ -307,8 +308,8 @@ class MainWindow(QMainWindow):
         listWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
         self.textBoxes = []
 
-        #Add items to list
-        for column, type in self.viewModel.formatList.items():
+        # Add items to list
+        for column, dtype in self.viewModel.formatList.items():
             item = QListWidgetItem(listWidget)
             itemWidget = QWidget()
             itemLayout = QHBoxLayout()
@@ -316,7 +317,7 @@ class MainWindow(QMainWindow):
 
             text = QLabel(str(column))
             text.setFixedWidth(100)
-            textBox = QLineEdit(str(type))
+            textBox = QLineEdit(str(dtype))
             textBox.setFixedWidth(400)
             textBox.setStyleSheet("background-color: white")
 
@@ -350,21 +351,20 @@ class MainWindow(QMainWindow):
 
         self.movetopage(4)
 
-    #Returns new formating changes if any, and continues cleaning process and sets up clean page
+    # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def clean_button_clicked(self):
         self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
         self.formatPageButton.setEnabled(False)
         self.cleaningPageButton.setEnabled(True)
         self.movetopage(5)
         self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        QTimer.singleShot(100, self.make_progress)
+        self.cleaningThread = WorkerThread(self.viewModel)
+        self.cleaningThread.threadSignal.connect(self.cleaning_finished)
+        self.cleaningThread.start()
 
-
-    def make_progress(self):
-        for i in range(4):
-            self.viewModel.beginProgress()
-            time.sleep(.5)
-        print("done")
+    def cleaning_finished(self, count):
+        if count == -1:
+            print("cleaning finished")
 
     # Generates rules in rule textbox on param page
     def rules_checkbox_clicked(self):
@@ -431,6 +431,9 @@ class MainWindow(QMainWindow):
         msgBox.setWindowTitle("Error")
         msgBox.setText(error)
         msgBox.exec()
+
+
+
 
 
 if __name__ == "__main__":
