@@ -1,0 +1,11 @@
+// Predicate declarations
+Sex(person, gender)
+Pclass(person, class)
+MissingAge(person)
+HasAge(person, age)
+
+// Soft rules (example weights, tweak as needed)
+MissingAge(x) ^ Sex(x, female) ^ Pclass(x, 1) => HasAge(x, 35.0) ^0.9
+MissingAge(x) ^ Sex(x, female) ^ Pclass(x, 3) => HasAge(x, 22.0) ^0.8
+MissingAge(x) ^ Sex(x, male) ^ Pclass(x, 1) => HasAge(x, 40.0) ^0.85
+MissingAge(x) ^ Sex(x, male) ^ Pclass(x, 3) => HasAge(x, 25.0) ^0.7
