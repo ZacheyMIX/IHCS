@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import datetime
 from IPython.display import display
-from dataprep.clean import clean_date, clean_df, clean_email, clean_address, clean_country, clean_url, clean_phone, clean_isbn, clean_text
+from dataprep.clean import clean_date, clean_df, clean_email, clean_address, clean_country, clean_url, clean_phone, clean_isbn, clean_text, clean_duplication
 
 def main():
     
@@ -124,8 +124,17 @@ def main():
                     formatted_df[col] = clean_text(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
                 else:
                     custom_column = True
+                
             except Exception as error:
                 error_list.append(error.__str__)
+        
+        # filter for duplicate values
+        formatted_df = formatted_df.drop_duplicates()
+        
+        # going through every invalid parsing
+        for err in error_list:
+            print(err)
+            
                 
 if __name__ == '__main__':
     main()
