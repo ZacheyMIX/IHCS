@@ -1,4 +1,5 @@
 import unittest
+from sympy import Symbol
 from sympy import symbols, Implies, And, Not, Or, Eq, Equivalent
 from sympy.logic.boolalg import to_cnf
 
@@ -49,6 +50,27 @@ def sympy_to_mln(expr):
         return ' v '.join(sympy_to_mln_literal(arg) for arg in cnf_expr.args)
     else:
         return sympy_to_mln_literal(cnf_expr)
+    
+def generate_candidate_predicates(rule_expr):
+    """
+    Given a Sympy rule expression, extract its free symbols and generate candidate
+    predicate declarations. For each symbol, if an underscore is present, we take the part
+    before the underscore as the base name; otherwise, we use the whole symbol name.
+    The candidate declaration is in the form:
+        Base(tuple, base.lower())
+    For example, for symbol 'City_t1', the candidate becomes 'City(tuple, city)'.
+    """
+    candidate_predicates = {}
+    for sym in rule_expr.free_symbols:
+        var_name = str(sym)
+        if "_" in var_name:
+            base_name = var_name.split("_")[0]
+        else:
+            base_name = var_name
+        # Generate a candidate predicate only if not already present.
+        if base_name not in candidate_predicates:
+            candidate_predicates[base_name] = f"{base_name}(tuple, {base_name.lower()})"
+    return candidate_predicates
 
 class TestMLNConversion(unittest.TestCase):
 
@@ -59,6 +81,10 @@ class TestMLNConversion(unittest.TestCase):
         mln_rule = sympy_to_mln(rule_expr)
         expected = "!(" + "City_t1" + ") v !(" + "City_t2" + ") v !(" + "State_t1" + ") v !(" + "State_t2" + ") v (State_t1 = State_t2)"
         self.assertEqual(mln_rule, expected)
+        candidates1 = generate_candidate_predicates(rule_expr)
+        print("Candidate Predicate Declarations for Rule 1:")
+        for base, decl in candidates1.items():
+            print(f"{base}: {decl}")
 
     def test_lookup_rule_using_eq(self):
         # Rule: If HN_t and CT_t hold then PN_t equals PhoneVal.
@@ -67,6 +93,10 @@ class TestMLNConversion(unittest.TestCase):
         mln_rule = sympy_to_mln(rule_expr)
         expected = "!(" + "CT_t" + ") v !(" + "HN_t" + ") v (" + "PN_t = PhoneVal" + ")"
         self.assertEqual(mln_rule, expected)
+        candidates2 = generate_candidate_predicates(rule_expr)
+        print("Candidate Predicate Declarations for Rule 2:")
+        for base, decl in candidates2.items():
+            print(f"{base}: {decl}")
 
     def test_unique_phone_per_state_using_eq(self):
         # Rule: If Phone_t1, Phone_t2, State_t1, and State_t2 hold then State_t1 equals State_t2.
@@ -75,6 +105,10 @@ class TestMLNConversion(unittest.TestCase):
         mln_rule = sympy_to_mln(rule_expr)
         expected = "!(" + "Phone_t1" + ") v !(" + "Phone_t2" + ") v !(" + "State_t1" + ") v !(" + "State_t2" + ") v (State_t1 = State_t2)"
         self.assertEqual(mln_rule, expected)
+        candidates3 = generate_candidate_predicates(rule_expr)
+        print("Candidate Predicate Declarations for Rule 3:")
+        for base, decl in candidates3.items():
+            print(f"{base}: {decl}")
 
     def test_boolean_equivalence_using_equivalent(self):
         # New Rule: For each record, IsActive is logically equivalent to Not(IsTerminated).
@@ -85,6 +119,10 @@ class TestMLNConversion(unittest.TestCase):
         # Remove redundant parentheses from expected for easier matching:
         expected = expected.replace("!((IsTerminated))", "!(IsTerminated)")
         self.assertEqual(mln_rule, expected)
+        candidates4 = generate_candidate_predicates(rule_expr)
+        print("Candidate Predicate Declarations for Rule 4:")
+        for base, decl in candidates4.items():
+            print(f"{base}: {decl}")
 
 if __name__ == '__main__':
     unittest.main()
