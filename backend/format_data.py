@@ -79,8 +79,6 @@ def convert_to_mln_format(formatted_df):
     """
     return formatted_df.to_dict(orient='records')
 
-
-
 """
 Note:
 Frontend handles:

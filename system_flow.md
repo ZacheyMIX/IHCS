@@ -7,12 +7,13 @@ Data Standardizing and Formatting System:
   - date/time, 
   - email, 
   - country, 
-  - duplicate values, 
   - phone number (if include country code, then US only), 
   - text, 
   - US street address, 
   - url, 
-  - ISBN numbers. 
+  - ISBN numbers
+
+If there are some values that are recognized as invalid parsing values, meaning they are not part of the anticipated error pattern, then the system will ask the user on how to handle the invalid parsing. Then, we can start sort out for duplicated values.
 
 If the incorrect columns are not part of the mentioned types, then have user input the desired pattern for those columns and detected the non-matching pattern values for those columns and asks the user on how to correct them. 
 
