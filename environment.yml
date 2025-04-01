@@ -9,3 +9,4 @@ dependencies:
   - jupyter
   - pandas
   - numpy
+  - sympy
