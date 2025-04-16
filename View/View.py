@@ -14,6 +14,7 @@ from ViewModel.ViewModel import ViewModel, WorkerThread
 
 class MainWindow(QMainWindow):
     currentSelectedPage = 0
+    repeatClean = False
     ss = StyleSheet()
 
 
@@ -358,20 +359,41 @@ class MainWindow(QMainWindow):
         self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
         self.formatPageButton.setEnabled(False)
         self.cleaningPageButton.setEnabled(True)
+
+        # #No need to set up page again
+        if self.repeatClean:
+            self.cleanRepeat()
+            return
+        self.repeatClean = True
         cleaningLayout = QVBoxLayout()
         self.progress_bar = QProgressBar()
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(self.ss.progressBarStyle())
         cleaningLayout.addWidget(QLabel("Cleaning in progress..."))
         cleaningLayout.addWidget(self.progress_bar)
+        cleaningLayout.addSpacing(400)
+        cleaningLayout.addWidget(QPushButton())
         self.cleaningPageWidget.setLayout(cleaningLayout)
         self.movetopage(5)
         self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.viewModel.startClean()
 
+    #On repeat uses, properly resets things without creating more
+    def cleanRepeat(self):
+        self.progress_bar.setValue(0)
+        self.viewModel.startClean()
+        self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
+
     @pyqtSlot(int)
     def update_progress(self, value):
         self.progress_bar.setValue(value)
 
+    #Display results from the cleaning process
     def cleaning_finished(self):
+        self.evaluationPageButton.setEnabled(True)
+        self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.resultPageButton.setEnabled(True)
+        self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.movetopage(6)
 
     # Generates rules in rule textbox on param page
