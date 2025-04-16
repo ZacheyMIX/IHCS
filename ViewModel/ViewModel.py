@@ -1,32 +1,44 @@
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QObject, pyqtSignal, QThread
+import time
 
 
-class ViewModel():
+class ViewModel(QObject):
     formatList = {"name": "object", "age": "int", "date": "date/time", "salary": "int"}
     newFormatList = []
-    progress = 0
+    progress_changed = pyqtSignal(int)
+    cleaning_finished = pyqtSignal()
+
 
     def __init__(self):
         super().__init__()
+        self.thread = None
+        self.worker = None
 
     def startFormat(self, file, rules):
         ruleList = rules.split(", ")
 
     def startClean(self):
-        print("stuff")
+        self.thread = QThread()
+        self.worker = WorkerThread()
+        self.worker.moveToThread(self.thread)
 
-    def beginProgress(self):
-        for i in range(4):
-            self.progress += 25
+        self.thread.started.connect(self.worker.run)
+        self.worker.progress.connect(self.progress_changed.emit)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+
+        self.worker.finished.connect(self.cleaning_finished.emit)
+
+        self.thread.start()
 
 
-class WorkerThread(QThread):
-    def __init__(self, viewModel):
-        super().__init__()
-        self.threadSignal = pyqtSignal(int)  # Signal to update UI
-        self.viewModel = viewModel
+class WorkerThread(QObject):
+    progress = pyqtSignal(int)
+    finished = pyqtSignal()
 
     def run(self):
-        while self.viewModel.progress < 100:
-            self.viewModel.beginProgress()
-        self.threadSignal.emit(-1)  # Signal completion
+        for i in range(101):
+            time.sleep(0.05)  # Simulate cleaning
+            self.progress.emit(i)
+        self.finished.emit()

@@ -1,6 +1,6 @@
 import os.path
 
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QPixmap
 import re
 import sys
@@ -10,19 +10,22 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              )
 from StyleSheets import StyleSheet
 from ViewModel.ViewModel import ViewModel, WorkerThread
-import time
 
 
 class MainWindow(QMainWindow):
     currentSelectedPage = 0
     ss = StyleSheet()
-    viewModel = ViewModel()
+
 
     def __init__(self):
         super().__init__()
         self.cleaningThread = None
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
+        self.viewModel = ViewModel()
+
+        self.viewModel.progress_changed.connect(self.update_progress)
+        self.viewModel.cleaning_finished.connect(self.cleaning_finished)
 
         # Tab UI Elements
         titleText = QLabel("IHCS")
@@ -287,7 +290,6 @@ class MainWindow(QMainWindow):
         self.resultPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.evaluationPageButton.setEnabled(False)
         self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-
         self.formatPageButton.setEnabled(True)
 
         # Format page UI
@@ -356,15 +358,21 @@ class MainWindow(QMainWindow):
         self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
         self.formatPageButton.setEnabled(False)
         self.cleaningPageButton.setEnabled(True)
+        cleaningLayout = QVBoxLayout()
+        self.progress_bar = QProgressBar()
+        cleaningLayout.addWidget(QLabel("Cleaning in progress..."))
+        cleaningLayout.addWidget(self.progress_bar)
+        self.cleaningPageWidget.setLayout(cleaningLayout)
         self.movetopage(5)
         self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.cleaningThread = WorkerThread(self.viewModel)
-        self.cleaningThread.threadSignal.connect(self.cleaning_finished)
-        self.cleaningThread.start()
+        self.viewModel.startClean()
 
-    def cleaning_finished(self, count):
-        if count == -1:
-            print("cleaning finished")
+    @pyqtSlot(int)
+    def update_progress(self, value):
+        self.progress_bar.setValue(value)
+
+    def cleaning_finished(self):
+        self.movetopage(6)
 
     # Generates rules in rule textbox on param page
     def rules_checkbox_clicked(self):
