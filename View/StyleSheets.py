@@ -69,6 +69,19 @@ class StyleSheet():
                 }
             """
 
+    def disabledPageButtonStyle(self):
+        return """
+                QPushButton {
+                    background-color: transparent;
+                    border-style: outset;
+                    border-width: 1px;
+                    border-color: grey;
+                    border-radius: 2px;
+                    color: grey;
+                    font-size: 16px;
+                }
+            """
+
     def browseButtonStyle(self):
         return """
                         QPushButton {

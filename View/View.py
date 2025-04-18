@@ -28,11 +28,39 @@ class MainWindow(QMainWindow):
         self.viewModel.progress_changed.connect(self.update_progress)
         self.viewModel.cleaning_finished.connect(self.cleaning_finished)
 
-        # Tab UI Elements
+        # Main layouts displayed at all times
+        self.mainLayout = QHBoxLayout()
+        self.tabLayout = QGridLayout()
+        self.pageLayout = QStackedLayout()
+
+        #Layout setup
+        self.tabLayouts()
+        self.pageLayouts()
+        self.aboutLayout()
+        self.helpLayout()
+        self.acknowlegementLayout()
+        self.paramLayout()
+        self.formatLayout()
+        self.cleanLayout()
+        self.resultLayout()
+        self.evalLayout()
+
+
+        self.mainLayout.addLayout(self.tabLayout, 1)
+        self.mainLayout.addLayout(self.pageLayout, 4)
+
+        widget = QWidget()
+        widget.setLayout(self.mainLayout)
+
+        self.setCentralWidget(widget)
+
+    def tabLayouts(self):
+
+        #UI
         titleText = QLabel("IHCS")
-        font = titleText.font()
-        font.setPointSize(30)
-        titleText.setFont(font)
+        self.font = titleText.font()
+        self.font.setPointSize(30)
+        titleText.setFont(self.font)
         titleText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         introLabel = QLabel()
@@ -90,13 +118,66 @@ class MainWindow(QMainWindow):
         self.evaluationPageButton.setFixedHeight(30)
         self.evaluationPageButton.clicked.connect(lambda: self.movetopage(7))
 
-        # About UI Elements
+        # tab layout set up
+        self.tabLayout.addWidget(titleText)
+        self.tabLayout.addWidget(introLabel)
+        self.tabLayout.addWidget(self.aboutPageButton)
+        self.tabLayout.addWidget(self.helpPageButton)
+        self.tabLayout.addWidget(self.acknowledgementPageButton)
+        self.tabLayout.addWidget(settingsLabel)
+        self.tabLayout.addWidget(self.paramPageButton)
+        self.tabLayout.addWidget(self.formatPageButton)
+        self.tabLayout.addWidget(cleaningLabel)
+        self.tabLayout.addWidget(self.cleaningPageButton)
+        self.tabLayout.addWidget(resultsLabel)
+        self.tabLayout.addWidget(self.resultPageButton)
+        self.tabLayout.addWidget(self.evaluationPageButton)
+
+    def pageLayouts(self):
+
+        self.aboutPageWidget = QWidget()
+        self.aboutPageWidget.setStyleSheet("background-color: white")
+        self.helpPageWidget = QWidget()
+        self.helpPageWidget.setStyleSheet("background-color: white")
+        self.acknowledgementPageWidget = QWidget()
+        self.acknowledgementPageWidget.setStyleSheet("background-color: white")
+        self.paramPageWidget = QWidget()
+        self.paramPageWidget.setStyleSheet("background-color: white")
+        self.formatPageWidget = QWidget()
+        self.formatPageWidget.setStyleSheet("background-color: white")
+        self.cleaningPageWidget = QWidget()
+        self.cleaningPageWidget.setStyleSheet("background-color: white")
+        self.resultPageWidget = QWidget()
+        self.resultPageWidget.setStyleSheet("background-color: white")
+        self.evaluationPageWidget = QWidget()
+        self.evaluationPageWidget.setStyleSheet("background-color: white")
+
+        # Adding all pages to pageLayout
+        self.pageLayout.addWidget(self.aboutPageWidget)
+        self.pageLayout.addWidget(self.helpPageWidget)
+        self.pageLayout.addWidget(self.acknowledgementPageWidget)
+        self.pageLayout.addWidget(self.paramPageWidget)
+        self.pageLayout.addWidget(self.formatPageWidget)
+        self.pageLayout.addWidget(self.cleaningPageWidget)
+        self.pageLayout.addWidget(self.resultPageWidget)
+        self.pageLayout.addWidget(self.evaluationPageWidget)
+
+    def aboutLayout(self):
+
         welcomeText = QLabel("Welcome to IHCS!")
-        welcomeText.setFont(font)
+        welcomeText.setFont(self.font)
         welcomeText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         aboutText = QLabel(self.outputFile("Text/About.txt"))
         aboutText.setWordWrap(True)
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        # About Page Setup
+        aboutLayout = QVBoxLayout(self.aboutPageWidget)
+        aboutLayout.addWidget(welcomeText)
+        aboutLayout.addWidget(aboutText)
+        aboutLayout.addSpacing(150)
+
+    def helpLayout(self):
 
         # Help UI Elements
         helpTitleWidget = QWidget()
@@ -107,7 +188,17 @@ class MainWindow(QMainWindow):
         helpText.setWordWrap(True)
         helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
-        # Acknowledge UI Elements
+        # Help Page Setup
+        helpLayout = QVBoxLayout(self.helpPageWidget)
+        helpTitleWidget.setLayout(helpTitleLayout)
+        helpTitleLayout.addSpacing(20)
+        helpTitleLayout.addWidget(helpTitle)
+        helpTitleLayout.addSpacing(10)
+        helpLayout.addWidget(helpTitleWidget)
+        helpLayout.addWidget(helpText)
+
+    def acknowlegementLayout(self):
+
         acknowlegementTitleWidget = QWidget()
         acknowlegementTitleLayout = QVBoxLayout()
         acknowlegementTitle = QLabel()
@@ -115,6 +206,17 @@ class MainWindow(QMainWindow):
         acknowledgementText = QLabel(self.outputFile("Text/Acknowledgements.txt"))
         acknowledgementText.setWordWrap(True)
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+
+        # Acknowledgement Page Setup
+        acknowledgementLayout = QVBoxLayout(self.acknowledgementPageWidget)
+        acknowlegementTitleWidget.setLayout(acknowlegementTitleLayout)
+        acknowlegementTitleLayout.addWidget(acknowlegementTitle)
+        acknowlegementTitleLayout.addSpacing(60)
+        acknowledgementLayout.addWidget(acknowlegementTitleWidget)
+        acknowledgementLayout.addWidget(acknowledgementText)
+        acknowledgementLayout.addSpacing(150)
+
+    def paramLayout(self):
 
         # Param UI Elements
         chooseWidget = QWidget()
@@ -159,70 +261,8 @@ class MainWindow(QMainWindow):
         formatButton.setFixedSize(100, 30)
         formatButton.clicked.connect(self.format_button_clicked)
 
-        # Main layouts displayed at all times
-        mainLayout = QHBoxLayout()
-        tabLayout = QGridLayout()
-        self.pageLayout = QStackedLayout()
-
-        # tab layout set up
-        tabLayout.addWidget(titleText)
-        tabLayout.addWidget(introLabel)
-        tabLayout.addWidget(self.aboutPageButton)
-        tabLayout.addWidget(self.helpPageButton)
-        tabLayout.addWidget(self.acknowledgementPageButton)
-        tabLayout.addWidget(settingsLabel)
-        tabLayout.addWidget(self.paramPageButton)
-        tabLayout.addWidget(self.formatPageButton)
-        tabLayout.addWidget(cleaningLabel)
-        tabLayout.addWidget(self.cleaningPageButton)
-        tabLayout.addWidget(resultsLabel)
-        tabLayout.addWidget(self.resultPageButton)
-        tabLayout.addWidget(self.evaluationPageButton)
-
-        # Page based layouts setup
-        aboutPageWidget = QWidget()
-        aboutPageWidget.setStyleSheet("background-color: white")
-        helpPageWidget = QWidget()
-        helpPageWidget.setStyleSheet("background-color: white")
-        acknowledgementPageWidget = QWidget()
-        acknowledgementPageWidget.setStyleSheet("background-color: white")
-        paramPageWidget = QWidget()
-        paramPageWidget.setStyleSheet("background-color: white")
-        self.formatPageWidget = QWidget()
-        self.formatPageWidget.setStyleSheet("background-color: white")
-        self.cleaningPageWidget = QWidget()
-        self.cleaningPageWidget.setStyleSheet("background-color: white")
-        self.resultPageWidget = QWidget()
-        self.resultPageWidget.setStyleSheet("background-color: white")
-        self.evaluationPageWidget = QWidget()
-        self.evaluationPageWidget.setStyleSheet("background-color: white")
-
-        # About Page Setup
-        aboutLayout = QVBoxLayout(aboutPageWidget)
-        aboutLayout.addWidget(welcomeText)
-        aboutLayout.addWidget(aboutText)
-        aboutLayout.addSpacing(150)
-
-        # Help Page Setup
-        helpLayout = QVBoxLayout(helpPageWidget)
-        helpTitleWidget.setLayout(helpTitleLayout)
-        helpTitleLayout.addSpacing(20)
-        helpTitleLayout.addWidget(helpTitle)
-        helpTitleLayout.addSpacing(10)
-        helpLayout.addWidget(helpTitleWidget)
-        helpLayout.addWidget(helpText)
-
-        # Acknowledgement Page Setup
-        acknowledgementLayout = QVBoxLayout(acknowledgementPageWidget)
-        acknowlegementTitleWidget.setLayout(acknowlegementTitleLayout)
-        acknowlegementTitleLayout.addWidget(acknowlegementTitle)
-        acknowlegementTitleLayout.addSpacing(60)
-        acknowledgementLayout.addWidget(acknowlegementTitleWidget)
-        acknowledgementLayout.addWidget(acknowledgementText)
-        acknowledgementLayout.addSpacing(150)
-
         # Param Page Setup
-        paramLayout = QVBoxLayout(paramPageWidget)
+        paramLayout = QVBoxLayout(self.paramPageWidget)
         chooseWidget.setLayout(chooseLayout)
         browseWidget.setLayout(browseLayout)
         formatWidget.setLayout(formatLayout)
@@ -246,23 +286,101 @@ class MainWindow(QMainWindow):
         paramLayout.addWidget(formatWidget)
         paramLayout.addSpacing(50)
 
-        # Adding all pages to pageLayout
-        self.pageLayout.addWidget(aboutPageWidget)
-        self.pageLayout.addWidget(helpPageWidget)
-        self.pageLayout.addWidget(acknowledgementPageWidget)
-        self.pageLayout.addWidget(paramPageWidget)
-        self.pageLayout.addWidget(self.formatPageWidget)
-        self.pageLayout.addWidget(self.cleaningPageWidget)
-        self.pageLayout.addWidget(self.resultPageWidget)
-        self.pageLayout.addWidget(self.evaluationPageWidget)
+    def formatLayout(self):
 
-        mainLayout.addLayout(tabLayout, 1)
-        mainLayout.addLayout(self.pageLayout, 4)
+        # Format page UI
+        labelLayout = QVBoxLayout()
+        labelWidget = QWidget()
+        listLayout = QVBoxLayout()
+        listLayoutWidget = QWidget()
+        buttonLayout = QHBoxLayout()
+        buttonWidget = QWidget()
+        formatSettingLabel = QLabel()
+        formatSettingLabel.setPixmap(QPixmap('Images/format page.png'))
+        instructionLabel = QLabel('Look over the data types of each column and make any changes if needed')
+        instructionLabel.setStyleSheet("color: blue")
+        instructionLabel.setFixedHeight(40)
+        self.listWidget = QListWidget()
+        self.listWidget.setSpacing(1)
+        self.listWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
+        self.textBoxes = []
+        formatButton = QPushButton("Next")
+        formatButton.setFixedSize(100, 30)
+        formatButton.setStyleSheet(self.ss.pageButtonStyle())
+        formatButton.clicked.connect(self.clean_button_clicked)
 
-        widget = QWidget()
-        widget.setLayout(mainLayout)
+        # Format page setup
+        formatPageLayout = QVBoxLayout(self.formatPageWidget)
+        labelWidget.setLayout(labelLayout)
+        listLayoutWidget.setLayout(listLayout)
+        buttonWidget.setLayout(buttonLayout)
+        labelLayout.addWidget(formatSettingLabel)
+        labelLayout.addWidget(instructionLabel)
+        listLayout.addWidget(self.listWidget)
+        buttonLayout.addSpacing(400)
+        buttonLayout.addWidget(formatButton)
+        formatPageLayout.addWidget(labelWidget)
+        formatPageLayout.addWidget(listLayoutWidget)
+        formatPageLayout.addSpacing(50)
+        formatPageLayout.addWidget(buttonWidget)
+        formatPageLayout.addSpacing(50)
 
-        self.setCentralWidget(widget)
+    def cleanLayout(self):
+
+        # clean UI
+        cleaningLayout = QVBoxLayout()
+        buttonLayout = QHBoxLayout()
+        buttonWidget = QWidget()
+        cleaningLabel = QLabel()
+        cleaningLabel.setPixmap(QPixmap('Images/cleaning page.png'))
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setTextVisible(False)
+        self.progress_bar.setStyleSheet(self.ss.progressBarStyle())
+        self.finishButton = QPushButton("Next")
+        self.finishButton.setFixedSize(100, 30)
+        self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
+        self.finishButton.clicked.connect(self.finish_button_clicked)
+        self.finishButton.setEnabled(False)
+
+        # clean layout setup
+        buttonWidget.setLayout(buttonLayout)
+        cleaningLayout.addWidget(cleaningLabel)
+        cleaningLayout.addWidget(self.progress_bar)
+        buttonLayout.addSpacing(400)
+        buttonLayout.addWidget(self.finishButton)
+        cleaningLayout.addSpacing(200)
+        cleaningLayout.addWidget(buttonWidget)
+        self.cleaningPageWidget.setLayout(cleaningLayout)
+
+    def resultLayout(self):
+
+        #Result UI
+        resultsLayout = QStackedLayout()
+        tupleLayout = QVBoxLayout()
+        attributeLayout = QVBoxLayout()
+
+        #Tuple UI
+        resultsLabel1 = QLabel()
+        resultsLabel1.setPixmap(QPixmap('Images/result page.png'))
+        congratsLabel = QLabel("Congratulations, cleaning finished!")
+        #Dataset UI stuff
+        chartButton = QPushButton()
+        chartButton.setStyleSheet(self.ss.pageButtonStyle())
+        duplicateCheck = QCheckBox("Keep Duplicates")
+        downloadButton = QPushButton()
+        downloadButton.setStyleSheet(self.ss.pageButtonStyle())
+
+
+        #Chart UI
+        resultsLabel2 = QLabel()
+        resultsLabel2.setPixmap(QPixmap('Images/result page.png'))
+
+        #Result Setup
+
+
+    def evalLayout(self):
+        print("hello")
+
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def format_button_clicked(self):
@@ -292,28 +410,11 @@ class MainWindow(QMainWindow):
         self.evaluationPageButton.setEnabled(False)
         self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.formatPageButton.setEnabled(True)
-
-        # Format page UI
-        labelLayout = QVBoxLayout()
-        labelWidget = QWidget()
-        listLayout = QVBoxLayout()
-        listLayoutWidget = QWidget()
-        buttonLayout = QHBoxLayout()
-        buttonWidget = QWidget()
-        formatSettingLabel = QLabel()
-        formatSettingLabel.setPixmap(QPixmap('Images/format page.png'))
-        instructionLabel = QLabel('Look over the data types of each column and make any changes if needed')
-        instructionLabel.setStyleSheet("color: blue")
-        instructionLabel.setFixedHeight(40)
-
-        listWidget = QListWidget()
-        listWidget.setSpacing(1)
-        listWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
-        self.textBoxes = []
+        self.textBoxes.clear()
 
         # Add items to list
         for column, dtype in self.viewModel.formatList.items():
-            item = QListWidgetItem(listWidget)
+            item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
             itemLayout = QHBoxLayout()
             itemLayout.setContentsMargins(0, 0, 0, 0)
@@ -328,29 +429,8 @@ class MainWindow(QMainWindow):
             itemLayout.addWidget(textBox)
             itemWidget.setLayout(itemLayout)
 
-            listWidget.setItemWidget(item, itemWidget)
+            self.listWidget.setItemWidget(item, itemWidget)
             self.textBoxes.append(textBox)
-
-        formatButton = QPushButton("Next")
-        formatButton.setFixedSize(100, 30)
-        formatButton.setStyleSheet(self.ss.pageButtonStyle())
-        formatButton.clicked.connect(self.clean_button_clicked)
-
-        # Format page setup
-        formatPageLayout = QVBoxLayout(self.formatPageWidget)
-        labelWidget.setLayout(labelLayout)
-        listLayoutWidget.setLayout(listLayout)
-        buttonWidget.setLayout(buttonLayout)
-        labelLayout.addWidget(formatSettingLabel)
-        labelLayout.addWidget(instructionLabel)
-        listLayout.addWidget(listWidget)
-        buttonLayout.addSpacing(400)
-        buttonLayout.addWidget(formatButton)
-        formatPageLayout.addWidget(labelWidget)
-        formatPageLayout.addWidget(listLayoutWidget)
-        formatPageLayout.addSpacing(50)
-        formatPageLayout.addWidget(buttonWidget)
-        formatPageLayout.addSpacing(50)
 
         self.movetopage(4)
 
@@ -358,32 +438,16 @@ class MainWindow(QMainWindow):
     def clean_button_clicked(self):
         self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
         self.formatPageButton.setEnabled(False)
+        self.progress_bar.setValue(0)
         self.cleaningPageButton.setEnabled(True)
+        self.finishButton.setEnabled(False)
+        self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
 
-        # #No need to set up page again
-        if self.repeatClean:
-            self.cleanRepeat()
-            return
-        self.repeatClean = True
-        cleaningLayout = QVBoxLayout()
-        self.progress_bar = QProgressBar()
-        self.progress_bar.setTextVisible(False)
-        self.progress_bar.setStyleSheet(self.ss.progressBarStyle())
-        cleaningLayout.addWidget(QLabel("Cleaning in progress..."))
-        cleaningLayout.addWidget(self.progress_bar)
-        cleaningLayout.addSpacing(400)
-        cleaningLayout.addWidget(QPushButton())
-        self.cleaningPageWidget.setLayout(cleaningLayout)
         self.movetopage(5)
         self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.viewModel.startClean()
 
-    #On repeat uses, properly resets things without creating more
-    def cleanRepeat(self):
-        self.progress_bar.setValue(0)
-        self.viewModel.startClean()
-        self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-
+    #Updates progress bar intermediately
     @pyqtSlot(int)
     def update_progress(self, value):
         self.progress_bar.setValue(value)
@@ -394,7 +458,24 @@ class MainWindow(QMainWindow):
         self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.resultPageButton.setEnabled(True)
         self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
+        self.finishButton.setEnabled(True)
+        self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
+
+    #Moves over to the results page
+    def finish_button_clicked(self):
         self.movetopage(6)
+
+    #Switches to the attribute view in results
+    def chart_button_clicked(self):
+        print("moving to chart page")
+
+    #Switches to the tuple view in results
+    def tuple_button_clicked(self):
+        print("moving to tuple page")
+
+    #Downloads the dataset provided if the status of duplicate checkbox
+    def download_button_clicked(self):
+        print("download dataset")
 
     # Generates rules in rule textbox on param page
     def rules_checkbox_clicked(self):
