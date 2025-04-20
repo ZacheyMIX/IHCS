@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Updated cleaning page a bit">
+    <list default="true" id="5b6c8dcb-4da1-4b6f-8910-3c50e93532af" name="Changes" comment="Reformated view.py for easier readability and seperation of concerns.  As well as starting results page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/StyleSheets.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/StyleSheets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/View.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/View.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ViewModel/ViewModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/ViewModel/ViewModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ViewModel/ViewModel.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,7 +112,14 @@
       <option name="project" value="LOCAL" />
       <updated>1744837000774</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Reformated view.py for easier readability and seperation of concerns.  As well as starting results page">
+      <created>1745016596508</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1745016596508</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -126,6 +132,7 @@
     <MESSAGE value="Placed a better error for bad input" />
     <MESSAGE value="Added multithreading to the UI, for the backend cleaning process to occur without freezing the UI" />
     <MESSAGE value="Updated cleaning page a bit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated cleaning page a bit" />
+    <MESSAGE value="Reformated view.py for easier readability and seperation of concerns.  As well as starting results page" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reformated view.py for easier readability and seperation of concerns.  As well as starting results page" />
   </component>
 </project>

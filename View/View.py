@@ -1,15 +1,17 @@
 import os.path
 
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QColor
 import re
 import sys
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
-                             QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem
+                             QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
+                             QTabWidget, QScrollArea, QToolTip, QTableWidget, QTableWidgetItem,
+                             QComboBox
                              )
 from StyleSheets import StyleSheet
-from ViewModel.ViewModel import ViewModel, WorkerThread
+from ViewModel import ViewModel
 
 
 class MainWindow(QMainWindow):
@@ -64,7 +66,7 @@ class MainWindow(QMainWindow):
         titleText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         introLabel = QLabel()
-        introLabel.setPixmap(QPixmap('Images/intro.png'))
+        introLabel.setPixmap(QPixmap('View/Images/intro.png'))
 
         self.aboutPageButton = QPushButton("About")
         self.aboutPageButton.setStyleSheet(self.ss.selectedButtonStyle())
@@ -82,7 +84,7 @@ class MainWindow(QMainWindow):
         self.acknowledgementPageButton.clicked.connect(lambda: self.movetopage(2))
 
         settingsLabel = QLabel()
-        settingsLabel.setPixmap(QPixmap('Images/settings.png'))
+        settingsLabel.setPixmap(QPixmap('View/Images/settings.png'))
 
         self.paramPageButton = QPushButton("Parameter Setting")
         self.paramPageButton.setStyleSheet(self.ss.enabledButtonStyle())
@@ -96,7 +98,7 @@ class MainWindow(QMainWindow):
         self.formatPageButton.clicked.connect(lambda: self.movetopage(4))
 
         cleaningLabel = QLabel()
-        cleaningLabel.setPixmap(QPixmap('Images/cleaning.png'))
+        cleaningLabel.setPixmap(QPixmap('View/Images/cleaning.png'))
 
         self.cleaningPageButton = QPushButton("Hybrid Data Cleaning System")
         self.cleaningPageButton.setEnabled(False)
@@ -105,7 +107,7 @@ class MainWindow(QMainWindow):
         self.cleaningPageButton.clicked.connect(lambda: self.movetopage(5))
 
         resultsLabel = QLabel()
-        resultsLabel.setPixmap(QPixmap('Images/results.png'))
+        resultsLabel.setPixmap(QPixmap('View/Images/results.png'))
 
         self.resultPageButton = QPushButton("Dataset Interaction")
         self.resultPageButton.setEnabled(False)
@@ -167,7 +169,7 @@ class MainWindow(QMainWindow):
         welcomeText = QLabel("Welcome to IHCS!")
         welcomeText.setFont(self.font)
         welcomeText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-        aboutText = QLabel(self.outputFile("Text/About.txt"))
+        aboutText = QLabel(self.outputFile("View/Text/About.txt"))
         aboutText.setWordWrap(True)
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -183,8 +185,8 @@ class MainWindow(QMainWindow):
         helpTitleWidget = QWidget()
         helpTitleLayout = QVBoxLayout()
         helpTitle = QLabel()
-        helpTitle.setPixmap(QPixmap('Images/help page.png'))
-        helpText = QLabel(self.outputFile("Text/Help.txt"))
+        helpTitle.setPixmap(QPixmap('View/Images/help page.png'))
+        helpText = QLabel(self.outputFile("View/Text/Help.txt"))
         helpText.setWordWrap(True)
         helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -202,8 +204,8 @@ class MainWindow(QMainWindow):
         acknowlegementTitleWidget = QWidget()
         acknowlegementTitleLayout = QVBoxLayout()
         acknowlegementTitle = QLabel()
-        acknowlegementTitle.setPixmap(QPixmap('Images/acknowledgements page.png'))
-        acknowledgementText = QLabel(self.outputFile("Text/Acknowledgements.txt"))
+        acknowlegementTitle.setPixmap(QPixmap('View/Images/acknowledgements page.png'))
+        acknowledgementText = QLabel(self.outputFile("View/Text/Acknowledgements.txt"))
         acknowledgementText.setWordWrap(True)
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -222,7 +224,7 @@ class MainWindow(QMainWindow):
         chooseWidget = QWidget()
         chooseLayout = QVBoxLayout()
         parameterSettingLabel = QLabel()
-        parameterSettingLabel.setPixmap(QPixmap('Images/parameter page.png'))
+        parameterSettingLabel.setPixmap(QPixmap('View/Images/parameter page.png'))
         chooseText = QLabel("Choose the Files")
         chooseText.setStyleSheet("color: blue")
         chooseText.setFixedHeight(20)
@@ -248,8 +250,9 @@ class MainWindow(QMainWindow):
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
-        browseRulesButton = QPushButton("Browse...")
-        browseRulesButton.setStyleSheet(self.ss.browseButtonStyle())
+        rulesToolTip = QLabel()
+        rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
+        rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
         self.generateRuleCheckBox = QCheckBox()
         self.generateRuleCheckBox.setText("Generate rules automatically")
         self.generateRuleCheckBox.setStyleSheet("background-color: transparent")
@@ -272,8 +275,10 @@ class MainWindow(QMainWindow):
         datasetLayout.addWidget(self.datasetTextBox)
         datasetLayout.addWidget(browseDatasetButton)
         rulesLayout.addWidget(rulesText)
+        rulesLayout.addSpacing(12)
         rulesLayout.addWidget(self.rulesTextBox)
-        rulesLayout.addSpacing(80)
+        rulesLayout.addSpacing(30)
+        rulesLayout.addWidget(rulesToolTip)
         browseLayout.addWidget(paramInfoText)
         browseLayout.addWidget(datasetWidget)
         browseLayout.addWidget(rulesWidget)
@@ -296,7 +301,7 @@ class MainWindow(QMainWindow):
         buttonLayout = QHBoxLayout()
         buttonWidget = QWidget()
         formatSettingLabel = QLabel()
-        formatSettingLabel.setPixmap(QPixmap('Images/format page.png'))
+        formatSettingLabel.setPixmap(QPixmap('View/Images/format page.png'))
         instructionLabel = QLabel('Look over the data types of each column and make any changes if needed')
         instructionLabel.setStyleSheet("color: blue")
         instructionLabel.setFixedHeight(40)
@@ -332,7 +337,7 @@ class MainWindow(QMainWindow):
         buttonLayout = QHBoxLayout()
         buttonWidget = QWidget()
         cleaningLabel = QLabel()
-        cleaningLabel.setPixmap(QPixmap('Images/cleaning page.png'))
+        cleaningLabel.setPixmap(QPixmap('View/Images/cleaning page.png'))
         self.progress_bar = QProgressBar()
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(self.ss.progressBarStyle())
@@ -361,7 +366,7 @@ class MainWindow(QMainWindow):
 
         #Tuple UI
         resultsLabel1 = QLabel()
-        resultsLabel1.setPixmap(QPixmap('Images/result page.png'))
+        resultsLabel1.setPixmap(QPixmap('View/Images/result page.png'))
         congratsLabel = QLabel("Congratulations, cleaning finished!")
         #Dataset UI stuff
         chartButton = QPushButton()
@@ -373,7 +378,7 @@ class MainWindow(QMainWindow):
 
         #Chart UI
         resultsLabel2 = QLabel()
-        resultsLabel2.setPixmap(QPixmap('Images/result page.png'))
+        resultsLabel2.setPixmap(QPixmap('View/Images/result page.png'))
 
         #Result Setup
 
@@ -385,16 +390,16 @@ class MainWindow(QMainWindow):
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def format_button_clicked(self):
 
-        # Check if file and rules are set correctly
+        # #Check if file and rules are set correctly
         # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
         #                  self.datasetTextBox.text()):
         #     self.errorDialog("You must input either a csv, xlsx, xls, or json file")
         #     return
         # if self.rulesTextBox.text() == "":
-        #     self.errorDialog("Must put in data quality rules")
+        #     self.errorDialog("Must put in MLN rules")
         #     return
         # elif not re.search(
-        #         r'^(accuracy|completeness|conformity|consistency|timeliness|uniqueness)(?:, (accuracy|completeness|conformity|consistency|timeliness|uniqueness))*$',
+        #         r'^([A-Za-z0-9]+\([A-Za-z0-9, .]+\))(?:(\^| \^|\^ | \^ )[A-Za-z0-9]+\([A-Za-z0-9, .]+\))*(=>| =>|=> | => )([A-Za-z0-9]+\([A-Za-z0-9, .]+\))(\^| \^|\^ | \^ )([0-9.]+)$',
         #         self.rulesTextBox.text().lower()):
         #     self.errorDialog("Only eligible rules are allowed")
         #     return

@@ -3,8 +3,9 @@ import time
 
 
 class ViewModel(QObject):
+    dirtyDataSet = ""
     formatList = {"name": "object", "age": "int", "date": "date/time", "salary": "int"}
-    newFormatList = {}
+    changedTypes = {"date": "object"}
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
 
