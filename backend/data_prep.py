@@ -131,6 +131,8 @@ def main():
         # filter for duplicate values
         formatted_df = formatted_df.drop_duplicates()
         
+        display(formatted_df)
+        
         # going through every invalid parsing
         for err in error_list:
             print(err)
