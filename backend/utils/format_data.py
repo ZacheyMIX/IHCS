@@ -7,8 +7,47 @@ from IPython.display import display
 from dataprep.clean import clean_date, clean_df, clean_email, clean_address, clean_country, clean_url, clean_phone, clean_isbn, clean_text, clean_duplication
 
 def format_whole_dataset(df):
-    """ formatted the whole dataframe """ 
+    """ formatted the whole dataframe 
+        return: 
+            @inferred_dtypes: data type detection for each column in the table | List of dictionaries (like no SQL)
+            "semantic": it helps users identify semantic variables (e.g., email) that are supported by DataPrep validating functions. Hence, users can later call the corresponding cleaning functions on these variables (e.g., “clean_email()”).
+            "atomic": it helps users identify the basic data types that are built into Python (e.g., interger, floating, string).
+            
+            inferred_dtypes = 
+            [{'column_name': 'Name',
+            'semantic_data_type': 'string',
+            'atomic_data_type': 'string'},
+            ...
+            {'column_name': 'Email',
+            'semantic_data_type': 'URL',
+            'atomic_data_type': 'string'}]
+            
+            @formatted_df = result of the use of clean_df, which is the first step/layer of the data formatting (that cleans table as an overall) | List of dictionaries (like no SQL)
+            [{'name': 'Aishwarya Menon',
+            'employee_id': '0194-826-537',
+            'salary': '90000',
+            'dob': '15th December, 1984',
+            'join_date': '24.05.2009',
+            'year_of_service': nan,
+            'weight': '150 lbs',
+            'address': '123 Elm St Apt 5, New York, NY 10001',
+            'email': 'aishwarya.menon@g mail.com'},
+            ...
+            {'name': 'Ying Zhao',
+            'employee_id': '0172-946-0580',
+            'salary': '600K',
+            'dob': '5/28/79',
+            'join_date': '21-Nov-11',
+            'year_of_service': nan,
+            'weight': '107.5 kg',
+            'address': '987 Elm Ave Apt 205, Virginia Beach, VA 23401',
+            'email': 'ying.zhao@yahoo.c om'}]
+
+    """ 
     inferred_dtypes, formatted_df = clean_df(df, standardize_missing_values='ignore', clean_header='const')
+    inferred_dtypes = inferred_dtypes.reset_index().rename(columns={'index': 'column_name'})
+    inferred_dtypes = inferred_dtypes.to_dict('records')
+    formatted_df = formatted_df.to_dict('records')
     return inferred_dtypes, formatted_df
 
 def minmax_yearrange_check(min_year, max_year):
@@ -83,7 +122,8 @@ def convert_to_mln_format(formatted_df):
 Note:
 Frontend handles:
     1. user verification for uploading the correct file to process
-    2. user verification for the formatted data'
+    2. user verification for the inferred datatypes and overall formatted data from first step in data formatting
     3. user verification for the formatted data's year format: \
         - set default min and max year (so when sent to backend, both are filled 
+    4. 
 """
