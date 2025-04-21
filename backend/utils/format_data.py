@@ -10,6 +10,7 @@ def format_whole_dataset(df):
     """ formatted the whole dataframe 
         return: 
             @inferred_dtypes: data type detection for each column in the table | List of dictionaries (like no SQL)
+            source: https://docs.dataprep.ai/user_guide/clean/clean_df.html
             "semantic": it helps users identify semantic variables (e.g., email) that are supported by DataPrep validating functions. Hence, users can later call the corresponding cleaning functions on these variables (e.g., “clean_email()”).
             "atomic": it helps users identify the basic data types that are built into Python (e.g., interger, floating, string).
             
