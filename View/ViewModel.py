@@ -4,8 +4,8 @@ import time
 
 class ViewModel(QObject):
     dirtyDataSet = ""
-    formatList = {"name": "object", "age": "int", "date": "date/time", "salary": "int"}
-    changedTypes = {"date": "object"}
+    formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address'}
+    changedTypes = {}
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
 
@@ -37,6 +37,7 @@ class ViewModel(QObject):
 #Multithread for the backend without freezing the UI
 class WorkerThread(QObject):
     progress = pyqtSignal(int)
+    format = pyqtSignal()
     finished = pyqtSignal()
 
     def run(self):

@@ -246,17 +246,13 @@ class MainWindow(QMainWindow):
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
         browseDatasetButton.clicked.connect(self.openFileDialog)
-        rulesText = QLabel("Rules:")
+        rulesText = QLabel("MLN Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
         rulesToolTip = QLabel()
         rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
         rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
-        self.generateRuleCheckBox = QCheckBox()
-        self.generateRuleCheckBox.setText("Generate rules automatically")
-        self.generateRuleCheckBox.setStyleSheet("background-color: transparent")
-        self.generateRuleCheckBox.clicked.connect(self.rules_checkbox_clicked)
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
@@ -275,14 +271,12 @@ class MainWindow(QMainWindow):
         datasetLayout.addWidget(self.datasetTextBox)
         datasetLayout.addWidget(browseDatasetButton)
         rulesLayout.addWidget(rulesText)
-        rulesLayout.addSpacing(12)
         rulesLayout.addWidget(self.rulesTextBox)
         rulesLayout.addSpacing(30)
         rulesLayout.addWidget(rulesToolTip)
         browseLayout.addWidget(paramInfoText)
         browseLayout.addWidget(datasetWidget)
         browseLayout.addWidget(rulesWidget)
-        browseLayout.addWidget(self.generateRuleCheckBox)
         formatLayout.addSpacing(400)
         formatLayout.addWidget(formatButton)
         paramLayout.addWidget(chooseWidget)
@@ -308,7 +302,7 @@ class MainWindow(QMainWindow):
         self.listWidget = QListWidget()
         self.listWidget.setSpacing(1)
         self.listWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
-        self.textBoxes = []
+        self.formatItemsList = []
         formatButton = QPushButton("Next")
         formatButton.setFixedSize(100, 30)
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
@@ -415,7 +409,7 @@ class MainWindow(QMainWindow):
         self.evaluationPageButton.setEnabled(False)
         self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.formatPageButton.setEnabled(True)
-        self.textBoxes.clear()
+        self.formatItemsList.clear()
 
         # Add items to list
         for column, dtype in self.viewModel.formatList.items():
@@ -426,22 +420,58 @@ class MainWindow(QMainWindow):
 
             text = QLabel(str(column))
             text.setFixedWidth(100)
-            textBox = QLineEdit(str(dtype))
-            textBox.setFixedWidth(400)
-            textBox.setStyleSheet("background-color: white")
+            comboBox = QComboBox()
+            comboBox.addItems(["date/time", "email", 'country', 'phone number', "text", 'US street address', 'url', 'ISBN numbers'])
+            comboBox.setCurrentText(dtype)
+            comboBox.setFixedWidth(150)
+            comboBox.setStyleSheet("background-color: white")
+
+
+            yearWidget = QWidget()
+            yearLayout = QHBoxLayout()
+            yearLayout.setContentsMargins(0, 0, 0, 0)
+            yearFormat = QCheckBox("Year format")
+            min_year_input = QLineEdit()
+            min_year_input.setPlaceholderText("Min Year")
+            min_year_input.setStyleSheet("background-color: white")
+            max_year_input = QLineEdit()
+            max_year_input.setPlaceholderText("Max Year")
+            max_year_input.setStyleSheet("background-color: white")
+            
+
+            yearLayout.addWidget(yearFormat)
+            yearLayout.addWidget(min_year_input)
+            yearLayout.addWidget(max_year_input)
+            yearWidget.setLayout(yearLayout)
+
+            yearWidget.setVisible(dtype == "date/time")
+
+            def onTypeChanged(text, yearWidget=yearWidget):
+                yearWidget.setVisible(text == "date/time")
+
+            comboBox.currentTextChanged.connect(onTypeChanged)
 
             itemLayout.addWidget(text)
-            itemLayout.addWidget(textBox)
+            itemLayout.addWidget(comboBox)
+            itemLayout.addWidget(yearWidget)
             itemWidget.setLayout(itemLayout)
 
             self.listWidget.setItemWidget(item, itemWidget)
-            self.textBoxes.append(textBox)
+            self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
 
         self.movetopage(4)
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def clean_button_clicked(self):
-        self.viewModel.newFormatList = [cb.text() for cb in self.textBoxes]
+
+        #Adds changed types to list if any
+        for items in self.formatItemsList:
+            if items[1].currentText() == "date/time" and items[2].isChecked():
+                self.viewModel.changedTypes[items[0]] = {"data_type": "date_time_w_year_format", "min_year": items[3].text(), "max_year": items[4].text()}
+            elif self.viewModel.formatList[items[0]] == items[1].currentText():
+                continue
+            else:
+                self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
         self.formatPageButton.setEnabled(False)
         self.progress_bar.setValue(0)
         self.cleaningPageButton.setEnabled(True)
@@ -450,7 +480,7 @@ class MainWindow(QMainWindow):
 
         self.movetopage(5)
         self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.viewModel.startClean()
+        self.viewModel.startClean() 
 
     #Updates progress bar intermediately
     @pyqtSlot(int)
@@ -481,11 +511,6 @@ class MainWindow(QMainWindow):
     #Downloads the dataset provided if the status of duplicate checkbox
     def download_button_clicked(self):
         print("download dataset")
-
-    # Generates rules in rule textbox on param page
-    def rules_checkbox_clicked(self):
-        if self.generateRuleCheckBox.isChecked():
-            self.rulesTextBox.setText("Accuracy, Completeness, Conformity, Consistency, Timeliness, Uniqueness")
 
     # Changes tab button highlight and moves to page selected
     def movetopage(self, page):
