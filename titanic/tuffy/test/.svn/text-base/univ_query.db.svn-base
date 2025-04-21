@@ -1,4 +1,0 @@
-advisedBy(person, person1)
-professor(person)
-student(person)
-

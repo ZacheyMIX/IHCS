@@ -1,0 +1,28 @@
+// Predicates
+HasName(Employee, Name)
+HasEmployeeID(Employee, ID)
+HasSalary(Employee, Salary)
+HasDOB(Employee, Date)
+HasJoinDate(Employee, Date)
+HasYearsOfService(Employee, Years)
+HasWeight(Employee, Weight)
+HasAddress(Employee, Address)
+HasEmail(Employee, Email)
+BadEmail(Employee)
+WeirdWeight(Employee)
+WeirdSalary(Employee)
+RegexMatch(String, Pattern)
+
+
+// Rules
+
+// Bad email detection (split into separate rules to avoid AND issues)
+0.8 HasEmail(e, email), RegexMatch(email, "g mail") => BadEmail(e)
+0.8 HasEmail(e, email), RegexMatch(email, " ") => BadEmail(e)
+
+// Suspicious weight
+0.7 HasWeight(e, w), RegexMatch(w, "pound") => WeirdWeight(e)
+
+// Weird salary patterns
+0.7 HasSalary(e, s), RegexMatch(s, "\\$") => WeirdSalary(e)
+0.7 HasSalary(e, s), RegexMatch(s, "K") => WeirdSalary(e)
