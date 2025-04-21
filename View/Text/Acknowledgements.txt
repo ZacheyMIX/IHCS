@@ -1,4 +1,4 @@
-This program was created by Grace Lewis, Novella Alvina, and Zachery Blomquist for the class "Data Analaysis and for Machine Learning" at the University of Utah, which was taught by Professor El Kindi Rezig.
+This program was created by Grace Lewis, Novella Alvina, and Zachery Blomquist for the class "Data Analaysis and for Machine Learning" at the University of Utah, taught by Professor El Kindi Rezig.
 
 Original Credit for IHCS belongs to Congcong Ge, Yunjun Gao, Xiaoye Miao, Lu Chen, Christian S. Jensen, and Ziyuan Zhu which they originally created at the Alibab-Zhejiang University Joint Institue of Frontier Technolgies in Hangzhou, China.
 

@@ -69,6 +69,19 @@ class StyleSheet():
                 }
             """
 
+    def disabledPageButtonStyle(self):
+        return """
+                QPushButton {
+                    background-color: transparent;
+                    border-style: outset;
+                    border-width: 1px;
+                    border-color: grey;
+                    border-radius: 2px;
+                    color: grey;
+                    font-size: 16px;
+                }
+            """
+
     def browseButtonStyle(self):
         return """
                         QPushButton {
@@ -83,3 +96,17 @@ class StyleSheet():
                             background-color: rgba(80, 80, 255, 255);
                         }
                     """
+
+    def progressBarStyle(self):
+        return """
+    QProgressBar {
+        background-color: #E8E8E8;
+        color: #333;
+        border: 1px solid #999;
+        border-radius: 5px;
+    }
+    
+    QProgressBar::chunk {
+        background-color: #007BFF;
+    }
+"""
