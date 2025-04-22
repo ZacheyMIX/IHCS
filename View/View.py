@@ -1,7 +1,7 @@
 import os.path
 
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtGui import QPixmap, QColor, QIcon
 import re
 import sys
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
@@ -244,9 +244,9 @@ class MainWindow(QMainWindow):
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
-        rulesToolTip = QLabel()
+        rulesToolTip = QLabel("🛈")
         rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
-        rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
+        #rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
@@ -411,6 +411,8 @@ class MainWindow(QMainWindow):
         self.viewModel.startClean() 
 
     def format_start(self):
+        
+        self.listWidget.clear()
 
         # Add items to list to display
         for column, dtype in self.viewModel.formatList.items():
