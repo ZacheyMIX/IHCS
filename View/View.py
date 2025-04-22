@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
         self.setFixedSize(800, 500)
         self.viewModel = ViewModel()
 
+        self.viewModel.format_start.connect(self.format_start)
         self.viewModel.progress_changed.connect(self.update_progress)
         self.viewModel.cleaning_finished.connect(self.cleaning_finished)
 
@@ -91,12 +92,6 @@ class MainWindow(QMainWindow):
         self.paramPageButton.setFixedHeight(30)
         self.paramPageButton.clicked.connect(lambda: self.movetopage(3))
 
-        self.formatPageButton = QPushButton("Format Setting")
-        self.formatPageButton.setEnabled(False)
-        self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.formatPageButton.setFixedHeight(30)
-        self.formatPageButton.clicked.connect(lambda: self.movetopage(4))
-
         cleaningLabel = QLabel()
         cleaningLabel.setPixmap(QPixmap('View/Images/cleaning.png'))
 
@@ -128,7 +123,6 @@ class MainWindow(QMainWindow):
         self.tabLayout.addWidget(self.acknowledgementPageButton)
         self.tabLayout.addWidget(settingsLabel)
         self.tabLayout.addWidget(self.paramPageButton)
-        self.tabLayout.addWidget(self.formatPageButton)
         self.tabLayout.addWidget(cleaningLabel)
         self.tabLayout.addWidget(self.cleaningPageButton)
         self.tabLayout.addWidget(resultsLabel)
@@ -258,7 +252,7 @@ class MainWindow(QMainWindow):
         formatButton = QPushButton("Next")
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
         formatButton.setFixedSize(100, 30)
-        formatButton.clicked.connect(self.format_button_clicked)
+        formatButton.clicked.connect(self.clean_button_clicked)
 
         # Param Page Setup
         paramLayout = QVBoxLayout(self.paramPageWidget)
@@ -306,7 +300,7 @@ class MainWindow(QMainWindow):
         formatButton = QPushButton("Next")
         formatButton.setFixedSize(100, 30)
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
-        formatButton.clicked.connect(self.clean_button_clicked)
+        formatButton.clicked.connect(self.viewModel.continueClean)
 
         # Format page setup
         formatPageLayout = QVBoxLayout(self.formatPageWidget)
@@ -382,7 +376,7 @@ class MainWindow(QMainWindow):
 
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
-    def format_button_clicked(self):
+    def clean_button_clicked(self):
 
         # #Check if file and rules are set correctly
         # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
@@ -399,7 +393,6 @@ class MainWindow(QMainWindow):
         #     return
 
         # Start cleaning sequence
-        self.viewModel.startFormat(self.datasetTextBox.text(), self.rulesTextBox.text().lower())
 
         # Reset pages
         self.cleaningPageButton.setEnabled(False)
@@ -408,15 +401,24 @@ class MainWindow(QMainWindow):
         self.resultPageButton.setStyleSheet(self.ss.disabledButtonStyle())
         self.evaluationPageButton.setEnabled(False)
         self.evaluationPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.formatPageButton.setEnabled(True)
         self.formatItemsList.clear()
+        self.progress_bar.setValue(0)
+        self.cleaningPageButton.setEnabled(True)
+        self.finishButton.setEnabled(False)
+        self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
 
-        # Add items to list
+        self.movetopage(5)
+        self.viewModel.startClean() 
+
+    def format_start(self):
+
+        # Add items to list to display
         for column, dtype in self.viewModel.formatList.items():
             item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
             itemLayout = QHBoxLayout()
             itemLayout.setContentsMargins(0, 0, 0, 0)
+            itemLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
             text = QLabel(str(column))
             text.setFixedWidth(100)
@@ -458,11 +460,11 @@ class MainWindow(QMainWindow):
 
             self.listWidget.setItemWidget(item, itemWidget)
             self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
+            self.movetopage(4)
 
-        self.movetopage(4)
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
-    def clean_button_clicked(self):
+    def format_button_clicked(self):
 
         #Adds changed types to list if any
         for items in self.formatItemsList:
@@ -472,15 +474,9 @@ class MainWindow(QMainWindow):
                 continue
             else:
                 self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
-        self.formatPageButton.setEnabled(False)
-        self.progress_bar.setValue(0)
-        self.cleaningPageButton.setEnabled(True)
-        self.finishButton.setEnabled(False)
-        self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
-
+        
         self.movetopage(5)
-        self.formatPageButton.setStyleSheet(self.ss.disabledButtonStyle())
-        self.viewModel.startClean() 
+        self.viewModel.continue_clean() 
 
     #Updates progress bar intermediately
     @pyqtSlot(int)
@@ -522,13 +518,11 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 3:
             self.paramPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        elif self.currentSelectedPage == 4:
-            self.formatPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 6:
             self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        else:
+        elif self.currentSelectedPage == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
 
         self.currentSelectedPage = page
@@ -542,13 +536,11 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 3:
             self.paramPageButton.setStyleSheet(self.ss.selectedButtonStyle())
-        elif page == 4:
-            self.formatPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 6:
             self.resultPageButton.setStyleSheet(self.ss.selectedButtonStyle())
-        else:
+        elif page == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
 
     # Reads a file and returns the text
