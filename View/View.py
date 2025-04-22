@@ -300,7 +300,7 @@ class MainWindow(QMainWindow):
         formatButton = QPushButton("Next")
         formatButton.setFixedSize(100, 30)
         formatButton.setStyleSheet(self.ss.pageButtonStyle())
-        formatButton.clicked.connect(self.viewModel.continueClean)
+        formatButton.clicked.connect(self.format_button_clicked)
 
         # Format page setup
         formatPageLayout = QVBoxLayout(self.formatPageWidget)
@@ -476,7 +476,7 @@ class MainWindow(QMainWindow):
                 self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
         
         self.movetopage(5)
-        self.viewModel.continue_clean() 
+        self.viewModel.continueClean() 
 
     #Updates progress bar intermediately
     @pyqtSlot(int)
