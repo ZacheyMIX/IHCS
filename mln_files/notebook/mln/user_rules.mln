@@ -28,4 +28,3 @@ RegexMatch(String, Pattern)
 0.7 HasSalary(e, s), RegexMatch(s, "K") => WeirdSalary(e)
 
 1.0 HasEmail(e, "aishwarya.menon@g mail.com") => BadEmail(e)
-
