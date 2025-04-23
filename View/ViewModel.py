@@ -7,7 +7,7 @@ class ViewModel(QObject):
     dirtyDataSet = "/somefilepath/data.csv"
     formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address', 'email': 'text'}
     changedTypes = {"date": {'datatype': 'date w year format', 'minyear': '20', 'maxyear': '22'}, 'email': 'email'}
-    cleanDataSetDict = [{
+    cleanDatasetDict = [{
             "TID": "001",
             "HospitalName": "General Hospital",
             "Address": "123 Main St",
@@ -28,8 +28,8 @@ class ViewModel(QObject):
             "changes": None
         }]
     groundTruthFile = ""
-    cleanScore = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'Recall': '.9955', 'F1-score': '.9834'}
-    dirtyScore = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'Recall': '.9435', 'F1-score': '.8398'}
+    cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'Recall': '.9955', 'F1-score': '.9834'}
+    dirtyScores = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'Recall': '.9435', 'F1-score': '.8398'}
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
     format_start = pyqtSignal()

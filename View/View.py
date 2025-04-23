@@ -348,31 +348,43 @@ class MainWindow(QMainWindow):
     def resultLayout(self):
 
         #Result UI
-        resultsLayout = QStackedLayout()
-        tupleLayout = QVBoxLayout()
-        attributeLayout = QVBoxLayout()
+        resultsLayout = QVBoxLayout()
+        downloadLayout = QHBoxLayout()
 
-        #Tuple UI
-        resultsLabel1 = QLabel()
-        resultsLabel1.setPixmap(QPixmap('View/Images/result page.png'))
+
+        resultsLabel = QLabel()
+        resultsLabel.setPixmap(QPixmap('View/Images/result page.png'))
         congratsLabel = QLabel("Congratulations, cleaning finished!")
+
         #Dataset UI stuff
-        chartButton = QPushButton()
-        chartButton.setStyleSheet(self.ss.pageButtonStyle())
-        duplicateCheck = QCheckBox("Keep Duplicates")
-        downloadButton = QPushButton()
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setWidgetResizable(True)
+        self.datasetWidget = QWidget()
+        self.datasetLayout = QVBoxLayout()
+        downloadWidget = QWidget()
+        downloadButton = QPushButton("Download")
         downloadButton.setStyleSheet(self.ss.pageButtonStyle())
-
-
-        #Chart UI
-        resultsLabel2 = QLabel()
-        resultsLabel2.setPixmap(QPixmap('View/Images/result page.png'))
+        downloadButton.setFixedSize(100, 30)
+        downloadButton.clicked.connect(self.download_button_clicked)
 
         #Result Setup
+        resultsLayout.addWidget(resultsLabel)
+        resultsLayout.addWidget(congratsLabel)
+        resultsLayout.addSpacing(5)
+        self.scrollArea.setWidget(self.datasetWidget)
+        resultsLayout.addWidget(self.scrollArea)
+        downloadLayout.addSpacing(400)
+        downloadLayout.addWidget(downloadButton)
+        downloadWidget.setLayout(downloadLayout)
+        resultsLayout.addWidget(downloadWidget)
+        self.resultPageWidget.setLayout(resultsLayout)
 
 
     def evalLayout(self):
-        print("hello")
+        print("evalLayout")
+
+    def chartLayout(self):
+        print("chartLayout")
 
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
@@ -406,6 +418,14 @@ class MainWindow(QMainWindow):
         self.cleaningPageButton.setEnabled(True)
         self.finishButton.setEnabled(False)
         self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
+
+        #reset data
+        self.viewModel.cleaningTime = 0
+        self.viewModel.formatList.clear()
+        self.viewModel.changedTypes.clear()
+        self.viewModel.cleanDatasetDict.clear()
+        self.viewModel.cleanScores.clear()
+        self.viewModel.dirtyScores.clear()
 
         self.movetopage(5)
         self.viewModel.startClean() 
@@ -462,7 +482,7 @@ class MainWindow(QMainWindow):
 
             self.listWidget.setItemWidget(item, itemWidget)
             self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
-            self.movetopage(4)
+        self.movetopage(4)
 
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
@@ -494,7 +514,7 @@ class MainWindow(QMainWindow):
         self.finishButton.setEnabled(True)
         self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
 
-    #Moves over to the results page
+    #Sets up results and moves over to that page
     def finish_button_clicked(self):
         self.movetopage(6)
 
