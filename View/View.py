@@ -362,8 +362,7 @@ class MainWindow(QMainWindow):
         self.datasetWidget = QWidget()
         self.datasetLayout = QVBoxLayout(self.datasetWidget)
         self.datasetHeader = QHBoxLayout()
-        self.datasetHeader.addWidget(QLabel("🔧"), alignment=Qt.AlignmentFlag.AlignLeft)
-        self.datasetHeader.addWidget(QLabel("|"))
+        
 
         downloadWidget = QWidget()
         downloadButton = QPushButton("Download")
@@ -431,13 +430,22 @@ class MainWindow(QMainWindow):
         self.viewModel.cleanScores.clear()
         self.viewModel.dirtyScores.clear()
 
+        #Clear widgets on repeat iterations
+        self.listWidget.clear()        
+        while self.datasetLayout.count():
+            child = self.datasetLayout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
+                
+
+
         self.movetopage(5)
         self.viewModel.startClean() 
 
     def format_start(self):
         
-        self.listWidget.clear()
-
         # Add items to list to display
         for column, dtype in self.viewModel.formatList.items():
             item = QListWidgetItem(self.listWidget)
@@ -509,15 +517,10 @@ class MainWindow(QMainWindow):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
 
-    #Sets up results for result page after cleaning
+    #Sets up the final data for the rest of the pages
     def cleaning_finished(self):
-        for key in self.viewModel.cleanDatasetDict[0].keys():
-            if key != "changes":
-                label = QLabel(f"<b>{key}<b>")
-                self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
-                self.datasetHeader.addWidget(QLabel("|"))
-        self.datasetLayout.addLayout(self.datasetHeader)
-        self.add_seperator(self.datasetLayout)
+        self.resultSetup()
+        
         
         self.finishButton.setEnabled(True)
         self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
@@ -582,11 +585,62 @@ class MainWindow(QMainWindow):
         elif page == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
 
+    def resultSetup(self):
+
+        changesColumn = QLabel("🔧")
+        changesColumn.setFixedWidth(20)
+        self.datasetHeader.addWidget(changesColumn, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.datasetHeader.addWidget(QLabel("|"))
+
+        #Add header
+        for key in self.viewModel.cleanDatasetDict[0].keys():
+            if key != "changes":
+                label = QLabel(f"<b>{key}<b>")
+                label.setFixedWidth(120)
+                self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
+                self.datasetHeader.addWidget(QLabel("|"))
+        self.datasetLayout.addLayout(self.datasetHeader)
+        self.datasetLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.add_seperator(self.datasetLayout)
+
+        #Add Rows
+        for row in self.viewModel.cleanDatasetDict:
+            row_layout = QHBoxLayout()
+
+            if row["changes"]:
+                icon_label = QLabel("🛈")
+                icon_label.setToolTip(row["changes"])
+            else:
+                icon_label = QLabel("")
+
+            icon_label.setFixedWidth(20)
+            row_layout.addWidget(icon_label)
+            row_layout.addWidget(QLabel("|"))
+
+            for key, value in row.items():
+                if key != "changes":
+                    lbl = QLabel(str(value))
+                    lbl.setFixedWidth(120)
+                    row_layout.addWidget(lbl)
+                    row_layout.addWidget(QLabel("|"))
+            
+            self.datasetLayout.addLayout(row_layout)
+            self.add_seperator(self.datasetLayout)
+
+    #Horizontal seperator for dataset visual
     def add_seperator(self, layout):
         line = QFrame()
-        line.setFrameShape(QFrame.Shape.VLine)
+        line.setFrameShape(QFrame.Shape.HLine)
         line.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(line)
+
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
 
     # Reads a file and returns the text
     def outputFile(self, file):

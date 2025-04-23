@@ -15,6 +15,8 @@ class ViewModel(QObject):
             "State": "NY",
             "Zipcode": "10001",
             "Phonenumber": "555-1234",
+            "Patient": "John Smith",
+            "Reason": "Cough",
             "changes": "Address corrected"
         },
         {
@@ -25,6 +27,8 @@ class ViewModel(QObject):
             "State": "NJ",
             "Zipcode": "07001",
             "Phonenumber": "555-5678",
+            "Patient": "Joker",
+            "Reason": "Broken Everything",
             "changes": None
         }]
     groundTruthFile = ""
