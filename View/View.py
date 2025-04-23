@@ -1,14 +1,14 @@
 import os.path
 
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QPixmap, QColor, QIcon
+from PyQt6.QtGui import QPixmap
 import re
 import sys
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
                              QTabWidget, QScrollArea, QToolTip, QTableWidget, QTableWidgetItem,
-                             QComboBox
+                             QComboBox, QFrame
                              )
 from StyleSheets import StyleSheet
 from ViewModel import ViewModel
@@ -360,12 +360,17 @@ class MainWindow(QMainWindow):
         self.scrollArea = QScrollArea()
         self.scrollArea.setWidgetResizable(True)
         self.datasetWidget = QWidget()
-        self.datasetLayout = QVBoxLayout()
+        self.datasetLayout = QVBoxLayout(self.datasetWidget)
+        self.datasetHeader = QHBoxLayout()
+        self.datasetHeader.addWidget(QLabel("🔧"), alignment=Qt.AlignmentFlag.AlignLeft)
+        self.datasetHeader.addWidget(QLabel("|"))
+
         downloadWidget = QWidget()
         downloadButton = QPushButton("Download")
         downloadButton.setStyleSheet(self.ss.pageButtonStyle())
         downloadButton.setFixedSize(100, 30)
         downloadButton.clicked.connect(self.download_button_clicked)
+        
 
         #Result Setup
         resultsLayout.addWidget(resultsLabel)
@@ -378,7 +383,6 @@ class MainWindow(QMainWindow):
         downloadWidget.setLayout(downloadLayout)
         resultsLayout.addWidget(downloadWidget)
         self.resultPageWidget.setLayout(resultsLayout)
-
 
     def evalLayout(self):
         print("evalLayout")
@@ -423,7 +427,7 @@ class MainWindow(QMainWindow):
         self.viewModel.cleaningTime = 0
         self.viewModel.formatList.clear()
         self.viewModel.changedTypes.clear()
-        self.viewModel.cleanDatasetDict.clear()
+        #self.viewModel.cleanDatasetDict.clear()
         self.viewModel.cleanScores.clear()
         self.viewModel.dirtyScores.clear()
 
@@ -505,18 +509,31 @@ class MainWindow(QMainWindow):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
 
-    #Display results from the cleaning process
+    #Sets up results for result page after cleaning
     def cleaning_finished(self):
+        for key in self.viewModel.cleanDatasetDict[0].keys():
+            if key != "changes":
+                label = QLabel(f"<b>{key}<b>")
+                self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
+                self.datasetHeader.addWidget(QLabel("|"))
+        self.datasetLayout.addLayout(self.datasetHeader)
+        self.add_seperator(self.datasetLayout)
+        
+        self.finishButton.setEnabled(True)
+        self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
+
+    
+
+    #Sets up results and moves over to that page
+    def finish_button_clicked(self):
+
+        self.movetopage(6)
+
+        #Enable rest of pages
         self.evaluationPageButton.setEnabled(True)
         self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.resultPageButton.setEnabled(True)
         self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        self.finishButton.setEnabled(True)
-        self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
-
-    #Sets up results and moves over to that page
-    def finish_button_clicked(self):
-        self.movetopage(6)
 
     #Switches to the attribute view in results
     def chart_button_clicked(self):
@@ -564,6 +581,12 @@ class MainWindow(QMainWindow):
             self.resultPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
+
+    def add_seperator(self, layout):
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.VLine)
+        line.setFrameShadow(QFrame.Shadow.Sunken)
+        layout.addWidget(line)
 
     # Reads a file and returns the text
     def outputFile(self, file):
