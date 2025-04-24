@@ -31,9 +31,11 @@ class ViewModel(QObject):
             "Reason": "Broken Everything",
             "changes": None
         }]
+    cleanDatasetPath = ""
     groundTruthFile = ""
     cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'Recall': '.9955', 'F1-score': '.9834'}
     dirtyScores = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'Recall': '.9435', 'F1-score': '.8398'}
+    history = []
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
     format_start = pyqtSignal()

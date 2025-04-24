@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              )
 from StyleSheets import StyleSheet
 from ViewModel import ViewModel
+import shutil
 
 
 class MainWindow(QMainWindow):
@@ -424,11 +425,11 @@ class MainWindow(QMainWindow):
 
         #reset data
         self.viewModel.cleaningTime = 0
-        self.viewModel.formatList.clear()
-        self.viewModel.changedTypes.clear()
+        #self.viewModel.formatList.clear()
+        #self.viewModel.changedTypes.clear()
         #self.viewModel.cleanDatasetDict.clear()
-        self.viewModel.cleanScores.clear()
-        self.viewModel.dirtyScores.clear()
+        #self.viewModel.cleanScores.clear()
+        #self.viewModel.dirtyScores.clear()
 
         #Clear widgets on repeat iterations
         self.listWidget.clear()        
@@ -546,9 +547,24 @@ class MainWindow(QMainWindow):
     def tuple_button_clicked(self):
         print("moving to tuple page")
 
-    #Downloads the dataset provided if the status of duplicate checkbox
+    #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
-        print("download dataset")
+        # Let user choose where to save the file
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save File As",
+            "",  # Default directory or filename
+            "CSV Files (*.csv);;XLSX Files (*.xlsx);;XLS Files (*.xls);;JSON Files (*.json);;All Files (*)"
+        )
+
+        #Path copy
+        if file_path:
+            try:
+                shutil.copy(self.viewModel.cleanDatasetPath, file_path)
+
+                print(f"File saved to: {file_path}")
+            except Exception as e:
+                print(f"Error saving file: {e}")
 
     # Changes tab button highlight and moves to page selected
     def movetopage(self, page):
@@ -598,7 +614,8 @@ class MainWindow(QMainWindow):
                 label = QLabel(f"<b>{key}<b>")
                 label.setFixedWidth(120)
                 self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
-                self.datasetHeader.addWidget(QLabel("|"))
+                if key != list(self.viewModel.cleanDatasetDict[0].keys())[len(self.viewModel.cleanDatasetDict[0]) - 2]:
+                    self.datasetHeader.addWidget(QLabel("|"))
         self.datasetLayout.addLayout(self.datasetHeader)
         self.datasetLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.add_seperator(self.datasetLayout)
@@ -622,7 +639,8 @@ class MainWindow(QMainWindow):
                     lbl = QLabel(str(value))
                     lbl.setFixedWidth(120)
                     row_layout.addWidget(lbl)
-                    row_layout.addWidget(QLabel("|"))
+                    if key != list(row.keys())[len(row) - 2]:
+                        row_layout.addWidget(QLabel("|"))
             
             self.datasetLayout.addLayout(row_layout)
             self.add_seperator(self.datasetLayout)
@@ -634,6 +652,7 @@ class MainWindow(QMainWindow):
         line.setFrameShadow(QFrame.Shadow.Sunken)
         layout.addWidget(line)
 
+    #Layout cleaner for reseting
     def clear_layout(self, layout):
         while layout.count():
             child = layout.takeAt(0)
