@@ -144,7 +144,9 @@ def main():
     # send to frontend
     inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
     
-    # user confirmation if any columns data type needs to be changed
+    """ >>>> user confirmation to proceed with column data type processing """
+    
+    # processing columns data type that needs to be changed
     columns_to_format = get_columns_to_format()
     if not columns_to_format:
         final_formatted_df = formatted_df
