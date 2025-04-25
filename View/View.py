@@ -1,23 +1,23 @@
 import os.path
 
 from PyQt6.QtCore import Qt, pyqtSlot
-from PyQt6.QtGui import QPixmap, QColor
+from PyQt6.QtGui import QPixmap
 import re
 import sys
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
-                             QTabWidget, QScrollArea, QToolTip, QTableWidget, QTableWidgetItem,
-                             QComboBox
+                             QScrollArea, QComboBox, QFrame
                              )
 from StyleSheets import StyleSheet
 from ViewModel import ViewModel
+import shutil
 
 
 class MainWindow(QMainWindow):
     currentSelectedPage = 0
-    repeatClean = False
     ss = StyleSheet()
+    formatting = False
 
 
     def __init__(self):
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
         self.viewModel.format_start.connect(self.format_start)
         self.viewModel.progress_changed.connect(self.update_progress)
         self.viewModel.cleaning_finished.connect(self.cleaning_finished)
+        self.viewModel.eval_finished.connect(self.evaluate_finished)
 
         # Main layouts displayed at all times
         self.mainLayout = QHBoxLayout()
@@ -47,7 +48,7 @@ class MainWindow(QMainWindow):
         self.cleanLayout()
         self.resultLayout()
         self.evalLayout()
-
+        self.chartLayout()
 
         self.mainLayout.addLayout(self.tabLayout, 1)
         self.mainLayout.addLayout(self.pageLayout, 4)
@@ -57,6 +58,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(widget)
 
+    #Static tab UI
     def tabLayouts(self):
 
         #UI
@@ -129,6 +131,7 @@ class MainWindow(QMainWindow):
         self.tabLayout.addWidget(self.resultPageButton)
         self.tabLayout.addWidget(self.evaluationPageButton)
 
+    #Static page UI
     def pageLayouts(self):
 
         self.aboutPageWidget = QWidget()
@@ -158,6 +161,7 @@ class MainWindow(QMainWindow):
         self.pageLayout.addWidget(self.resultPageWidget)
         self.pageLayout.addWidget(self.evaluationPageWidget)
 
+    #Static about page UI
     def aboutLayout(self):
 
         welcomeText = QLabel("Welcome to IHCS!")
@@ -173,6 +177,7 @@ class MainWindow(QMainWindow):
         aboutLayout.addWidget(aboutText)
         aboutLayout.addSpacing(150)
 
+    #Static help page UI
     def helpLayout(self):
 
         # Help UI Elements
@@ -193,6 +198,7 @@ class MainWindow(QMainWindow):
         helpLayout.addWidget(helpTitleWidget)
         helpLayout.addWidget(helpText)
 
+    #Static acknowlegment page UI
     def acknowlegementLayout(self):
 
         acknowlegementTitleWidget = QWidget()
@@ -212,6 +218,7 @@ class MainWindow(QMainWindow):
         acknowledgementLayout.addWidget(acknowledgementText)
         acknowledgementLayout.addSpacing(150)
 
+    #Static parameter setting page UI
     def paramLayout(self):
 
         # Param UI Elements
@@ -239,14 +246,13 @@ class MainWindow(QMainWindow):
         self.datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
-        browseDatasetButton.clicked.connect(self.openFileDialog)
+        browseDatasetButton.clicked.connect(lambda: self.openFileDialog("parameter"))
         rulesText = QLabel("MLN Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
-        rulesToolTip = QLabel()
+        rulesToolTip = QLabel("🛈")
         rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
-        rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
@@ -279,6 +285,7 @@ class MainWindow(QMainWindow):
         paramLayout.addWidget(formatWidget)
         paramLayout.addSpacing(50)
 
+    #Static format page UI
     def formatLayout(self):
 
         # Format page UI
@@ -318,6 +325,7 @@ class MainWindow(QMainWindow):
         formatPageLayout.addWidget(buttonWidget)
         formatPageLayout.addSpacing(50)
 
+    #Static cleaning page UI
     def cleanLayout(self):
 
         # clean UI
@@ -345,35 +353,180 @@ class MainWindow(QMainWindow):
         cleaningLayout.addWidget(buttonWidget)
         self.cleaningPageWidget.setLayout(cleaningLayout)
 
+    #Static result page UI
     def resultLayout(self):
 
         #Result UI
-        resultsLayout = QStackedLayout()
-        tupleLayout = QVBoxLayout()
-        attributeLayout = QVBoxLayout()
+        resultsLayout = QVBoxLayout()
+        downloadLayout = QHBoxLayout()
 
-        #Tuple UI
-        resultsLabel1 = QLabel()
-        resultsLabel1.setPixmap(QPixmap('View/Images/result page.png'))
+
+        resultsLabel = QLabel()
+        resultsLabel.setPixmap(QPixmap('View/Images/result page.png'))
         congratsLabel = QLabel("Congratulations, cleaning finished!")
+
         #Dataset UI stuff
-        chartButton = QPushButton()
-        chartButton.setStyleSheet(self.ss.pageButtonStyle())
-        duplicateCheck = QCheckBox("Keep Duplicates")
-        downloadButton = QPushButton()
+        self.scrollArea = QScrollArea()
+        self.scrollArea.setWidgetResizable(True)
+        self.datasetWidget = QWidget()
+        self.datasetLayout = QVBoxLayout(self.datasetWidget)
+        self.datasetHeader = QHBoxLayout()
+        
+
+        downloadWidget = QWidget()
+        downloadButton = QPushButton("Download")
         downloadButton.setStyleSheet(self.ss.pageButtonStyle())
-
-
-        #Chart UI
-        resultsLabel2 = QLabel()
-        resultsLabel2.setPixmap(QPixmap('View/Images/result page.png'))
+        downloadButton.setFixedSize(100, 30)
+        downloadButton.clicked.connect(self.download_button_clicked)
+        
 
         #Result Setup
+        resultsLayout.addWidget(resultsLabel)
+        resultsLayout.addWidget(congratsLabel)
+        resultsLayout.addSpacing(5)
+        self.scrollArea.setWidget(self.datasetWidget)
+        resultsLayout.addWidget(self.scrollArea)
+        downloadLayout.addSpacing(400)
+        downloadLayout.addWidget(downloadButton)
+        downloadWidget.setLayout(downloadLayout)
+        resultsLayout.addWidget(downloadWidget)
+        self.resultPageWidget.setLayout(resultsLayout)
 
-
+    #Static evaluation page UI
     def evalLayout(self):
-        print("hello")
 
+        #UI Stuff
+        evalFullLayout = QVBoxLayout()        
+
+        evalHeaderLayout = QHBoxLayout()
+        evalHeaderWidget = QWidget()
+        evalHeaderWidget.setLayout(evalHeaderLayout)
+        evalLabel = QLabel()
+        evalLabel.setPixmap(QPixmap("View/Images/evaluation page.png"))
+        self.chartButton = QPushButton("Chart")
+        self.chartButton.setEnabled(False)
+        self.chartButton.setStyleSheet(self.ss.disabledPageButtonStyle())
+        self.chartButton.setFixedWidth(150)
+        self.chartButton.clicked.connect(self.chart_button_clicked)
+
+        compareLabel = QLabel("Compare")
+        compareLabel.setStyleSheet("color: blue")
+        
+        evalMiniLayout = QVBoxLayout()
+        evalMiniWidget = QWidget()
+        evalMiniWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
+        evalMiniWidget.setLayout(evalMiniLayout)
+        groundTruthLabel = QLabel("If you have a ground truth file, please input the file into here. We utilize Presicion, Recall, and F1-score to evaluate the accuracy of the cleaning result")
+        groundTruthLabel.setWordWrap(True)
+        groundTruthLabel.setStyleSheet("background-color: transparent")
+
+        fileLayout = QHBoxLayout()
+        fileWidget = QWidget()
+        fileWidget.setStyleSheet("background-color: transparent")
+        fileWidget.setLayout(fileLayout)
+        self.groundTruthTextBox = QLineEdit()
+        self.groundTruthTextBox.setEnabled(False)
+        self.groundTruthTextBox.setFixedWidth(300)
+        self.groundTruthTextBox.setStyleSheet("background-color: white")
+        browseButton = QPushButton("Browse...")
+        browseButton.setStyleSheet(self.ss.browseButtonStyle())
+        browseButton.setFixedWidth(100)
+        browseButton.clicked.connect(lambda: self.openFileDialog("Eval"))
+        evalButton = QPushButton("Evaluate")
+        evalButton.setStyleSheet(self.ss.greyPageButtonStyle())
+        evalButton.setFixedWidth(100)
+        evalButton.clicked.connect(self.evaluate_button_clicked)
+
+        currentCleaningLabel = QLabel("Current Cleaning Result:")
+        currentCleaningLabel.setStyleSheet("background-color: transparent")
+
+        resultVLayout = QVBoxLayout()
+        resultVWidget = QWidget()
+        resultVWidget.setLayout(resultVLayout)
+        resultVWidget.setStyleSheet("background-color: transparent")
+        
+        resultHeaderLayout = QHBoxLayout()
+        resultHeaderWidget = QWidget()
+        resultHeaderWidget.setStyleSheet("background-color: white")
+        resultHeaderWidget.setLayout(resultHeaderLayout)
+        resultDatasetHead = QLabel(f"<b>Dataset<b>")
+        resultRuntimeHead = QLabel(f"<b>Runtime<b>")
+        resultPrecisionHead = QLabel(f"<b>Precision<b>")
+        resultRecallHead = QLabel(f"<b>Recall<b>")
+        resultF1Head = QLabel(f"<b>F1-Score<b>")
+
+        self.resultLayout = QHBoxLayout()
+        resultWidget = QWidget()
+        resultWidget.setLayout(self.resultLayout)
+
+        historyResultLayout = QHBoxLayout()
+        historyResultWidget = QWidget()
+        historyResultWidget.setStyleSheet("background-color: transparent")
+        historyResultWidget.setLayout(historyResultLayout)
+        historyResultLabel = QLabel("History Cleaning Results:")
+        clearRecordButton = QPushButton("Clear Records")
+        clearRecordButton.setFixedWidth(150)
+        clearRecordButton.setStyleSheet(self.ss.greyPageButtonStyle())
+        clearRecordButton.clicked.connect(self.clear_record_button_clicked)
+
+        historyVLayout = QVBoxLayout()
+        historyVWidget = QWidget()
+        historyVWidget.setStyleSheet("background-color: transparent")
+        historyVWidget.setLayout(historyVLayout)
+        
+
+        historyHeaderLayout = QHBoxLayout()
+        historyHeaderWidget = QWidget()
+        historyHeaderWidget.setStyleSheet("background-color: white")
+        historyHeaderWidget.setLayout(historyHeaderLayout)
+        historyDatasetHead = QLabel(f"<b>Dataset<b>")
+        historyRuntimeHead = QLabel(f"<b>Runtime<b>")
+        historyPrecisionHead = QLabel(f"<b>Precision<b>")
+        historyRecallHead = QLabel(f"<b>Recall<b>")
+        historyF1Head = QLabel(f"<b>F1-Score<b>")
+
+        self.historyListWidget = QListWidget()
+        self.historyListWidget.setMinimumHeight(125)
+
+
+        #UI Setup
+        evalFullLayout.addWidget(evalHeaderWidget)
+        evalHeaderLayout.addWidget(evalLabel)
+        evalHeaderLayout.addWidget(self.chartButton)
+        evalFullLayout.addWidget(compareLabel)
+        evalFullLayout.addWidget(evalMiniWidget)
+        evalMiniLayout.addWidget(groundTruthLabel)
+        evalMiniLayout.addWidget(fileWidget)
+        fileLayout.addWidget(self.groundTruthTextBox)
+        fileLayout.addWidget(browseButton)
+        fileLayout.addWidget(evalButton)
+        evalMiniLayout.addWidget(currentCleaningLabel)
+        evalMiniLayout.addWidget(resultVWidget)
+        resultVLayout.addWidget(resultHeaderWidget)
+        resultHeaderLayout.addWidget(resultDatasetHead)
+        resultHeaderLayout.addWidget(resultRuntimeHead)
+        resultHeaderLayout.addWidget(resultPrecisionHead)
+        resultHeaderLayout.addWidget(resultRecallHead)
+        resultHeaderLayout.addWidget(resultF1Head)
+        resultVLayout.addWidget(resultWidget)
+        evalMiniLayout.addWidget(historyResultWidget)
+        historyResultLayout.addWidget(historyResultLabel)
+        historyResultLayout.addSpacing(100)
+        historyResultLayout.addWidget(clearRecordButton)
+        evalMiniLayout.addWidget(historyVWidget)
+        historyVLayout.addWidget(historyHeaderWidget)
+        historyHeaderLayout.addWidget(historyDatasetHead)
+        historyHeaderLayout.addWidget(historyRuntimeHead)
+        historyHeaderLayout.addWidget(historyPrecisionHead)
+        historyHeaderLayout.addWidget(historyRecallHead)
+        historyHeaderLayout.addWidget(historyF1Head)
+        historyVLayout.addWidget(self.historyListWidget)
+
+        self.evaluationPageWidget.setLayout(evalFullLayout)
+
+    #Static chart page UI
+    def chartLayout(self):
+        print("chartLayout")
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
@@ -407,15 +560,35 @@ class MainWindow(QMainWindow):
         self.finishButton.setEnabled(False)
         self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
 
+        #reset data
+        self.viewModel.cleaningTime = 0
+        #self.viewModel.formatList.clear()
+        #self.viewModel.changedTypes.clear()
+        #self.viewModel.cleanDatasetDict.clear()
+        #self.viewModel.cleanScores.clear()
+        #self.viewModel.dirtyScores.clear()
+
+        #Clear widgets on repeat iterations
+        self.listWidget.clear()        
+        while self.datasetLayout.count():
+            child = self.datasetLayout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
+                
         self.movetopage(5)
         self.viewModel.startClean() 
 
+    #Dyanmic portion of format UI
     def format_start(self):
-
+        self.formatting = True
+        
         # Add items to list to display
         for column, dtype in self.viewModel.formatList.items():
             item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
+            itemWidget.setStyleSheet("background-color: transparent")
             itemLayout = QHBoxLayout()
             itemLayout.setContentsMargins(0, 0, 0, 0)
             itemLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -460,11 +633,11 @@ class MainWindow(QMainWindow):
 
             self.listWidget.setItemWidget(item, itemWidget)
             self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
-            self.movetopage(4)
-
+        self.movetopage(4)
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def format_button_clicked(self):
+        self.formatting = False
 
         #Adds changed types to list if any
         for items in self.formatItemsList:
@@ -483,30 +656,99 @@ class MainWindow(QMainWindow):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
 
-    #Display results from the cleaning process
+    #Sets up the final data for the rest of the pages
     def cleaning_finished(self):
+        self.resultSetup()
+        
+        self.finishButton.setEnabled(True)
+        self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
+
+    #Sets up results and moves over to that page
+    def finish_button_clicked(self):
+
+        self.movetopage(6)
+
+        #Enable rest of pages
         self.evaluationPageButton.setEnabled(True)
         self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         self.resultPageButton.setEnabled(True)
         self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        self.finishButton.setEnabled(True)
-        self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
-
-    #Moves over to the results page
-    def finish_button_clicked(self):
-        self.movetopage(6)
 
     #Switches to the attribute view in results
     def chart_button_clicked(self):
         print("moving to chart page")
 
     #Switches to the tuple view in results
-    def tuple_button_clicked(self):
-        print("moving to tuple page")
+    def eval_page_button_clicked(self):
+        print("moving to eval page")
 
-    #Downloads the dataset provided if the status of duplicate checkbox
+    #Starts the evaluation on the dataset
+    def evaluate_button_clicked(self):
+        #Check if file format is correct
+        # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+        #                  self.datasetTextBox.text()):
+        #     self.errorDialog("You must input either a csv, xlsx, xls, or json file")
+        #     return
+        #Run Novellas evaluation program
+        self.viewModel.startEval()
+
+    #Sets up results from evaluation onto UI
+    def evaluate_finished(self):
+        self.chartButton.setEnabled(True)
+        self.chartButton.setStyleSheet(self.ss.pageButtonStyle())
+        results = self.viewModel.cleanScores
+
+        #Current Eval
+        self.clear_layout(self.resultLayout)
+        self.resultLayout.addWidget(QLabel(results["dataset"]))
+        self.resultLayout.addWidget(QLabel(str(results["runtime"])))
+        self.resultLayout.addWidget(QLabel(results["precision"]))
+        self.resultLayout.addWidget(QLabel(results["recall"]))
+        self.resultLayout.addWidget(QLabel(results["f1-score"]))
+
+        #History
+        self.viewModel.history.append(results)
+
+        #History
+        self.historyListWidget.clear()
+        for row in self.viewModel.history:
+            item = QListWidgetItem(self.historyListWidget)
+            itemWidget = QWidget()
+            itemLayout = QHBoxLayout()
+            itemWidget.setStyleSheet("background-color: transparent")
+            itemLayout.setContentsMargins(0, 0, 0, 0)
+
+            itemLayout.addWidget(QLabel(row['dataset']))
+            itemLayout.addWidget(QLabel(str(results["runtime"])))
+            itemLayout.addWidget(QLabel(results["precision"]))
+            itemLayout.addWidget(QLabel(results["recall"]))
+            itemLayout.addWidget(QLabel(results["f1-score"]))
+            itemWidget.setLayout(itemLayout)
+
+            self.historyListWidget.setItemWidget(item, itemWidget)
+
+    #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
-        print("download dataset")
+
+        # Let user choose where to save the file
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save File As",
+            "",  # Default directory or filename
+            "CSV Files (*.csv);;XLSX Files (*.xlsx);;XLS Files (*.xls);;JSON Files (*.json);;All Files (*)"
+        )
+
+        #File copy to new path
+        if file_path:
+            try:
+                shutil.copy(self.viewModel.cleanDatasetPath, file_path)
+            except Exception as e:
+                self.errorDialog(f"Error saving file: {e}")
+
+    #Clears record and the UI associated
+    def clear_record_button_clicked(self):
+        self.historyListWidget.clear()
+        self.viewModel.history = []
 
     # Changes tab button highlight and moves to page selected
     def movetopage(self, page):
@@ -518,7 +760,7 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 3:
             self.paramPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        elif self.currentSelectedPage == 5:
+        elif self.currentSelectedPage == 4 or self.currentSelectedPage == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 6:
             self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
@@ -526,7 +768,13 @@ class MainWindow(QMainWindow):
             self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
 
         self.currentSelectedPage = page
-        self.pageLayout.setCurrentIndex(page)
+        if page == 4 or page == 5:
+            if self.formatting:
+                self.pageLayout.setCurrentIndex(4)
+            else:
+                self.pageLayout.setCurrentIndex(5)
+        else:
+            self.pageLayout.setCurrentIndex(page)
 
         if page == 0:
             self.aboutPageButton.setStyleSheet(self.ss.selectedButtonStyle())
@@ -536,12 +784,73 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 3:
             self.paramPageButton.setStyleSheet(self.ss.selectedButtonStyle())
-        elif page == 5:
+        elif page == 4 or page == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 6:
             self.resultPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
+
+    #Dynamic portion of result UI setup
+    def resultSetup(self):
+
+        changesColumn = QLabel("🔧")
+        changesColumn.setFixedWidth(20)
+        self.datasetHeader.addWidget(changesColumn, alignment=Qt.AlignmentFlag.AlignLeft)
+        self.datasetHeader.addWidget(QLabel("|"))
+
+        #Add header
+        for key in self.viewModel.cleanDatasetDict[0].keys():
+            if key != "changes":
+                label = QLabel(f"<b>{key}<b>")
+                label.setFixedWidth(120)
+                self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
+                if key != list(self.viewModel.cleanDatasetDict[0].keys())[len(self.viewModel.cleanDatasetDict[0]) - 2]:
+                    self.datasetHeader.addWidget(QLabel("|"))
+        self.datasetLayout.addLayout(self.datasetHeader)
+        self.datasetLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.add_seperator(self.datasetLayout)
+
+        #Add Rows
+        for row in self.viewModel.cleanDatasetDict:
+            row_layout = QHBoxLayout()
+
+            if row["changes"]:
+                icon_label = QLabel("🛈")
+                icon_label.setToolTip(row["changes"])
+            else:
+                icon_label = QLabel("")
+
+            icon_label.setFixedWidth(20)
+            row_layout.addWidget(icon_label)
+            row_layout.addWidget(QLabel("|"))
+
+            for key, value in row.items():
+                if key != "changes":
+                    lbl = QLabel(str(value))
+                    lbl.setFixedWidth(120)
+                    row_layout.addWidget(lbl)
+                    if key != list(row.keys())[len(row) - 2]:
+                        row_layout.addWidget(QLabel("|"))
+            
+            self.datasetLayout.addLayout(row_layout)
+            self.add_seperator(self.datasetLayout)
+
+    #Horizontal seperator for dataset visual
+    def add_seperator(self, layout):
+        line = QFrame()
+        line.setFrameShape(QFrame.Shape.HLine)
+        line.setFrameShadow(QFrame.Shadow.Sunken)
+        layout.addWidget(line)
+
+    #Layout cleaner for reseting
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
 
     # Reads a file and returns the text
     def outputFile(self, file):
@@ -549,24 +858,24 @@ class MainWindow(QMainWindow):
         return f.read()
 
     # Opens filepath
-    def openFileDialog(self):
+    def openFileDialog(self, page):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Select Datasheet")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
         if file_dialog.exec():
-            self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
-
+            if page == "parameter":
+                self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
+            else:
+                self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
+            
     # Provides a popup error given an error message
     def errorDialog(self, error):
         msgBox = QMessageBox()
         msgBox.setWindowTitle("Error")
         msgBox.setText(error)
         msgBox.exec()
-
-
-
 
 
 if __name__ == "__main__":

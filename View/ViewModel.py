@@ -3,12 +3,43 @@ import time
 
 
 class ViewModel(QObject):
-    dirtyDataSet = ""
-    formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address'}
-    changedTypes = {}
+    cleaningTime = 0
+    dirtyDataSet = "/somefilepath/data.csv"
+    formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address', 'email': 'text'}
+    changedTypes = {"date": {'datatype': 'date w year format', 'minyear': '20', 'maxyear': '22'}, 'email': 'email'}
+    cleanDatasetDict = [{
+            "TID": "001",
+            "HospitalName": "General Hospital",
+            "Address": "123 Main St",
+            "City": "Metropolis",
+            "State": "NY",
+            "Zipcode": "10001",
+            "Phonenumber": "555-1234",
+            "Patient": "John Smith",
+            "Reason": "Cough",
+            "changes": "Address corrected"
+        },
+        {
+            "TID": "002",
+            "HospitalName": "City Clinic",
+            "Address": "456 Elm St",
+            "City": "Gotham",
+            "State": "NJ",
+            "Zipcode": "07001",
+            "Phonenumber": "555-5678",
+            "Patient": "Joker",
+            "Reason": "Broken Everything",
+            "changes": None
+        }]
+    cleanDatasetPath = ""
+    groundTruthFile = ""
+    cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'recall': '.9955', 'f1-score': '.9834'}
+    dirtyScores = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'recall': '.9435', 'f1-score': '.8398'}
+    history = []
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
     format_start = pyqtSignal()
+    eval_finished = pyqtSignal()
 
 
     def __init__(self):
@@ -21,7 +52,7 @@ class ViewModel(QObject):
         self.worker = WorkerThread()
         self.worker.moveToThread(self.thread)
 
-        self.thread.started.connect(self.worker.run)
+        self.thread.started.connect(self.worker.runCleaning)
         self.worker.progress.connect(self.progress_changed.emit)
         self.worker.formatAwait.connect(self.format_start.emit)
         self.worker.cleaningFinished.connect(self.cleaning_finished.emit)
@@ -31,6 +62,20 @@ class ViewModel(QObject):
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
+
+    def startEval(self):
+        self.thread = QThread()
+        self.worker = WorkerThread()
+        self.worker.moveToThread(self.thread)
+
+        self.thread.started.connect(self.worker.runEvaluation)
+        self.worker.evaluationFinished.connect(self.eval_finished.emit)
+        self.worker.evaluationFinished.connect(self.thread.quit)
+        self.worker.evaluationFinished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+
+        self.thread.start()
+
     
     def continueClean(self):
         self.worker.continue_work()
@@ -42,12 +87,13 @@ class WorkerThread(QObject):
     progress = pyqtSignal(int)
     formatAwait = pyqtSignal()
     cleaningFinished = pyqtSignal()
+    evaluationFinished = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self._paused = False
 
-    def run(self):
+    def runCleaning(self):
         for i in range(101):
             time.sleep(0.05)  # Simulate cleaning
             self.progress.emit(i)
@@ -64,3 +110,6 @@ class WorkerThread(QObject):
     @pyqtSlot()
     def continue_work(self):
         self._paused = False
+
+    def runEvaluation(self):
+        self.evaluationFinished.emit()
