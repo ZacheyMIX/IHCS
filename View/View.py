@@ -7,8 +7,7 @@ import sys
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
-                             QTabWidget, QScrollArea, QToolTip, QTableWidget, QTableWidgetItem,
-                             QComboBox, QFrame
+                             QScrollArea, QComboBox, QFrame
                              )
 from StyleSheets import StyleSheet
 from ViewModel import ViewModel
@@ -51,7 +50,6 @@ class MainWindow(QMainWindow):
         self.evalLayout()
         self.chartLayout()
 
-
         self.mainLayout.addLayout(self.tabLayout, 1)
         self.mainLayout.addLayout(self.pageLayout, 4)
 
@@ -60,6 +58,7 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(widget)
 
+    #Static tab UI
     def tabLayouts(self):
 
         #UI
@@ -132,6 +131,7 @@ class MainWindow(QMainWindow):
         self.tabLayout.addWidget(self.resultPageButton)
         self.tabLayout.addWidget(self.evaluationPageButton)
 
+    #Static page UI
     def pageLayouts(self):
 
         self.aboutPageWidget = QWidget()
@@ -161,6 +161,7 @@ class MainWindow(QMainWindow):
         self.pageLayout.addWidget(self.resultPageWidget)
         self.pageLayout.addWidget(self.evaluationPageWidget)
 
+    #Static about page UI
     def aboutLayout(self):
 
         welcomeText = QLabel("Welcome to IHCS!")
@@ -176,6 +177,7 @@ class MainWindow(QMainWindow):
         aboutLayout.addWidget(aboutText)
         aboutLayout.addSpacing(150)
 
+    #Static help page UI
     def helpLayout(self):
 
         # Help UI Elements
@@ -196,6 +198,7 @@ class MainWindow(QMainWindow):
         helpLayout.addWidget(helpTitleWidget)
         helpLayout.addWidget(helpText)
 
+    #Static acknowlegment page UI
     def acknowlegementLayout(self):
 
         acknowlegementTitleWidget = QWidget()
@@ -215,6 +218,7 @@ class MainWindow(QMainWindow):
         acknowledgementLayout.addWidget(acknowledgementText)
         acknowledgementLayout.addSpacing(150)
 
+    #Static parameter setting page UI
     def paramLayout(self):
 
         # Param UI Elements
@@ -281,6 +285,7 @@ class MainWindow(QMainWindow):
         paramLayout.addWidget(formatWidget)
         paramLayout.addSpacing(50)
 
+    #Static format page UI
     def formatLayout(self):
 
         # Format page UI
@@ -320,6 +325,7 @@ class MainWindow(QMainWindow):
         formatPageLayout.addWidget(buttonWidget)
         formatPageLayout.addSpacing(50)
 
+    #Static cleaning page UI
     def cleanLayout(self):
 
         # clean UI
@@ -347,6 +353,7 @@ class MainWindow(QMainWindow):
         cleaningLayout.addWidget(buttonWidget)
         self.cleaningPageWidget.setLayout(cleaningLayout)
 
+    #Static result page UI
     def resultLayout(self):
 
         #Result UI
@@ -385,6 +392,7 @@ class MainWindow(QMainWindow):
         resultsLayout.addWidget(downloadWidget)
         self.resultPageWidget.setLayout(resultsLayout)
 
+    #Static evaluation page UI
     def evalLayout(self):
 
         #UI Stuff
@@ -516,9 +524,9 @@ class MainWindow(QMainWindow):
 
         self.evaluationPageWidget.setLayout(evalFullLayout)
 
+    #Static chart page UI
     def chartLayout(self):
         print("chartLayout")
-
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
@@ -572,6 +580,7 @@ class MainWindow(QMainWindow):
         self.movetopage(5)
         self.viewModel.startClean() 
 
+    #Dyanmic portion of format UI
     def format_start(self):
         self.formatting = True
         
@@ -626,7 +635,6 @@ class MainWindow(QMainWindow):
             self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
         self.movetopage(4)
 
-
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def format_button_clicked(self):
         self.formatting = False
@@ -674,6 +682,7 @@ class MainWindow(QMainWindow):
     def eval_page_button_clicked(self):
         print("moving to eval page")
 
+    #Starts the evaluation on the dataset
     def evaluate_button_clicked(self):
         #Check if file format is correct
         # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
@@ -683,6 +692,7 @@ class MainWindow(QMainWindow):
         #Run Novellas evaluation program
         self.viewModel.startEval()
 
+    #Sets up results from evaluation onto UI
     def evaluate_finished(self):
         self.chartButton.setEnabled(True)
         self.chartButton.setStyleSheet(self.ss.pageButtonStyle())
@@ -735,6 +745,7 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 self.errorDialog(f"Error saving file: {e}")
 
+    #Clears record and the UI associated
     def clear_record_button_clicked(self):
         self.historyListWidget.clear()
         self.viewModel.history = []
@@ -859,7 +870,6 @@ class MainWindow(QMainWindow):
             else:
                 self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
             
-
     # Provides a popup error given an error message
     def errorDialog(self, error):
         msgBox = QMessageBox()
