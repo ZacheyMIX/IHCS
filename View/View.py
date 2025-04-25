@@ -17,8 +17,8 @@ import shutil
 
 class MainWindow(QMainWindow):
     currentSelectedPage = 0
-    repeatClean = False
     ss = StyleSheet()
+    formatting = False
 
 
     def __init__(self):
@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
         self.viewModel.format_start.connect(self.format_start)
         self.viewModel.progress_changed.connect(self.update_progress)
         self.viewModel.cleaning_finished.connect(self.cleaning_finished)
+        self.viewModel.eval_finished.connect(self.evaluate_finished)
 
         # Main layouts displayed at all times
         self.mainLayout = QHBoxLayout()
@@ -48,6 +49,7 @@ class MainWindow(QMainWindow):
         self.cleanLayout()
         self.resultLayout()
         self.evalLayout()
+        self.chartLayout()
 
 
         self.mainLayout.addLayout(self.tabLayout, 1)
@@ -392,11 +394,12 @@ class MainWindow(QMainWindow):
         evalHeaderWidget = QWidget()
         evalHeaderWidget.setLayout(evalHeaderLayout)
         evalLabel = QLabel()
-        evalLabel.setPixmap(QPixmap("View/Images/result page.png"))
-        chartButton = QPushButton("Chart")
-        chartButton.setEnabled(False)
-        chartButton.setStyleSheet(self.ss.disabledPageButtonStyle())
-        chartButton.setFixedWidth(100)
+        evalLabel.setPixmap(QPixmap("View/Images/evaluation page.png"))
+        self.chartButton = QPushButton("Chart")
+        self.chartButton.setEnabled(False)
+        self.chartButton.setStyleSheet(self.ss.disabledPageButtonStyle())
+        self.chartButton.setFixedWidth(150)
+        self.chartButton.clicked.connect(self.chart_button_clicked)
 
         compareLabel = QLabel("Compare")
         compareLabel.setStyleSheet("color: blue")
@@ -422,7 +425,7 @@ class MainWindow(QMainWindow):
         browseButton.setFixedWidth(100)
         browseButton.clicked.connect(lambda: self.openFileDialog("Eval"))
         evalButton = QPushButton("Evaluate")
-        evalButton.setStyleSheet(self.ss.pageButtonStyle())
+        evalButton.setStyleSheet(self.ss.greyPageButtonStyle())
         evalButton.setFixedWidth(100)
         evalButton.clicked.connect(self.evaluate_button_clicked)
 
@@ -436,6 +439,7 @@ class MainWindow(QMainWindow):
         
         resultHeaderLayout = QHBoxLayout()
         resultHeaderWidget = QWidget()
+        resultHeaderWidget.setStyleSheet("background-color: white")
         resultHeaderWidget.setLayout(resultHeaderLayout)
         resultDatasetHead = QLabel(f"<b>Dataset<b>")
         resultRuntimeHead = QLabel(f"<b>Runtime<b>")
@@ -449,20 +453,23 @@ class MainWindow(QMainWindow):
 
         historyResultLayout = QHBoxLayout()
         historyResultWidget = QWidget()
+        historyResultWidget.setStyleSheet("background-color: transparent")
         historyResultWidget.setLayout(historyResultLayout)
         historyResultLabel = QLabel("History Cleaning Results:")
         clearRecordButton = QPushButton("Clear Records")
         clearRecordButton.setFixedWidth(150)
-        clearRecordButton.setStyleSheet(self.ss.pageButtonStyle())
+        clearRecordButton.setStyleSheet(self.ss.greyPageButtonStyle())
         clearRecordButton.clicked.connect(self.clear_record_button_clicked)
 
         historyVLayout = QVBoxLayout()
         historyVWidget = QWidget()
+        historyVWidget.setStyleSheet("background-color: transparent")
         historyVWidget.setLayout(historyVLayout)
         
 
         historyHeaderLayout = QHBoxLayout()
         historyHeaderWidget = QWidget()
+        historyHeaderWidget.setStyleSheet("background-color: white")
         historyHeaderWidget.setLayout(historyHeaderLayout)
         historyDatasetHead = QLabel(f"<b>Dataset<b>")
         historyRuntimeHead = QLabel(f"<b>Runtime<b>")
@@ -471,12 +478,13 @@ class MainWindow(QMainWindow):
         historyF1Head = QLabel(f"<b>F1-Score<b>")
 
         self.historyListWidget = QListWidget()
+        self.historyListWidget.setMinimumHeight(125)
 
 
         #UI Setup
         evalFullLayout.addWidget(evalHeaderWidget)
         evalHeaderLayout.addWidget(evalLabel)
-        evalHeaderLayout.addWidget(chartButton)
+        evalHeaderLayout.addWidget(self.chartButton)
         evalFullLayout.addWidget(compareLabel)
         evalFullLayout.addWidget(evalMiniWidget)
         evalMiniLayout.addWidget(groundTruthLabel)
@@ -506,13 +514,7 @@ class MainWindow(QMainWindow):
         historyHeaderLayout.addWidget(historyF1Head)
         historyVLayout.addWidget(self.historyListWidget)
 
-
         self.evaluationPageWidget.setLayout(evalFullLayout)
-
-        
-
-
-
 
     def chartLayout(self):
         print("chartLayout")
@@ -567,17 +569,17 @@ class MainWindow(QMainWindow):
             elif child.layout():
                 self.clear_layout(child.layout())
                 
-
-
         self.movetopage(5)
         self.viewModel.startClean() 
 
     def format_start(self):
+        self.formatting = True
         
         # Add items to list to display
         for column, dtype in self.viewModel.formatList.items():
             item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
+            itemWidget.setStyleSheet("background-color: transparent")
             itemLayout = QHBoxLayout()
             itemLayout.setContentsMargins(0, 0, 0, 0)
             itemLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -627,6 +629,7 @@ class MainWindow(QMainWindow):
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def format_button_clicked(self):
+        self.formatting = False
 
         #Adds changed types to list if any
         for items in self.formatItemsList:
@@ -649,11 +652,8 @@ class MainWindow(QMainWindow):
     def cleaning_finished(self):
         self.resultSetup()
         
-        
         self.finishButton.setEnabled(True)
         self.finishButton.setStyleSheet(self.ss.pageButtonStyle())
-
-    
 
     #Sets up results and moves over to that page
     def finish_button_clicked(self):
@@ -675,7 +675,47 @@ class MainWindow(QMainWindow):
         print("moving to eval page")
 
     def evaluate_button_clicked(self):
-        print("Evaluating")
+        #Check if file format is correct
+        # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+        #                  self.datasetTextBox.text()):
+        #     self.errorDialog("You must input either a csv, xlsx, xls, or json file")
+        #     return
+        #Run Novellas evaluation program
+        self.viewModel.startEval()
+
+    def evaluate_finished(self):
+        self.chartButton.setEnabled(True)
+        self.chartButton.setStyleSheet(self.ss.pageButtonStyle())
+        results = self.viewModel.cleanScores
+
+        #Current Eval
+        self.clear_layout(self.resultLayout)
+        self.resultLayout.addWidget(QLabel(results["dataset"]))
+        self.resultLayout.addWidget(QLabel(str(results["runtime"])))
+        self.resultLayout.addWidget(QLabel(results["precision"]))
+        self.resultLayout.addWidget(QLabel(results["recall"]))
+        self.resultLayout.addWidget(QLabel(results["f1-score"]))
+
+        #History
+        self.viewModel.history.append(results)
+
+        #History
+        self.historyListWidget.clear()
+        for row in self.viewModel.history:
+            item = QListWidgetItem(self.historyListWidget)
+            itemWidget = QWidget()
+            itemLayout = QHBoxLayout()
+            itemWidget.setStyleSheet("background-color: transparent")
+            itemLayout.setContentsMargins(0, 0, 0, 0)
+
+            itemLayout.addWidget(QLabel(row['dataset']))
+            itemLayout.addWidget(QLabel(str(results["runtime"])))
+            itemLayout.addWidget(QLabel(results["precision"]))
+            itemLayout.addWidget(QLabel(results["recall"]))
+            itemLayout.addWidget(QLabel(results["f1-score"]))
+            itemWidget.setLayout(itemLayout)
+
+            self.historyListWidget.setItemWidget(item, itemWidget)
 
     #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
@@ -709,7 +749,7 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 3:
             self.paramPageButton.setStyleSheet(self.ss.enabledButtonStyle())
-        elif self.currentSelectedPage == 5:
+        elif self.currentSelectedPage == 4 or self.currentSelectedPage == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.enabledButtonStyle())
         elif self.currentSelectedPage == 6:
             self.resultPageButton.setStyleSheet(self.ss.enabledButtonStyle())
@@ -717,7 +757,13 @@ class MainWindow(QMainWindow):
             self.evaluationPageButton.setStyleSheet(self.ss.enabledButtonStyle())
 
         self.currentSelectedPage = page
-        self.pageLayout.setCurrentIndex(page)
+        if page == 4 or page == 5:
+            if self.formatting:
+                self.pageLayout.setCurrentIndex(4)
+            else:
+                self.pageLayout.setCurrentIndex(5)
+        else:
+            self.pageLayout.setCurrentIndex(page)
 
         if page == 0:
             self.aboutPageButton.setStyleSheet(self.ss.selectedButtonStyle())
@@ -727,13 +773,14 @@ class MainWindow(QMainWindow):
             self.acknowledgementPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 3:
             self.paramPageButton.setStyleSheet(self.ss.selectedButtonStyle())
-        elif page == 5:
+        elif page == 4 or page == 5:
             self.cleaningPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 6:
             self.resultPageButton.setStyleSheet(self.ss.selectedButtonStyle())
         elif page == 7:
             self.evaluationPageButton.setStyleSheet(self.ss.selectedButtonStyle())
 
+    #Dynamic portion of result UI setup
     def resultSetup(self):
 
         changesColumn = QLabel("🔧")
@@ -806,10 +853,12 @@ class MainWindow(QMainWindow):
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
-        if file_dialog.exec() and page == "parameter":
-            self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
-        else:
-            self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
+        if file_dialog.exec():
+            if page == "parameter":
+                self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
+            else:
+                self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
+            
 
     # Provides a popup error given an error message
     def errorDialog(self, error):
@@ -817,9 +866,6 @@ class MainWindow(QMainWindow):
         msgBox.setWindowTitle("Error")
         msgBox.setText(error)
         msgBox.exec()
-
-
-
 
 
 if __name__ == "__main__":
