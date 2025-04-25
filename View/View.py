@@ -240,14 +240,13 @@ class MainWindow(QMainWindow):
         self.datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
-        browseDatasetButton.clicked.connect(self.openFileDialog)
+        browseDatasetButton.clicked.connect(lambda: self.openFileDialog("parameter"))
         rulesText = QLabel("MLN Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
         rulesToolTip = QLabel("🛈")
         rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
-        #rulesToolTip.setPixmap(QPixmap("View/Images/tooltip.png"))
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
@@ -385,7 +384,135 @@ class MainWindow(QMainWindow):
         self.resultPageWidget.setLayout(resultsLayout)
 
     def evalLayout(self):
-        print("evalLayout")
+
+        #UI Stuff
+        evalFullLayout = QVBoxLayout()        
+
+        evalHeaderLayout = QHBoxLayout()
+        evalHeaderWidget = QWidget()
+        evalHeaderWidget.setLayout(evalHeaderLayout)
+        evalLabel = QLabel()
+        evalLabel.setPixmap(QPixmap("View/Images/result page.png"))
+        chartButton = QPushButton("Chart")
+        chartButton.setEnabled(False)
+        chartButton.setStyleSheet(self.ss.disabledPageButtonStyle())
+        chartButton.setFixedWidth(100)
+
+        compareLabel = QLabel("Compare")
+        compareLabel.setStyleSheet("color: blue")
+        
+        evalMiniLayout = QVBoxLayout()
+        evalMiniWidget = QWidget()
+        evalMiniWidget.setStyleSheet("background-color: rgba(220, 220, 220, 100)")
+        evalMiniWidget.setLayout(evalMiniLayout)
+        groundTruthLabel = QLabel("If you have a ground truth file, please input the file into here. We utilize Presicion, Recall, and F1-score to evaluate the accuracy of the cleaning result")
+        groundTruthLabel.setWordWrap(True)
+        groundTruthLabel.setStyleSheet("background-color: transparent")
+
+        fileLayout = QHBoxLayout()
+        fileWidget = QWidget()
+        fileWidget.setStyleSheet("background-color: transparent")
+        fileWidget.setLayout(fileLayout)
+        self.groundTruthTextBox = QLineEdit()
+        self.groundTruthTextBox.setEnabled(False)
+        self.groundTruthTextBox.setFixedWidth(300)
+        self.groundTruthTextBox.setStyleSheet("background-color: white")
+        browseButton = QPushButton("Browse...")
+        browseButton.setStyleSheet(self.ss.browseButtonStyle())
+        browseButton.setFixedWidth(100)
+        browseButton.clicked.connect(lambda: self.openFileDialog("Eval"))
+        evalButton = QPushButton("Evaluate")
+        evalButton.setStyleSheet(self.ss.pageButtonStyle())
+        evalButton.setFixedWidth(100)
+        evalButton.clicked.connect(self.evaluate_button_clicked)
+
+        currentCleaningLabel = QLabel("Current Cleaning Result:")
+        currentCleaningLabel.setStyleSheet("background-color: transparent")
+
+        resultVLayout = QVBoxLayout()
+        resultVWidget = QWidget()
+        resultVWidget.setLayout(resultVLayout)
+        resultVWidget.setStyleSheet("background-color: transparent")
+        
+        resultHeaderLayout = QHBoxLayout()
+        resultHeaderWidget = QWidget()
+        resultHeaderWidget.setLayout(resultHeaderLayout)
+        resultDatasetHead = QLabel(f"<b>Dataset<b>")
+        resultRuntimeHead = QLabel(f"<b>Runtime<b>")
+        resultPrecisionHead = QLabel(f"<b>Precision<b>")
+        resultRecallHead = QLabel(f"<b>Recall<b>")
+        resultF1Head = QLabel(f"<b>F1-Score<b>")
+
+        self.resultLayout = QHBoxLayout()
+        resultWidget = QWidget()
+        resultWidget.setLayout(self.resultLayout)
+
+        historyResultLayout = QHBoxLayout()
+        historyResultWidget = QWidget()
+        historyResultWidget.setLayout(historyResultLayout)
+        historyResultLabel = QLabel("History Cleaning Results:")
+        clearRecordButton = QPushButton("Clear Records")
+        clearRecordButton.setFixedWidth(150)
+        clearRecordButton.setStyleSheet(self.ss.pageButtonStyle())
+        clearRecordButton.clicked.connect(self.clear_record_button_clicked)
+
+        historyVLayout = QVBoxLayout()
+        historyVWidget = QWidget()
+        historyVWidget.setLayout(historyVLayout)
+        
+
+        historyHeaderLayout = QHBoxLayout()
+        historyHeaderWidget = QWidget()
+        historyHeaderWidget.setLayout(historyHeaderLayout)
+        historyDatasetHead = QLabel(f"<b>Dataset<b>")
+        historyRuntimeHead = QLabel(f"<b>Runtime<b>")
+        historyPrecisionHead = QLabel(f"<b>Precision<b>")
+        historyRecallHead = QLabel(f"<b>Recall<b>")
+        historyF1Head = QLabel(f"<b>F1-Score<b>")
+
+        self.historyListWidget = QListWidget()
+
+
+        #UI Setup
+        evalFullLayout.addWidget(evalHeaderWidget)
+        evalHeaderLayout.addWidget(evalLabel)
+        evalHeaderLayout.addWidget(chartButton)
+        evalFullLayout.addWidget(compareLabel)
+        evalFullLayout.addWidget(evalMiniWidget)
+        evalMiniLayout.addWidget(groundTruthLabel)
+        evalMiniLayout.addWidget(fileWidget)
+        fileLayout.addWidget(self.groundTruthTextBox)
+        fileLayout.addWidget(browseButton)
+        fileLayout.addWidget(evalButton)
+        evalMiniLayout.addWidget(currentCleaningLabel)
+        evalMiniLayout.addWidget(resultVWidget)
+        resultVLayout.addWidget(resultHeaderWidget)
+        resultHeaderLayout.addWidget(resultDatasetHead)
+        resultHeaderLayout.addWidget(resultRuntimeHead)
+        resultHeaderLayout.addWidget(resultPrecisionHead)
+        resultHeaderLayout.addWidget(resultRecallHead)
+        resultHeaderLayout.addWidget(resultF1Head)
+        resultVLayout.addWidget(resultWidget)
+        evalMiniLayout.addWidget(historyResultWidget)
+        historyResultLayout.addWidget(historyResultLabel)
+        historyResultLayout.addSpacing(100)
+        historyResultLayout.addWidget(clearRecordButton)
+        evalMiniLayout.addWidget(historyVWidget)
+        historyVLayout.addWidget(historyHeaderWidget)
+        historyHeaderLayout.addWidget(historyDatasetHead)
+        historyHeaderLayout.addWidget(historyRuntimeHead)
+        historyHeaderLayout.addWidget(historyPrecisionHead)
+        historyHeaderLayout.addWidget(historyRecallHead)
+        historyHeaderLayout.addWidget(historyF1Head)
+        historyVLayout.addWidget(self.historyListWidget)
+
+
+        self.evaluationPageWidget.setLayout(evalFullLayout)
+
+        
+
+
+
 
     def chartLayout(self):
         print("chartLayout")
@@ -544,11 +671,15 @@ class MainWindow(QMainWindow):
         print("moving to chart page")
 
     #Switches to the tuple view in results
-    def tuple_button_clicked(self):
-        print("moving to tuple page")
+    def eval_page_button_clicked(self):
+        print("moving to eval page")
+
+    def evaluate_button_clicked(self):
+        print("Evaluating")
 
     #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
+
         # Let user choose where to save the file
         file_path, _ = QFileDialog.getSaveFileName(
             self,
@@ -557,14 +688,16 @@ class MainWindow(QMainWindow):
             "CSV Files (*.csv);;XLSX Files (*.xlsx);;XLS Files (*.xls);;JSON Files (*.json);;All Files (*)"
         )
 
-        #Path copy
+        #File copy to new path
         if file_path:
             try:
                 shutil.copy(self.viewModel.cleanDatasetPath, file_path)
-
-                print(f"File saved to: {file_path}")
             except Exception as e:
-                print(f"Error saving file: {e}")
+                self.errorDialog(f"Error saving file: {e}")
+
+    def clear_record_button_clicked(self):
+        self.historyListWidget.clear()
+        self.viewModel.history = []
 
     # Changes tab button highlight and moves to page selected
     def movetopage(self, page):
@@ -667,14 +800,16 @@ class MainWindow(QMainWindow):
         return f.read()
 
     # Opens filepath
-    def openFileDialog(self):
+    def openFileDialog(self, page):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Select Datasheet")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
-        if file_dialog.exec():
+        if file_dialog.exec() and page == "parameter":
             self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
+        else:
+            self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
 
     # Provides a popup error given an error message
     def errorDialog(self, error):
