@@ -68,6 +68,28 @@ class StyleSheet():
                     color: white
                 }
             """
+    
+    # Style for regular buttons on the page
+    def greyPageButtonStyle(self):
+        return """
+                QPushButton {
+                    background-color: white;
+                    border-style: outset;
+                    border-width: 1px;
+                    border-color: blue;
+                    border-radius: 2px;
+                    color: blue;
+                    font-size: 16px;
+                }
+                QPushButton:hover {
+                    background-color: rgba(100, 100, 255, 100); 
+                    color: rgba(30, 30, 30, 255)
+                }
+                QPushButton:pressed {
+                    background-color: rgba(0, 0, 255, 155);
+                    color: white
+                }
+            """
 
     def disabledPageButtonStyle(self):
         return """
