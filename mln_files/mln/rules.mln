@@ -8,18 +8,28 @@ HasYearsOfService(Employee, Years)
 HasWeight(Employee, Weight)
 HasAddress(Employee, Address)
 HasEmail(Employee, Email)
-BadEmail(Employee)
 WeirdWeight(Employee)
 WeirdSalary(Employee)
 RegexMatch(String, Pattern)
+
+// Error/Derived Predicates
+BadEmail(Employee)
+BadDOB(Employee)
+BadSalary(Employee)
+BadJoinDate(Employee)
+BadWeight(Employee)
+BadID(Employee)
+BadName(Employee)
+BadYearsOfService(Employee)
+BadAddress(Employee)
 
 // Rules
 
 0.9 HasEmail(e, "aishwarya.menon@g mail.com") => BadEmail(e)
 
-0.8 HasEmail(e, email), RegexMatch(email, "g mail") => BadEmail(e)
+0.8 HasEmail(e, email), RegexMatch(email, "gmail") => BadEmail(e)
 0.8 HasEmail(e, email), RegexMatch(email, ".*\\s+.*") => BadEmail(e)
-0.8 HasEmail(e, email), RegexMatch(email, "c om") => BadEmail(e)
+0.8 HasEmail(e, email), RegexMatch(email, "com") => BadEmail(e)
 
 0.7 HasWeight(e, w), RegexMatch(w, "pound") => WeirdWeight(e)
 0.7 HasWeight(e, w), RegexMatch(w, "lb") => WeirdWeight(e)
