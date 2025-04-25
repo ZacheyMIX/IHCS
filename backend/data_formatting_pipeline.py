@@ -47,6 +47,10 @@ def format_whole_dataset(df):
     """ 
     inferred_dtypes, formatted_df = clean_df(df, standardize_missing_values='ignore', clean_header='const')
     inferred_dtypes = inferred_dtypes.reset_index().rename(columns={'index': 'column_name'})
+    return inferred_dtypes, formatted_df
+
+def send_overall_formatted_df(inferred_dtypes, formatted_df):
+    """ send the inferred data types and formatted dataframe to the frontend """
     inferred_dtypes = inferred_dtypes.to_dict('records')
     formatted_df = formatted_df.to_dict('records')
     return inferred_dtypes, formatted_df
@@ -55,7 +59,7 @@ def minmax_yearrange_check(min_year, max_year):
     """ check min and max year gap range """    
     return bool(max_year-min_year <=99)
 
-def format_data_columns(df: pd.DataFrame, columns_to_format: typing.Dict):
+def format_data_columns(formatted_df: pd.DataFrame, columns_to_format: typing.Dict):
     """ format the columns of the dataframe 
         @columns_to_format: a dictionary of columns to format and their data type and the year format arguments if applicable
         columns_to_format = {
@@ -70,44 +74,39 @@ def format_data_columns(df: pd.DataFrame, columns_to_format: typing.Dict):
             'col9': {'data_type': 'datetime_w_year_format', 'min_year': min_year, 'max_year': max_year}
         }
     """
-    
-    error_list = [] 
+    invalid_datatypes = False
     for col in columns_to_format.keys():
         data_type = columns_to_format[col]['data_type']
-        try:
-            if data_type == 'datetime':
-                formatted_df[col] = clean_date(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
+        if data_type == 'datetime':
+            formatted_df[col] = clean_date(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+            formatted_df[col] = pd.to_datetime(formatted_df[col])
+        elif data_type == 'datetime_w_year_format':
+            if minmax_yearrange_check(columns_to_format[col]['min_year'], columns_to_format[col]['max_year']):
+                formatted_df[col] = clean_date(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
                 formatted_df[col] = pd.to_datetime(formatted_df[col])
-            elif data_type == 'datetime_w_year_format':
-                if minmax_yearrange_check(columns_to_format[col]['min_year'], columns_to_format[col]['max_year']):
-                    formatted_df[col] = clean_date(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-                    formatted_df[col] = pd.to_datetime(formatted_df[col])
-                    formatted_df[col] = formatted_df[col].apply(lambda x: x.replace(year=x.year-100) if x.year > columns_to_format[col]['max'] else x)
-                else: raise Exception("The year range is too large. Please check the year format.")
-            elif data_type == 'email':
-                formatted_df[col] = clean_email(formatted_df, col, errors='raise', remove_whitespace=True, report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'US_address':
-                formatted_df[col] = clean_address(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'country':
-                formatted_df[col] = clean_country(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'url':
-                formatted_df[col] = clean_url(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'phone':
-                formatted_df[col] = clean_phone(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'isbn':
-                formatted_df[col] = clean_isbn(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            elif data_type == 'text':
-                formatted_df[col] = clean_text(formatted_df, col, errors='raise', report=True, progress=True)[f'{col}_clean']
-            else:
-                custom_column = True
-            
-        except Exception as error:
-            error_list.append(error.__str__)
+                formatted_df[col] = formatted_df[col].apply(lambda x: x.replace(year=x.year-100) if x.year > columns_to_format[col]['max'] else x)
+            else: raise Exception("The year range is too large. Please check the year format.")
+        elif data_type == 'email':
+            formatted_df[col] = clean_email(formatted_df, col, errors='coerce', remove_whitespace=True, report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'US_address':
+            formatted_df[col] = clean_address(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'country':
+            formatted_df[col] = clean_country(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'url':
+            formatted_df[col] = clean_url(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'phone':
+            formatted_df[col] = clean_phone(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'isbn':
+            formatted_df[col] = clean_isbn(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        elif data_type == 'text':
+            formatted_df[col] = clean_text(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
+        else:
+            invalid_datatypes = True
     
     # filter for duplicate values
     formatted_df = formatted_df.drop_duplicates()
     
-    return formatted_df, error_list
+    return formatted_df
 
 def convert_to_mln_format(formatted_df):
     """ convert the formatted dataframe to the MLN format 
@@ -119,6 +118,41 @@ def convert_to_mln_format(formatted_df):
     """
     return formatted_df.to_dict(orient='records')
 
+def get_columns_to_format():
+    """ get the columns that need to be formatted from the frontend """
+    pass
+    # return columns_to_format
+
+def main():
+    """ main function to run the script """
+    
+    # uploaded messy data
+    data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/potential_dataset/Messy-Data.csv'
+
+    """ >>>> user confirmation to proceed with the uploaded data """
+    
+    # create dataframe from the uploaded file
+    md_df = pd.read_csv(data_path)
+    
+    # format overall data
+    inferred_dtypes, formatted_df = format_whole_dataset(md_df)
+    
+    # send to frontend
+    inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
+    
+    """ >>>> user confirmation to proceed with column data type processing """
+    
+    # processing columns data type that needs to be changed
+    columns_to_format = get_columns_to_format()
+    if not columns_to_format:
+        final_formatted_df = formatted_df
+    else:
+        final_formatted_df = format_data_columns(formatted_df, columns_to_format)
+    
+    # send finalized formatted df to be mln processed
+    final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
+    
+main()
 """
 Note:
 Frontend handles:

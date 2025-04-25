@@ -8,7 +8,7 @@ from dataprep.clean import clean_date, clean_df, clean_email, clean_address, cle
 def main():
     
     # get the data path from the user
-    data_path = input("Enter the data path")
+    # data_path = input("Enter the data path")
     data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/potential_dataset/Messy-Data.csv'
     
     # create dataframe from the uploaded file
