@@ -108,10 +108,6 @@ def format_data_columns(formatted_df: pd.DataFrame, columns_to_format: typing.Di
     
     return formatted_df
 
-def send_finalized_formatted_df(formatted_df):
-    """ send the final formatted dataframe to the be mln processed """
-    return formatted_df.to_csv(index=False)
-
 def convert_to_mln_format(formatted_df):
     """ convert the formatted dataframe to the MLN format 
     Example: (Tuple here is the term used in database referring to the rows in the table)
@@ -154,9 +150,9 @@ def main():
         final_formatted_df = format_data_columns(formatted_df, columns_to_format)
     
     # send finalized formatted df to be mln processed
-    formatted_csv = send_finalized_formatted_df(final_formatted_df)
+    final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
     
-    
+main()
 """
 Note:
 Frontend handles:
