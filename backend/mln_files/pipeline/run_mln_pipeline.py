@@ -10,7 +10,7 @@ def run_tuffy():
         "-i", "../mln/rules.mln",
         "-e", "../mln/facts.db",
         "-r", "../mln/final.result",
-        "-q", "BadEmail,WeirdWeight,WeirdSalary",   
+        "-q", "BadName,BadID,BadSalary,BadDOB,BadJoinDate,BadYearsOfService,BadWeight,BadAddress,BadEmail", 
         "-conf", "../tuffy/tuffy.conf"
     ], check=True)
     print("Tuffy run complete.")
@@ -50,7 +50,8 @@ def annotate_csv(csv_path, result_path, output_csv_path=None):
 if __name__ == "__main__":
     run_tuffy()
     annotate_csv(
-        csv_path="../data/Messy-Data.csv",
-        result_path="../mln/final.result",
-        output_csv_path="../../results/final.csv"
-    )
+    csv_path="../data/Messy-Data.csv",
+    result_path="../mln/final.result",
+    output_csv_path="../../results/final.csv"
+)
+
