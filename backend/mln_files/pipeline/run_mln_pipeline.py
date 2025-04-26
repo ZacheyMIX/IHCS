@@ -10,13 +10,9 @@ def clean_name(name):
     if len(parts) == 1:
         return parts[0], "", ""
     elif len(parts) == 2:
-        return parts[1], "", parts[0]
-    elif len(parts) == 3:
-        return parts[1], parts[0], parts[2]
-    elif len(parts) >= 4:
-        return parts[2], parts[0], parts[3]
+        return parts[0], "", parts[1]
     else:
-        return "", "", ""
+        return parts[0], ' '.join(parts[1:-1]), parts[-1]
 
 def clean_salary(salary):
     if pd.isna(salary):
