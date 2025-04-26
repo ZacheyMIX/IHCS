@@ -1,12 +1,15 @@
 from PyQt6.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
 import time
+from backend import data_formatting_pipeline, data_evaluation_pipeline
+
 
 
 class ViewModel(QObject):
     cleaningTime = 0
     dirtyDataSet = "/somefilepath/data.csv"
     formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address', 'email': 'text'}
-    changedTypes = {"date": {'datatype': 'date w year format', 'minyear': '20', 'maxyear': '22'}, 'email': 'email'}
+    formatPreview = {}
+    changedTypes = {"date": {'datatype': 'date_w_year_format', 'minyear': '20', 'maxyear': '22'}, 'email': 'email'}
     cleanDatasetDict = [{
             "TID": "001",
             "HospitalName": "General Hospital",
@@ -49,7 +52,7 @@ class ViewModel(QObject):
 
     def startClean(self):
         self.thread = QThread()
-        self.worker = WorkerThread()
+        self.worker = WorkerThread(self)
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.runCleaning)
@@ -62,6 +65,13 @@ class ViewModel(QObject):
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
+
+    def handle_formatting_read(self, types, preview):
+        self.formatList = types
+        self.formatPreview = preview
+
+    def handle_final_data_ready(self, final_data):
+        self.cleanDatasetDict = final_data
 
     def startEval(self):
         self.thread = QThread()
@@ -85,31 +95,44 @@ class ViewModel(QObject):
 #Multithread for the backend without freezing the UI
 class WorkerThread(QObject):
     progress = pyqtSignal(int)
-    formatAwait = pyqtSignal()
+    format_ready = pyqtSignal(dict, list)
+    final_data_ready = pyqtSignal(list)
     cleaningFinished = pyqtSignal()
+    scores_read = pyqtSignal(dict)
     evaluationFinished = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, path):
         super().__init__()
-        self._paused = False
+        self.path = path
+        self.update_types = None
+        self.formatter = None
+
+    
 
     def runCleaning(self):
-        for i in range(101):
-            time.sleep(0.05)  # Simulate cleaning
-            self.progress.emit(i)
+        types, preview_data = data_formatting_pipeline.main(self.path)
+        
 
-            if i == 50:
-                self._paused = True
-                self.formatAwait.emit()
+    def _wait_for_continue(self):
+        while self.update_types is None:
+            QThread.msleep(100)
+        
+        self.finish_cleaning
 
-                while self._paused:
-                    time.sleep(.1)
+    #Called by viewmodel when user updates formated types
+    def continue_pipeline(self):
+        pass
 
+    def finish_cleaning(self):
+        #Sends new updated types to Novella
+
+        #Starts Graces pipeline
+
+        #Call when finished
         self.cleaningFinished.emit()
 
-    @pyqtSlot()
-    def continue_work(self):
-        self._paused = False
+    def updateProgress(self, i):
+        self.progress.emit(i)
 
     def runEvaluation(self):
         self.evaluationFinished.emit()

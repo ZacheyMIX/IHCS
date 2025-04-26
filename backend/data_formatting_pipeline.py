@@ -123,11 +123,8 @@ def get_columns_to_format():
      pass
      # return columns_to_format
  
-def main():
+def main(data_path):
      """ main function to run the script """
- 
-     # uploaded messy data
-     data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/potential_dataset/Messy-Data.csv'
  
      """ >>>> user confirmation to proceed with the uploaded data """
  
