@@ -3,6 +3,16 @@ import pandas as pd
 import re
 from collections import defaultdict
 from dateutil import parser
+import os
+import time
+
+def wait_for_files(csv_path, mln_path, check_interval=5):
+    print(f"Waiting for {csv_path} and {mln_path} to appear...")
+
+    while not (os.path.exists(csv_path) and os.path.exists(mln_path)):
+        time.sleep(check_interval)
+
+    print("Both files found. Starting the pipeline...")
 
 def clean_name(name):
     parts = re.split(r'[,\s]+', name.strip())
@@ -152,27 +162,30 @@ def annotate_csv(csv_path, result_path, output_csv_path=None):
     return df.to_dict(orient="records")
 
 if __name__ == "__main__":
+    wait_for_files(
+        csv_path="../data/Data.csv",
+        mln_path="../mln/rules.mln"
+    )
+
     # Step 1: Generate .db
     csv_to_db(
-        csv_path="../data/Messy-Data.csv",
+        csv_path="../data/Data.csv",
         db_path="../mln/facts.db"
     )
 
-    # Step 2: Run tuffy inference
+    # Step 2: Run Tuffy inference
     run_tuffy()
 
-    # Step 3: Annotate errors + Python repairs
+    # Step 3: Annotate + Python repairs
     annotate_csv(
-        csv_path="../data/Messy-Data.csv",
+        csv_path="../data/Data.csv",
         result_path="../mln/final.result",
         output_csv_path="../../results/final.csv"
     )
 
     df_dirty = pd.read_csv("../../results/final.csv")
     df_repaired = repair_dataframe(df_dirty)
-
-    df_repaired = df_repaired.sort_values(by="FirstName").reset_index(drop=True)
-
+    df_repaired = df_repaired.sort_values(by="FirstName")
     df_repaired.to_csv("../../results/final_cleaned.csv", index=False)
 
-    print("Repaired, sorted by FirstName, and saved at ../../results/final_cleaned.csv")
+    print("Final cleaned file saved at: ../../results/final_cleaned.csv")
