@@ -153,6 +153,7 @@ def main():
     final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
     
 main()
+
 """
 Note:
 Frontend handles:
