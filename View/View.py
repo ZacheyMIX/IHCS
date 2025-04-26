@@ -526,7 +526,10 @@ class MainWindow(QMainWindow):
 
     #Static chart page UI
     def chartLayout(self):
-        print("chartLayout")
+        chartsLayout = QVBoxLayout()
+        headerLayout = QHBoxLayout()
+        headerLabel = QLabel()
+        headerLabel.setPixmap(QPixmap())
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
