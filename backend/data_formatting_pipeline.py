@@ -98,6 +98,7 @@ def save_final_outputs(cleaned_df, final_csv_path):
 if __name__ == "__main__":
     # COMMENT OUT later when using signals from Zach
 
+<<<<<<< HEAD
     dirty_csv = "../data/Messy-Data.csv"          # Original dirty dataset
     cleaned_csv = "../data/Cleaned-Data.csv"      # Partially cleaned (Novella output)
     mln_file = "../mln/rules.mln"                 # User-uploaded MLN file
@@ -138,3 +139,39 @@ if __name__ == "__main__":
     print("✅ Pipeline complete.")
 
     # Zach will later import this module and use final_dict directly!
+=======
+    """ >>>> user confirmation to proceed with the uploaded data """
+    
+    # create dataframe from the uploaded file
+    md_df = pd.read_csv(data_path)
+    
+    # format overall data
+    inferred_dtypes, formatted_df = format_whole_dataset(md_df)
+    
+    # send to frontend
+    inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
+    
+    """ >>>> user confirmation to proceed with column data type processing """
+    
+    # processing columns data type that needs to be changed
+    columns_to_format = get_columns_to_format()
+    if not columns_to_format:
+        final_formatted_df = formatted_df
+    else:
+        final_formatted_df = format_data_columns(formatted_df, columns_to_format)
+    
+    # send finalized formatted df to be mln processed
+    final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
+    
+main()
+
+"""
+Note:
+Frontend handles:
+    1. user verification for uploading the correct file to process
+    2. user verification for the inferred datatypes and overall formatted data from first step in data formatting
+    3. user verification for the formatted data's year format: \
+        - set default min and max year (so when sent to backend, both are filled 
+    4. 
+"""
+>>>>>>> 0fa4bd48e76bfc318540aa37101ba0fe6d3d1c8c
