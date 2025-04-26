@@ -10,6 +10,7 @@ HasAddress(Employee, Address)
 HasEmail(Employee, Email)
 RegexMatch(String, Pattern)
 
+// Error Detection Flags
 BadName(Employee)
 BadID(Employee)
 BadSalary(Employee)
@@ -20,61 +21,27 @@ BadWeight(Employee)
 BadAddress(Employee)
 BadEmail(Employee)
 
-SuggestFixedName(Employee, Name)
-SuggestFixedID(Employee, ID)
-SuggestFixedSalary(Employee, Salary)
-SuggestFixedDOB(Employee, DOB)
-SuggestFixedJoinDate(Employee, JoinDate)
-SuggestFixedYearsOfService(Employee, Years)
-SuggestFixedWeight(Employee, Weight)
-SuggestFixedAddress(Employee, Address)
-SuggestFixedEmail(Employee, Email)
-
-HasCleanName(Employee, Name)
-HasCleanEmployeeID(Employee, ID)
-HasCleanSalary(Employee, Salary)
-HasCleanDOB(Employee, DOB)
-HasCleanJoinDate(Employee, JoinDate)
-HasCleanYearsOfService(Employee, Years)
-HasCleanWeight(Employee, Weight)
-HasCleanAddress(Employee, Address)
-HasCleanEmail(Employee, Email)
-
 // Error detection rules
 0.8 HasEmail(e, email), RegexMatch(email, ".*\\s+.*") => BadEmail(e)
 0.8 HasEmail(e, email), !RegexMatch(email, ".*@.*") => BadEmail(e)
 0.8 HasEmail(e, email), !RegexMatch(email, ".*\\.com|\\.org|\\.edu") => BadEmail(e)
 
+0.8 HasAddress(e, addr), !RegexMatch(addr, ".*\\d+.*") => BadAddress(e)
+0.8 HasAddress(e, addr), RegexMatch(addr, ".*[!@#$%^&*()]+.*") => BadAddress(e)
 
-// Suggest fixes (store same value for now)
-BadEmail(e) , HasEmail(e, email) => SuggestFixedEmail(e, email).
-BadAddress(e) , HasAddress(e, addr) => SuggestFixedAddress(e, addr).
-BadSalary(e) , HasSalary(e, sal) => SuggestFixedSalary(e, sal).
-BadWeight(e) , HasWeight(e, w) => SuggestFixedWeight(e, w).
-BadJoinDate(e) , HasJoinDate(e, jd) => SuggestFixedJoinDate(e, jd).
-BadDOB(e) , HasDOB(e, dob) => SuggestFixedDOB(e, dob).
-BadID(e) , HasEmployeeID(e, id) => SuggestFixedID(e, id).
-BadName(e) , HasName(e, name) => SuggestFixedName(e, name).
-BadYearsOfService(e) , HasYearsOfService(e, y) => SuggestFixedYearsOfService(e, y).
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*[a-zA-Z]+.*") => BadSalary(e)
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*\\$.*") => BadSalary(e)
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*K.*") => BadSalary(e)
 
-// Final clean value rules
-SuggestFixedEmail(e, fixed) => HasCleanEmail(e, fixed).
-SuggestFixedAddress(e, fixed) => HasCleanAddress(e, fixed).
-SuggestFixedSalary(e, fixed) => HasCleanSalary(e, fixed).
-SuggestFixedWeight(e, fixed) => HasCleanWeight(e, fixed).
-SuggestFixedJoinDate(e, fixed) => HasCleanJoinDate(e, fixed).
-SuggestFixedDOB(e, fixed) => HasCleanDOB(e, fixed).
-SuggestFixedID(e, fixed) => HasCleanEmployeeID(e, fixed).
-SuggestFixedName(e, fixed) => HasCleanName(e, fixed).
-SuggestFixedYearsOfService(e, fixed) => HasCleanYearsOfService(e, fixed).
+0.7 HasWeight(e, w), !RegexMatch(w, ".*(kg|lbs|lb).*") => BadWeight(e)
+0.7 HasWeight(e, w), RegexMatch(w, ".*[^0-9.].*") => BadWeight(e)
 
-// If no error, use original
-HasEmail(e, email) , !BadEmail(e) => HasCleanEmail(e, email).
-HasAddress(e, addr) , !BadAddress(e) => HasCleanAddress(e, addr).
-HasSalary(e, sal) , !BadSalary(e) => HasCleanSalary(e, sal).
-HasWeight(e, w) , !BadWeight(e) => HasCleanWeight(e, w).
-HasJoinDate(e, jd) , !BadJoinDate(e) => HasCleanJoinDate(e, jd).
-HasDOB(e, dob) , !BadDOB(e) => HasCleanDOB(e, dob).
-HasEmployeeID(e, id) , !BadID(e) => HasCleanEmployeeID(e, id).
-HasName(e, name) , !BadName(e) => HasCleanName(e, name).
-HasYearsOfService(e, y) , !BadYearsOfService(e) => HasCleanYearsOfService(e, y).
+0.7 HasName(e, name), RegexMatch(name, ".*[0-9]+.*") => BadName(e)
+0.7 HasName(e, name), RegexMatch(name, ".*[^a-zA-Z\\s'\\-\\.].*") => BadName(e)
+
+0.8 HasEmployeeID(e, id), !RegexMatch(id, ".*[0-9]+.*") => BadID(e)
+
+0.8 HasDOB(e, dob), RegexMatch(dob, ".*[^0-9/\\-.].*") => BadDOB(e)
+0.8 HasJoinDate(e, jd), RegexMatch(jd, ".*[^0-9/\\-.].*") => BadJoinDate(e)
+
+0.8 HasYearsOfService(e, y), RegexMatch(y, ".*[^0-9].*") => BadYearsOfService(e)
