@@ -110,7 +110,13 @@ class WorkerThread(QObject):
     
 
     def runCleaning(self):
-        types, preview_data = data_formatting_pipeline.main(self.path)
+        self.formatter = data_formatting_pipeline
+        self.progress.emit(10)
+        types, preview_data = self.formatter.main(self.path)
+        self.progress.emit(20)
+        self.format_ready.emit(types, preview_data)
+
+        self._wait_for_continue()
         
 
     def _wait_for_continue(self):
@@ -124,15 +130,16 @@ class WorkerThread(QObject):
         pass
 
     def finish_cleaning(self):
+        self.progress.emit(20)
         #Sends new updated types to Novella
+        self.formatter.main_cont(self.update_types)
+        self.progress.emit(20)
 
         #Starts Graces pipeline
+        self.progress.emit(30)
 
         #Call when finished
         self.cleaningFinished.emit()
-
-    def updateProgress(self, i):
-        self.progress.emit(i)
 
     def runEvaluation(self):
         self.evaluationFinished.emit()

@@ -5,6 +5,8 @@ import numpy as np
 import datetime
 from IPython.display import display
 from dataprep.clean import clean_date, clean_df, clean_email, clean_address, clean_country, clean_url, clean_phone, clean_isbn, clean_text, clean_duplication
+
+formated_df = None
  
 def format_whole_dataset(df):
      """ formatted the whole dataframe 
@@ -124,6 +126,7 @@ def get_columns_to_format():
      # return columns_to_format
  
 def main(data_path):
+     global formatted_df
      """ main function to run the script """
  
      """ >>>> user confirmation to proceed with the uploaded data """
@@ -136,11 +139,13 @@ def main(data_path):
  
      # send to frontend
      inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
+
+     return inferred_dtypes_frontend, formatted_df_frontend
  
-     """ >>>> user confirmation to proceed with column data type processing """
+
+def main_cont(columns_to_format):
+     global formatted_df
  
-     # processing columns data type that needs to be changed
-     columns_to_format = get_columns_to_format()
      if not columns_to_format:
          final_formatted_df = formatted_df
      else:
