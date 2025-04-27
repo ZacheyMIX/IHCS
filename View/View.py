@@ -9,15 +9,15 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
                              QScrollArea, QComboBox, QFrame
                              )
-from StyleSheets import StyleSheet
-from ViewModel import ViewModel
 import shutil
+from ViewModel import ViewModel
+from View import StyleSheets
 
 
 class MainWindow(QMainWindow):
     currentSelectedPage = 0
-    ss = StyleSheet()
     formatting = False
+    ss = StyleSheets
 
 
     def __init__(self):
@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self.cleaningThread = None
         self.setWindowTitle("IHCS")
         self.setFixedSize(800, 500)
-        self.viewModel = ViewModel()
+        self.viewModel = ViewModel.ViewModel()
 
         self.viewModel.format_start.connect(self.format_start)
         self.viewModel.progress_changed.connect(self.update_progress)
@@ -547,6 +547,8 @@ class MainWindow(QMainWindow):
         #         self.rulesTextBox.text().lower()):
         #     self.errorDialog("Only eligible rules are allowed")
         #     return
+        
+        self.viewModel.dirtyDataSet = self.datasetTextBox.text()
 
         # Start cleaning sequence
 
@@ -880,8 +882,7 @@ class MainWindow(QMainWindow):
         msgBox.setText(error)
         msgBox.exec()
 
-
-if __name__ == "__main__":
+def begin():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

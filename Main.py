@@ -1,6 +1,10 @@
+from View import View
+# from ViewModel import ViewModel
+# from backend import data_formatting_pipeline, data_evaluation_pipeline
+# from backend.mln_files.pipeline import run_mln_pipeline
 
 if __name__ == "__main__":
-    print("stuff")
+    View.begin()
 
 #MLN Rule Format Guide
 

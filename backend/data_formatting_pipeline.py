@@ -154,8 +154,6 @@ def main_cont(columns_to_format):
      # send finalized formatted df to be mln processed
      final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
  
-main()
- 
  
 #  Note:
 #  Frontend handles:

@@ -2,14 +2,10 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 import sys
 
-class StyleSheet():
-    def __init__(self):
-        super().__init__()
 
-        # Style for enabled tab button
-
-    def enabledButtonStyle(self):
-        return """
+# Style for enabled tab button
+def enabledButtonStyle():
+    return """
                 QPushButton {
                     background-color: transparent;
                     color: black;
@@ -26,8 +22,9 @@ class StyleSheet():
                 }
             """
 
-    def selectedButtonStyle(self):
-        return """
+
+def selectedButtonStyle():
+    return """
                         QPushButton {
                             background-color: rgba(100, 100, 255, 100);
                             color: black;
@@ -36,9 +33,10 @@ class StyleSheet():
                         }
                     """
 
-    # Style for disabled tab buttons
-    def disabledButtonStyle(self):
-        return """
+
+# Style for disabled tab buttons
+def disabledButtonStyle():
+    return """
                         QPushButton {
                             background-color: transparent;
                             color: grey;
@@ -47,9 +45,10 @@ class StyleSheet():
                         }
                     """
 
-    # Style for regular buttons on the page
-    def pageButtonStyle(self):
-        return """
+
+# Style for regular buttons on the page
+def pageButtonStyle():
+    return """
                 QPushButton {
                     background-color: transparent;
                     border-style: outset;
@@ -68,10 +67,11 @@ class StyleSheet():
                     color: white
                 }
             """
-    
-    # Style for regular buttons on the page
-    def greyPageButtonStyle(self):
-        return """
+
+
+# Style for regular buttons on the page
+def greyPageButtonStyle():
+    return """
                 QPushButton {
                     background-color: white;
                     border-style: outset;
@@ -91,8 +91,9 @@ class StyleSheet():
                 }
             """
 
-    def disabledPageButtonStyle(self):
-        return """
+
+def disabledPageButtonStyle():
+    return """
                 QPushButton {
                     background-color: transparent;
                     border-style: outset;
@@ -104,8 +105,9 @@ class StyleSheet():
                 }
             """
 
-    def browseButtonStyle(self):
-        return """
+
+def browseButtonStyle():
+    return """
                         QPushButton {
                             background-color: rgba(120, 120, 255, 255);
                             color: white;
@@ -119,8 +121,9 @@ class StyleSheet():
                         }
                     """
 
-    def progressBarStyle(self):
-        return """
+
+def progressBarStyle():
+    return """
     QProgressBar {
         background-color: #E8E8E8;
         color: #333;

@@ -52,12 +52,13 @@ class ViewModel(QObject):
 
     def startClean(self):
         self.thread = QThread()
-        self.worker = WorkerThread(self)
+        self.worker = WorkerThread(self.dirtyDataSet)
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.runCleaning)
         self.worker.progress.connect(self.progress_changed.emit)
-        self.worker.formatAwait.connect(self.format_start.emit)
+        self.worker.format_ready.connect(self.handle_formatting_ready)
+        self.worker.final_data_ready.connect(self.handle_final_data_ready)
         self.worker.cleaningFinished.connect(self.cleaning_finished.emit)
 
         self.worker.cleaningFinished.connect(self.thread.quit)
@@ -66,7 +67,7 @@ class ViewModel(QObject):
 
         self.thread.start()
 
-    def handle_formatting_read(self, types, preview):
+    def handle_formatting_ready(self, types, preview):
         self.formatList = types
         self.formatPreview = preview
 
@@ -98,6 +99,7 @@ class WorkerThread(QObject):
     format_ready = pyqtSignal(dict, list)
     final_data_ready = pyqtSignal(list)
     cleaningFinished = pyqtSignal()
+    
     scores_read = pyqtSignal(dict)
     evaluationFinished = pyqtSignal()
 
