@@ -6,6 +6,12 @@ import datetime
 from IPython.display import display
 from dataprep.clean import clean_date, clean_df, clean_email, clean_address, clean_country, clean_url, clean_phone, clean_isbn, clean_text, clean_duplication
 
+# set path to backend directory
+import os
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 formated_df = None
  
 def format_whole_dataset(df):
@@ -86,7 +92,7 @@ def format_data_columns(formatted_df: pd.DataFrame, columns_to_format: typing.Di
              if minmax_yearrange_check(columns_to_format[col]['min_year'], columns_to_format[col]['max_year']):
                  formatted_df[col] = clean_date(formatted_df, col, errors='coerce', report=True, progress=True)[f'{col}_clean']
                  formatted_df[col] = pd.to_datetime(formatted_df[col])
-                 formatted_df[col] = formatted_df[col].apply(lambda x: x.replace(year=x.year-100) if x.year > columns_to_format[col]['max'] else x)
+                 formatted_df[col] = formatted_df[col].apply(lambda x: x.replace(year=x.year-100) if x.year > columns_to_format[col]['max_year'] else x)
              else: raise Exception("The year range is too large. Please check the year format.")
          elif data_type == 'email':
              formatted_df[col] = clean_email(formatted_df, col, errors='coerce', remove_whitespace=True, report=True, progress=True)[f'{col}_clean']
@@ -141,7 +147,13 @@ def main(data_path):
      inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
 
      return inferred_dtypes_frontend, formatted_df_frontend
- 
+
+# columns_to_format = {
+#     'dob': {'data_type': 'datetime_w_year_format', 'min_year': 1926, 'max_year': 2025},
+#     'join_date': {'data_type': 'datetime'},
+#     'email': {'data_type': 'email'},
+#     'address': {'data_type': 'US_address'}
+# }
 
 def main_cont(columns_to_format):
      global formatted_df
@@ -153,8 +165,7 @@ def main_cont(columns_to_format):
  
      # send finalized formatted df to be mln processed
      final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
- 
- 
+
 #  Note:
 #  Frontend handles:
 #      1. user verification for uploading the correct file to process
