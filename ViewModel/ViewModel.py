@@ -58,6 +58,7 @@ class ViewModel(QObject):
 
         self.thread.started.connect(self.worker.runCleaning)
         self.worker.progress.connect(self.progress_changed.emit)
+        self.worker.format_start.connect(self.format_start.emit)
         self.worker.format_ready.connect(self.handle_formatting_ready)
         self.worker.final_data_ready.connect(self.handle_final_data_ready)
         self.worker.cleaningFinished.connect(self.cleaning_finished.emit)
@@ -97,6 +98,7 @@ class ViewModel(QObject):
 #Multithread for the backend without freezing the UI
 class WorkerThread(QObject):
     progress = pyqtSignal(int)
+    format_start = pyqtSignal()
     format_ready = pyqtSignal(dict, list)
     final_data_ready = pyqtSignal(list)
     cleaningFinished = pyqtSignal()
@@ -123,6 +125,7 @@ class WorkerThread(QObject):
         
 
     def _wait_for_continue(self):
+        self.format_start.emit()
         while self.update_types is None:
             QThread.msleep(100)
         
