@@ -148,13 +148,6 @@ def main(data_path):
 
      return inferred_dtypes_frontend, formatted_df_frontend
 
-# columns_to_format = {
-#     'dob': {'data_type': 'datetime_w_year_format', 'min_year': 1926, 'max_year': 2025},
-#     'join_date': {'data_type': 'datetime'},
-#     'email': {'data_type': 'email'},
-#     'address': {'data_type': 'US_address'}
-# }
-
 def main_cont(columns_to_format):
      global formatted_df
  
@@ -164,7 +157,7 @@ def main_cont(columns_to_format):
          final_formatted_df = format_data_columns(formatted_df, columns_to_format)
  
      # send finalized formatted df to be mln processed
-     final_formatted_df.to_csv('results/final_formatted_data.csv', index=False)
+     final_formatted_df.to_csv('mln_files/data/final_formatted_data.csv', index=False)
 
 #  Note:
 #  Frontend handles:
