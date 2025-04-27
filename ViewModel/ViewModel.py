@@ -75,6 +75,11 @@ class ViewModel(QObject):
 
     def handle_final_data_ready(self, final_data):
         self.cleanDatasetDict = final_data
+        
+    def continue_clean(self):
+        if self.changedTypes:
+            self.worker.update_types = self.changedTypes
+            self.worker.continue_pipeline()
 
     def startEval(self):
         self.thread = QThread()
@@ -89,17 +94,13 @@ class ViewModel(QObject):
 
         self.thread.start()
 
-    
-    def continueClean(self):
-        self.worker.continue_work()
-
 
 
 #Multithread for the backend without freezing the UI
 class WorkerThread(QObject):
     progress = pyqtSignal(int)
     format_start = pyqtSignal()
-    format_ready = pyqtSignal(dict, list)
+    format_ready = pyqtSignal(list, list)
     final_data_ready = pyqtSignal(list)
     cleaningFinished = pyqtSignal()
     

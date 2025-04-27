@@ -254,7 +254,8 @@ class MainWindow(QMainWindow):
         rulesText = QLabel("MLN Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
-        self.rulesTextBox.setMaximumWidth(370)
+        self.rulesTextBox.setMinimumWidth(370)
+        self.rulesTextBox.setMaximumWidth(390)
         browseRulesButton = QPushButton("Browse...")
         browseRulesButton.setStyleSheet(self.ss.browseButtonStyle())
         browseRulesButton.clicked.connect(lambda: self.openFileDialog("rules"))
@@ -551,7 +552,6 @@ class MainWindow(QMainWindow):
             return
         
         self.viewModel.dirtyDataSet = self.datasetTextBox.text()
-        print(self.mln_folder)
         try:
             shutil.copy(self.rulesTextBox.text(), self.mln_folder)
         except Exception as e:
@@ -574,11 +574,11 @@ class MainWindow(QMainWindow):
 
         #reset data
         self.viewModel.cleaningTime = 0
-        #self.viewModel.formatList.clear()
-        #self.viewModel.changedTypes.clear()
-        #self.viewModel.cleanDatasetDict.clear()
-        #self.viewModel.cleanScores.clear()
-        #self.viewModel.dirtyScores.clear()
+        self.viewModel.formatList.clear()
+        self.viewModel.changedTypes.clear()
+        self.viewModel.cleanDatasetDict.clear()
+        self.viewModel.cleanScores.clear()
+        self.viewModel.dirtyScores.clear()
 
         #Clear widgets on repeat iterations
         self.listWidget.clear()        
@@ -595,9 +595,14 @@ class MainWindow(QMainWindow):
     #Dyanmic portion of format UI
     def format_start(self):
         self.formatting = True
+        self.originalTypes = {}
         
         # Add items to list to display
-        for column, dtype in self.viewModel.formatList.items():
+        for column in self.viewModel.formatList:
+            colName = column['column_name']
+            semantic = column['semantic_data_type']
+            atomic = column['atomic_data_type']
+            self.originalTypes[colName] = semantic
             item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
             itemWidget.setStyleSheet("background-color: transparent")
@@ -605,13 +610,15 @@ class MainWindow(QMainWindow):
             itemLayout.setContentsMargins(0, 0, 0, 0)
             itemLayout.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
-            text = QLabel(str(column))
-            text.setFixedWidth(100)
+            colText = QLabel(colName)
+            colText.setFixedWidth(100)
             comboBox = QComboBox()
-            comboBox.addItems(["date/time", "email", 'country', 'phone number', "text", 'US street address', 'url', 'ISBN numbers'])
-            comboBox.setCurrentText(dtype)
+            comboBox.addItems(["string", "date/time", "email", 'country', 'phone number', "text", 'address', 'URL', 'ISBN numbers'])
+            comboBox.setCurrentText(semantic)
             comboBox.setFixedWidth(150)
             comboBox.setStyleSheet("background-color: white")
+            typeText = QLabel(atomic)
+            
 
 
             yearWidget = QWidget()
@@ -631,20 +638,21 @@ class MainWindow(QMainWindow):
             yearLayout.addWidget(max_year_input)
             yearWidget.setLayout(yearLayout)
 
-            yearWidget.setVisible(dtype == "date/time")
+            yearWidget.setVisible(semantic == "date/time")
 
             def onTypeChanged(text, yearWidget=yearWidget):
                 yearWidget.setVisible(text == "date/time")
 
             comboBox.currentTextChanged.connect(onTypeChanged)
 
-            itemLayout.addWidget(text)
+            itemLayout.addWidget(colText)
             itemLayout.addWidget(comboBox)
+            itemLayout.addWidget(typeText)
             itemLayout.addWidget(yearWidget)
             itemWidget.setLayout(itemLayout)
 
             self.listWidget.setItemWidget(item, itemWidget)
-            self.formatItemsList.append((column, comboBox, yearFormat, min_year_input, max_year_input))
+            self.formatItemsList.append((colName, comboBox, yearFormat, min_year_input, max_year_input))
         self.movetopage(4)
 
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
@@ -655,13 +663,13 @@ class MainWindow(QMainWindow):
         for items in self.formatItemsList:
             if items[1].currentText() == "date/time" and items[2].isChecked():
                 self.viewModel.changedTypes[items[0]] = {"data_type": "date_time_w_year_format", "min_year": items[3].text(), "max_year": items[4].text()}
-            elif self.viewModel.formatList[items[0]] == items[1].currentText():
+            elif self.originalTypes[items[0]] == items[1].currentText():
                 continue
             else:
                 self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
         
         self.movetopage(5)
-        self.viewModel.continueClean() 
+        self.viewModel.continue_clean
 
     #Updates progress bar intermediately
     @pyqtSlot(int)
