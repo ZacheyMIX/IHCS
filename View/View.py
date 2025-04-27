@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
     ss = StyleSheets
     mln_folder = os.path.join(os.path.dirname(__file__), '..', 'backend', 'mln_files', 'mln')
     mln_folder = os.path.abspath(mln_folder)
+    mln_folder = mln_folder + "/user_uploaded_rules.mln"
 
 
     def __init__(self):
@@ -550,6 +551,7 @@ class MainWindow(QMainWindow):
             return
         
         self.viewModel.dirtyDataSet = self.datasetTextBox.text()
+        print(self.mln_folder)
         try:
             shutil.copy(self.rulesTextBox.text(), self.mln_folder)
         except Exception as e:

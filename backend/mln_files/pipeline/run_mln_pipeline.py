@@ -161,7 +161,7 @@ def annotate_csv(csv_path, result_path, output_csv_path=None):
 
     return df.to_dict(orient="records")
 
-if __name__ == "__main__":
+def run():
     wait_for_files(
         csv_path="../data/Data.csv",
         mln_path="../mln/rules.mln"
@@ -189,3 +189,5 @@ if __name__ == "__main__":
     df_repaired.to_csv("../../results/final_cleaned.csv", index=False)
 
     print("Final cleaned file saved at: ../../results/final_cleaned.csv")
+    
+    return df_repaired.to_dict()

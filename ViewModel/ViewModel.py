@@ -1,6 +1,7 @@
 from PyQt6.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
 import time
 from backend import data_formatting_pipeline, data_evaluation_pipeline
+from backend.mln_files.pipeline import run_mln_pipeline
 
 
 
@@ -138,6 +139,8 @@ class WorkerThread(QObject):
         self.progress.emit(20)
 
         #Starts Graces pipeline
+        final_data = run_mln_pipeline.run()
+        self.final_data_ready.emit(final_data)
         self.progress.emit(30)
 
         #Call when finished
