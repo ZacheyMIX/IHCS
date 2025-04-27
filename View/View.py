@@ -4,6 +4,7 @@ from PyQt6.QtCore import Qt, pyqtSlot
 from PyQt6.QtGui import QPixmap
 import re
 import sys
+import os
 from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWindow,
                              QProgressBar, QFileDialog, QMessageBox, QPushButton, QVBoxLayout, QHBoxLayout,
                              QStackedLayout, QGridLayout, QWidget, QListWidget, QListWidgetItem,
@@ -18,6 +19,8 @@ class MainWindow(QMainWindow):
     currentSelectedPage = 0
     formatting = False
     ss = StyleSheets
+    mln_folder = os.path.join(os.path.dirname(__file__), '..', 'backend', 'mln_files', 'mln')
+    mln_folder = os.path.abspath(mln_folder)
 
 
     def __init__(self):
@@ -246,13 +249,14 @@ class MainWindow(QMainWindow):
         self.datasetTextBox.setMaximumWidth(370)
         browseDatasetButton = QPushButton("Browse...")
         browseDatasetButton.setStyleSheet(self.ss.browseButtonStyle())
-        browseDatasetButton.clicked.connect(lambda: self.openFileDialog("parameter"))
+        browseDatasetButton.clicked.connect(lambda: self.openFileDialog("dirty_data"))
         rulesText = QLabel("MLN Rules:")
         self.rulesTextBox = QLineEdit()
         self.rulesTextBox.setStyleSheet("background-color: white")
         self.rulesTextBox.setMaximumWidth(370)
-        rulesToolTip = QLabel("🛈")
-        rulesToolTip.setToolTip(self.outputFile("View/Text/MLNRules.txt"))
+        browseRulesButton = QPushButton("Browse...")
+        browseRulesButton.setStyleSheet(self.ss.browseButtonStyle())
+        browseRulesButton.clicked.connect(lambda: self.openFileDialog("rules"))
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
@@ -273,7 +277,7 @@ class MainWindow(QMainWindow):
         rulesLayout.addWidget(rulesText)
         rulesLayout.addWidget(self.rulesTextBox)
         rulesLayout.addSpacing(30)
-        rulesLayout.addWidget(rulesToolTip)
+        rulesLayout.addWidget(browseRulesButton)
         browseLayout.addWidget(paramInfoText)
         browseLayout.addWidget(datasetWidget)
         browseLayout.addWidget(rulesWidget)
@@ -431,7 +435,7 @@ class MainWindow(QMainWindow):
         browseButton = QPushButton("Browse...")
         browseButton.setStyleSheet(self.ss.browseButtonStyle())
         browseButton.setFixedWidth(100)
-        browseButton.clicked.connect(lambda: self.openFileDialog("Eval"))
+        browseButton.clicked.connect(lambda: self.openFileDialog("ground_truth"))
         evalButton = QPushButton("Evaluate")
         evalButton.setStyleSheet(self.ss.greyPageButtonStyle())
         evalButton.setFixedWidth(100)
@@ -534,21 +538,22 @@ class MainWindow(QMainWindow):
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
 
-        # #Check if file and rules are set correctly
-        # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-        #                  self.datasetTextBox.text()):
-        #     self.errorDialog("You must input either a csv, xlsx, xls, or json file")
-        #     return
-        # if self.rulesTextBox.text() == "":
-        #     self.errorDialog("Must put in MLN rules")
-        #     return
-        # elif not re.search(
-        #         r'^([A-Za-z0-9]+\([A-Za-z0-9, .]+\))(?:(\^| \^|\^ | \^ )[A-Za-z0-9]+\([A-Za-z0-9, .]+\))*(=>| =>|=> | => )([A-Za-z0-9]+\([A-Za-z0-9, .]+\))(\^| \^|\^ | \^ )([0-9.]+)$',
-        #         self.rulesTextBox.text().lower()):
-        #     self.errorDialog("Only eligible rules are allowed")
-        #     return
+        #Check if file and rules are set correctly
+        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+                         self.datasetTextBox.text()):
+            self.errorDialog("You must input either a csv, xlsx, xls, or json file")
+            return
+        if not re.search(
+                r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.mln$',
+                self.rulesTextBox.text()):
+            self.errorDialog("Must put in mln rules")
+            return
         
         self.viewModel.dirtyDataSet = self.datasetTextBox.text()
+        try:
+            shutil.copy(self.rulesTextBox.text(), self.mln_folder)
+        except Exception as e:
+            self.errorDialog(f"Error saving file: {e}")
 
         # Start cleaning sequence
 
@@ -863,16 +868,18 @@ class MainWindow(QMainWindow):
         return f.read()
 
     # Opens filepath
-    def openFileDialog(self, page):
+    def openFileDialog(self, type):
         file_dialog = QFileDialog(self)
         file_dialog.setWindowTitle("Select Datasheet")
         file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
         file_dialog.setViewMode(QFileDialog.ViewMode.Detail)
 
         if file_dialog.exec():
-            if page == "parameter":
+            if type == "dirty_data":
                 self.datasetTextBox.setText(file_dialog.selectedFiles()[0])
-            else:
+            elif type == "rules":
+                self.rulesTextBox.setText(file_dialog.selectedFiles()[0])
+            elif type == "ground_truth":
                 self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
             
     # Provides a popup error given an error message
