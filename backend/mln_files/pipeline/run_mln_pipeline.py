@@ -5,11 +5,13 @@ from collections import defaultdict
 from dateutil import parser
 import os
 import time
+import shutil
 
 def wait_for_new_upload(csv_folder, mln_folder, check_interval=5):
     print(f"Waiting for new uploads in {csv_folder} and {mln_folder}...")
 
-    last_mtimes = {}
+    last_csv_mtime = None
+    last_mln_mtime = None
 
     while True:
         csv_files = [f for f in os.listdir(csv_folder) if f.endswith(".csv")]
@@ -22,20 +24,17 @@ def wait_for_new_upload(csv_folder, mln_folder, check_interval=5):
             csv_mtime = os.path.getmtime(csv_path)
             mln_mtime = os.path.getmtime(mln_path)
 
-            if (csv_path not in last_mtimes or last_mtimes[csv_path] != csv_mtime or
-                mln_path not in last_mtimes or last_mtimes[mln_path] != mln_mtime):
-
-                last_mtimes[csv_path] = csv_mtime
-                last_mtimes[mln_path] = mln_mtime
-
-                print(f"Detected new upload: {csv_path} and {mln_path}")
+            #first modification recently
+            if (last_csv_mtime != csv_mtime) or (last_mln_mtime != mln_mtime):
+                last_csv_mtime = csv_mtime
+                last_mln_mtime = mln_mtime
+                print(f"New upload detected!")
                 return csv_path, mln_path
 
         time.sleep(check_interval)
 
-#Cleaning Helper Functions
 def clean_name(name):
-    parts = re.split(r'[,\s]+', name.strip())
+    parts = re.split(r'[,\s]+', str(name).strip())
     parts = [p for p in parts if p]
     if len(parts) == 1:
         return parts[0], "", ""
@@ -60,10 +59,7 @@ def clean_weight(weight):
         return None
     weight = str(weight).lower().replace("pounds", "lbs").replace("pound", "lbs")
     weight = re.sub(r"[^\d.]", "", weight)
-    if weight:
-        return f"{float(weight)} lbs"
-    else:
-        return None
+    return f"{float(weight)} lbs" if weight else None
 
 def clean_email(email):
     if pd.isna(email):
@@ -113,7 +109,7 @@ def csv_to_db(csv_path, db_path):
                     f.write(f'{pred}({eid}, "{val}")\n')
 
 def run_tuffy():
-    print("Running Tuffy inference...")
+    print("⚡ Running Tuffy inference...")
     subprocess.run([
         "java", "-jar", "../tuffy/tuffy.jar",
         "-i", "../mln/rules.mln",
@@ -122,7 +118,7 @@ def run_tuffy():
         "-q", "BadName,BadID,BadSalary,BadDOB,BadJoinDate,BadYearsOfService,BadWeight,BadAddress,BadEmail",
         "-conf", "../tuffy/tuffy.conf"
     ], check=True)
-    print("Tuffy run complete.")
+    print("Tuffy inference done!")
 
 def parse_result(result_path):
     bad_map = defaultdict(list)
@@ -134,7 +130,7 @@ def parse_result(result_path):
                 bad_map[eid].append(error_type)
     return bad_map
 
-def annotate_csv(csv_path, result_path, output_csv_path=None):
+def annotate_csv(csv_path, result_path):
     df = pd.read_csv(csv_path)
     if 'id' not in df.columns:
         df.reset_index(drop=True, inplace=True)
@@ -145,22 +141,16 @@ def annotate_csv(csv_path, result_path, output_csv_path=None):
     changes_col = []
     for idx in range(len(df)):
         eid = f"E{idx}"
-        row_changes = bad_map.get(eid, [])
-        changes_col.append(", ".join(row_changes) if row_changes else "")
+        changes = bad_map.get(eid, [])
+        changes_col.append(", ".join(changes) if changes else "")
 
     df["Changes"] = changes_col
-
-    if output_csv_path:
-        df.to_csv(output_csv_path, index=False)
-        print(f"Final annotated CSV saved at: {output_csv_path}")
-
     return df
 
 def repair_dataframe(df):
     repaired_rows = []
     for _, row in df.iterrows():
         first_name, middle_name, last_name = clean_name(row["Name"]) if "Name" in row else ("", "", "")
-
         repaired_row = {
             "FirstName": first_name,
             "MiddleName": middle_name,
@@ -177,39 +167,35 @@ def repair_dataframe(df):
         }
         repaired_rows.append(repaired_row)
 
-    return pd.DataFrame(repaired_rows)
+    df_clean = pd.DataFrame(repaired_rows)
+    df_clean = df_clean.sort_values(by="FirstName")
+    return df_clean
+
+def cleanup_old_files():
+    print("🧹 Cleaning old uploads...")
+    for folder in ["../data/", "../mln/"]:
+        for file in os.listdir(folder):
+            if file.endswith(".csv") or file.endswith(".mln"):
+                os.remove(os.path.join(folder, file))
 
 def run_pipeline_once():
-    # Watch for new uploads
+    cleanup_old_files()
+
     csv_path, mln_path = wait_for_new_upload(
         csv_folder="../data/",
         mln_folder="../mln/"
     )
 
-
-    csv_to_db(
-        csv_path=csv_path,
-        db_path="../mln/facts.db"
-    )
-
-
+    csv_to_db(csv_path, db_path="../mln/facts.db")
     run_tuffy()
 
-
-    df_dirty = annotate_csv(
-        csv_path=csv_path,
-        result_path="../mln/final.result",
-        output_csv_path="../../results/final.csv"
-    )
-
+    df_dirty = annotate_csv(csv_path, "../mln/final.result")
+    df_dirty.to_csv("../../results/final.csv", index=False)
 
     df_repaired = repair_dataframe(df_dirty)
-
-    df_repaired = df_repaired.sort_values(by="FirstName")
-
     df_repaired.to_csv("../../results/final_cleaned.csv", index=False)
 
-    print("Final cleaned file saved at: ../../results/final_cleaned.csv ✅")
+    print("Final repaired dataset ready at: ../../results/final_cleaned.csv ✅")
 
 def main():
     while True:

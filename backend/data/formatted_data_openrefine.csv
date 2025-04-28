@@ -1,0 +1,51 @@
+Name,EmployeeID,Salary,DOB,JoinDate,Year of Service,Weight,Address,Email
+Aishwarya Menon,0194-826-537,90000,1984-12-15T00:00:00Z,24.05.2009,,150 lbs,"123 Elm St Apt 5, New York, NY 10001",aishwarya.menon@gmail.com
+"Al-Farsi, Ahmed",426-930-0187,800K,1980-05-21T00:00:00Z,2015-05-24T00:00:00Z,7 years,68.5 kg,"456 Maple Ave #101, Los Angeles, CA 90210",ahmed.alfarsi@yahoo.com
+"Al-Farsi, Ahmed",426 930 0187,800K,1980-05-21T00:00:00Z,2015-05-24T00:00:00Z,,68.5 kg,"456 Maple Ave APT 101, Los Angeles, CA 90210",ahmed.alfarsi@yahoo.com
+"Al-Farsi, Ahmed M.",0654-890-127,500K,03.10.1978,2010-06-02T00:00:00Z,12 years,75.2 kg,"987 Pine Blvd, San Francisco, CA 94102",ahmed.m.alfarsi@gmail.com
+Alice B. Brown,0632 750 194,"$950,000",1983-08-12T00:00:00Z,2018-10-15T00:00:00Z,3 years,200 lbs,"654 Birch Rd, Apt 305, Boston, MA 02108",alice.brown@gmail.com
+Alice K Brown,0429-581-0763,780K,1983-02-10T00:00:00Z,2015-07-01T00:00:00Z,,90.3 kg,"321 Cedar Dr, Seattle, WA 98101",alice.88-brown@yahoo.com
+"Chen, Mei",00482-679-013,"$25,000",1990-05-15T00:00:00Z,2005-08-23T00:00:00Z,16 years,160 lbs,"111 Willow Cir #7, Houston, TX 77002",mei.chen@yahoo.com
+"Chen, Mei",0983-567-0124,"33,000",1977-09-18T00:00:00Z,12.22.2014,,72.6 kg,"222 Spruce Ct, Atlanta, GA 30301",mei.chen@yahoo.com
+"Choudhary-Smith, Meera",0502-349-0186,42K,1971-08-16T00:00:00Z,2012-12-14T00:00:00Z,,145 pounds,"333 Fir Pl, Miami, FL 33101",meera.choudhary-smith@gmail.com
+"Chris Davis, Esq.",105-297-384,15K,1972-07-19T00:00:00Z,2009-09-28T00:00:00Z,12 years,65.7 kg,"444 Poplar Ln, Unit 12, Dallas, TX 75201",chris.davis.esq@gmail.com
+"Da Silva, Maria",0614 208 357,"$250,000",15.06.1996,2006-08-16T00:00:00Z,,185 lbs,"555 Sycamore Ave Apt 201, Washington, DC 20001",maria.da.silva@gmail.com
+"Desai, Professor Arjun",0736-150-824,"850,000",11.30.1980,2016-09-21T00:00:00Z,,84.0 kg,"666 Ash St, Phoniex, AZ 85001",arjun.desai@gmail.com
+Dr. Robert Johnson,0532 941 687,"$35,000",1999-03-08T00:00:00Z,2018-10-09T00:00:00Z,,170 lbs,"777 Redwood Rd, Denver, CO 80202",dr.robert.johnson@gmail.com
+"Garcia, Javier",0952-864-301,120K,1986-09-22T00:00:00Z,2013-03-11T00:00:00Z,,77.1 kg,"888 Magnolia Blvd, Philadelpia, PA 19101",javier.garcia@yahoo.com
+"Garcia, Javier",0314-728-0569,"95,000",1968-09-20T00:00:00Z,2018-06-09T00:00:00Z,,155 pounds,"999 Cedar St, Detroit, MI 48201",javier.garcia202@yahoo.com
+Hui Yang,0349-761-802,120000,1986-11-18T00:00:00Z,2016-02-12T00:00:00Z,6 years,70.2 kg,"101 Oakwood Dr #305, Las Vegas, NV 89101",hui.yang@gmail.com
+"Iyer, Esq., Siddharth",0419 587 306,"$175,000",27.03.1991,2019-02-26T00:00:00Z,3 years,195 lbs,"202 Birch Ave, San Antonio, TX 78201",siddharth.iyer.esq@gmail.com
+Jamal Williams,0238-617-495,650K,03.09.1970,12.07.2013,,88.5 kg,"303 Maple Rd, Orlando, FL 32801",jamal.williams@yahoo.com
+Jane Smith,0850 694 271,"$19,000",1994-01-07T00:00:00Z,2019-07-19T00:00:00Z,,140 lbs,"404 Willow Ln #8, San Diego, CA 92101",jane.smith@gmail.com
+Jane Smith,850694271,"$19,000",1994-01-07T00:00:00Z,2019-07-19T00:00:00Z,,140 lbs,"404 Willow Ln #8, San Diego, CA 92101",jane.smith@gmail.com
+John Doe,0580-796-321,200000,1996-09-22T00:00:00Z,2010-08-18T00:00:00Z,11 years,175 lbs,"606 Cedar Pl, Apt 502, New Orleans, LA 70112",john.doe@yahoo.com
+"Kapoor, PhD, Ananya",703-182-965,85K,1975-06-30T00:00:00Z,2014-11-08T00:00:00Z,7 years,79.8 kg,"707 Elm Ct #3, St. Louis, MO 63101",ananya.kapoor.phd@gmail.com
+"Kapoor, PhD, Ananya",0796 351 0482,$29K,1998-06-09T00:00:00Z,03.19.2019,,150 pounds,"808 Redwood Dr, Indianapolis, IN 46201",ananya.kapoor.phd@gmail.com
+Li Ying,0670-123-598,60K,1965-06-14T00:00:00Z,2006-07-14T00:00:00Z,15 years,68.1 kg,"909 Oakwood Blvd, Minneapolis, MN 55401",li.ying@yahoo.com
+Mary Ann White,0569 318 702,"$22,000",1998-08-07T00:00:00Z,2011-08-03T00:00:00Z,10 years,190 lbs,"210 Pine St #4, Baltimore, MD 21201",mary.ann.white@gmail.com
+Meera Choudhary-Smith,0287-604-159,45000,1979-01-12T00:00:00Z,2018-04-17T00:00:00Z,3 years,86.4 kg,"321 Spruce Ln, Tampa, FL 33601",meera.choudhary-smith@gmail.com
+Mr. William Turner Jr.,0825 403 0716,$80K,1976-07-05T00:00:00Z,2015-06-05T00:00:00Z,,165 lbs,"432 Birch Rd Apt 15B, Cleveland, OH 44101",mr.william.turner.jr@gmail.com
+"Nkosi, Fatima",0902-345-618,"40,000",1982-07-12T00:00:00Z,2014-03-03T00:00:00Z,7 years,74.9 kg,"543 Cedar Ave, Pittsburgh, PA 15201",fatima.nkosi@gmail.com
+"Nkosi, Fatima S.",0874 951 820,"$18,000",1989-06-14T00:00:00Z,2016-09-11T00:00:00Z,5 years,205 lbs,"654 Elm Cir, Milwaukeee, WI 53201",fatima.s.nkosi@gmail.com
+"Patel, Dr. Priya",618372549,"$1,000,000",10.10.1973,2019-04-17T00:00:00Z,,93.0 kg,"765 Sycamore Pl, Cincinnati, OH 45201",dr.priya.patel@yahoo.com
+Professor Michael Williams,156489237,$500K,02.28.1974,2005-07-12T00:00:00Z,16 years,135 lbs,"876 Maple Blvd, Portland, OR 97201",professor.michael.williams@gmail.com
+Professor Michael Williams,0873 216 0905,"$50,000",31.07.1995,2009-03-25T00:00:00Z,,61.3 kg,"987 Willow Rd, Kansas City, MO 64101",professor.michael.williams@gmail.com
+"Reddy, Kavita",874215603,"$70,000",1987-09-10T00:00:00Z,2017-01-05T00:00:00Z,6 years,210 lbs,"108 Pine Dr #205, Charlotte, NC 28201",kavita.reddy@gmail.com
+"Rodriguez, Diego",0467-215-0983,28K,1988-02-17T00:00:00Z,2011-10-15T00:00:00Z,,95.7 kg,"219 Redwood Ln, Salt Lake City, UT 84101",diego.rodriguez@gmail.com
+"Rodriguez, Diego",0287-460-931,38K,1985-03-27T00:00:00Z,2010-09-17T00:00:00Z,,130 lbs,"320 Oak Ave, Raleigh, NC 27601",diego.rodriguez@gmail.com
+"Rodriguez, Diego J.",0456 790 321,"$600,000",11.18.1988,2019-07-19T00:00:00Z,2 years,59.0 kg,"431 Cedar Blvd Apt 7, Nashville, TN 37201",diego.j.rodriguez@yahoo.com
+Samantha Taylor-Smith,0743 856 291,"$300,000",1993-09-30T00:00:00Z,2016-12-09T00:00:00Z,5 years,220 lbs,"542 Birch St, Sacramento, CA 95801",samantha.taylor-smith@gmail.com
+"Sara L. Miller, PhD",891 567 204,35000,1985-08-22T00:00:00Z,2008-11-15T00:00:00Z,13 years,99.4 kg,"653 Magnolia Rd, Apt 101, Austin, TX 78701",sara.l.miller.phd@gmail.com
+"Sharma, Rahul",0761 502 834,"$55,000",1997-01-20T00:00:00Z,2008-02-28T00:00:00Z,,125 pounds,"764 Sycamore Cir, Phladelphia, PA 19101",rahul.sharma@yahoo.com
+"Singh, Vikram",539 687 214,"$90,000",03.15.1992,2012-05-10T00:00:00Z,,56.8 kg,"875 Pine Pl, San Diego, CA 92101",vikram.singh@gmail.com
+"Takahashi, Akira",198-543-706,"30,000",1995-04-03T00:00:00Z,2012-03-07T00:00:00Z,9 years,225 lbs,"986 Spruce Ln, Jacksonvill, FL 32201",akira.takahashi@gmail.com
+"Takahashi, Akira",0143 297 865,"$42,000",1971-05-21T00:00:00Z,2014-10-30T00:00:00Z,,102.1 kg,"109 Elm Dr #302, Charleston, SC 29401",akira.takahashi@gmail.com
+Tao Xu,0309-678-0124,"750,000",24.11.1981,01.12.2017,,120 lbs,"210 Maple Rd, Memphs, TN 38101",tao.xu@yahoo.com
+"Verma, Mr. Rajiv",215 908 347,"$45,000",1990-02-25T00:00:00Z,2007-04-30T00:00:00Z,14 years,54.5 kg,"321 Oakwood Ave, Oklahma City, OK 73101",mr.rajiv.verma@gmail.com
+Wei Chen,0876 234 501,"$75,000",1992-12-07T00:00:00Z,2013-09-21T00:00:00Z,8 years,230 lbs,"432 Birch Pl, Apt 6D, Richmond, VA 23201",wei.chen@yahoo.com
+William Turner Jr.,0961 874 0250,"$850,000",1982-12-20T00:00:00Z,2006-08-02T00:00:00Z,,104.8 kg,"543 Sycamore Blvd, Newark, NJ 07001",william.turner.jr@gmail.com
+"Williams, Jamal",0297-431-0568,55K,1978-04-05T00:00:00Z,2008-04-13T00:00:00Z,,115 lbs,"654 Willow Cir #9, Hartford, CT 06101",jamal.williams@yahoo.com
+"Williams, Jamal",0845 603 0219,"$14,000",1989-02-14T00:00:00Z,04.08.2005,,52.2 kg,"765 Redwood Dr, Bufflo, NY 14201",jamal.williams@yahoo.com
+"Xavier, Sara",0406-892-0715,68K,1974-10-23T00:00:00Z,12.25.2017,,235 lbs,"876 Cedar Ln, Rochestor, NY 14601",sara.xavier@gmail.com
+Ying Zhao,0172-946-0580,600K,1979-05-28T00:00:00Z,2011-11-21T00:00:00Z,,107.5 kg,"987 Elm Ave Apt 205, Virginia Beach, VA 23401",ying.zhao@yahoo.com

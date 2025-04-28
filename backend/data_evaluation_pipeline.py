@@ -4,9 +4,10 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 
 def get_dataset():
     """ function to get both the messy dataset and the cleaned dataset """
-    cleaned_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/results/final_formatted_data.csv'    
-    gt_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/potential_dataset/Cleaned-Data.csv'
-    return cleaned_data_path, gt_data_path
+    messy_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Messy-Data.csv'
+    cleaned_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/results/final_cleaned.csv'
+    gt_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Cleaned-Data.csv'
+    return messy_data_path, cleaned_data_path, gt_data_path
 
 def identify_modified_columns(original_df, cleaned_df):
     """
@@ -34,7 +35,7 @@ def identify_modified_columns(original_df, cleaned_df):
     
     return modified_columns
 
-def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
+# def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
     """
     Evaluate the cleaning results against ground truth
     
@@ -158,16 +159,34 @@ def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
     
     return results
 
+def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
+    """
+    Evaluate the accuracy of data cleaning by comparing cleaned data with ground truth.
+    
+    Parameters:
+    cleaned_df (pd.DataFrame): The cleaned data.
+    gt_df (pd.DataFrame): The ground truth data.
+    modified_columns (list, optional): List of columns to evaluate. If None, all columns are evaluated.
+    
+    Returns:
+    dict: A dictionary containing evaluation metrics for each column and overall metrics.
+    """
+    
+
 def main():
     """ main function to run the script """
 
     # messy data and gt data
-    messy_data_path, gt_data_path = get_dataset()
+    messy_data_path, cleaned_data_path, gt_data_path = get_dataset()
     
     # create dataframe from the uploaded file
     messy_df = pd.read_csv(messy_data_path)
-    cleaned_df = pd.read_csv(messy_data_path)  # Replace this with your actual cleaned dataframe
+    cleaned_df = pd.read_csv(cleaned_data_path)  
     gt_df = pd.read_csv(gt_data_path)
+    
+    print(f"messy_df: {messy_df.info()}")
+    print(f"cleaned_df: {cleaned_df.info()}")
+    print(f"gt_df: {gt_df.info()}")
     
     # Identify which columns were modified during cleaning
     modified_columns = identify_modified_columns(messy_df, cleaned_df)
