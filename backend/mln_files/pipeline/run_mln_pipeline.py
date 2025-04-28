@@ -208,7 +208,8 @@ def repair_dataframe(df):
             "Year of Service": row.get("Year of Service", ""),
             "Weight": clean_weight(row.get("Weight")),
             "Address": clean_address(row.get("Address")),
-            "Email": clean_email(row.get("Email"))
+            "Email": clean_email(row.get("Email")),
+            "Changes": row.get("Changes", "")
         }
         repaired_rows.append(repaired_row)
 
