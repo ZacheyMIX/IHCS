@@ -38,7 +38,6 @@ class ViewModel(QObject):
     cleanDatasetPath = ""
     groundTruthFile = ""
     cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'recall': '.9955', 'f1-score': '.9834'}
-    dirtyScores = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'recall': '.9435', 'f1-score': '.8398'}
     history = []
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()

@@ -13,6 +13,8 @@ from PyQt6.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit, QMainWi
 import shutil
 from ViewModel import ViewModel
 from View import StyleSheets
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
 
 class MainWindow(QMainWindow):
@@ -155,6 +157,8 @@ class MainWindow(QMainWindow):
         self.resultPageWidget.setStyleSheet("background-color: white")
         self.evaluationPageWidget = QWidget()
         self.evaluationPageWidget.setStyleSheet("background-color: white")
+        self.chartPageWidget = QWidget()
+        self.chartPageWidget.setStyleSheet("background-color: white")
 
         # Adding all pages to pageLayout
         self.pageLayout.addWidget(self.aboutPageWidget)
@@ -165,6 +169,7 @@ class MainWindow(QMainWindow):
         self.pageLayout.addWidget(self.cleaningPageWidget)
         self.pageLayout.addWidget(self.resultPageWidget)
         self.pageLayout.addWidget(self.evaluationPageWidget)
+        self.pageLayout.addWidget(self.chartPageWidget)
 
     #Static about page UI
     def aboutLayout(self):
@@ -534,10 +539,32 @@ class MainWindow(QMainWindow):
 
     #Static chart page UI
     def chartLayout(self):
-        chartsLayout = QVBoxLayout()
+        
+        #UI
+        self.chartsLayout = QVBoxLayout()
+        headerWidget = QWidget()
         headerLayout = QHBoxLayout()
+        headerWidget.setLayout(headerLayout)
+        
         headerLabel = QLabel()
-        headerLabel.setPixmap(QPixmap())
+        headerLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'evaluation page.png')))
+        evalButton = QPushButton()
+        evalButton.setStyleSheet = self.ss.pageButtonStyle
+        evalButton.setMaximumWidth(150)
+        
+        self.canvas = FigureCanvas(Figure(figsize=(8, 5)))
+        
+        
+        
+        #Setup
+        self.chartsLayout.addWidget(headerWidget)
+        headerLayout.addWidget(headerLabel)
+        headerLayout.addWidget(evalButton)
+        self.chartsLayout.addWidget(QLabel("Here you can view how scores compare to other cleaning systems"))
+        self.chartsLayout.addWidget(self.canvas)
+        
+        self.chartPageWidget.setLayout(self.chartsLayout)
+        
 
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
@@ -698,11 +725,11 @@ class MainWindow(QMainWindow):
 
     #Switches to the attribute view in results
     def chart_button_clicked(self):
-        print("moving to chart page")
+        self.pageLayout.setCurrentIndex(8)
 
     #Switches to the tuple view in results
     def eval_page_button_clicked(self):
-        print("moving to eval page")
+        self.pageLayout.setCurrentIndex(7)
 
     #Starts the evaluation on the dataset
     def evaluate_button_clicked(self):
@@ -733,9 +760,8 @@ class MainWindow(QMainWindow):
 
         #History
         self.viewModel.history.append({'dataset': dataset, 'runtime': str(self.viewModel.cleaningTime), 'precision':  ourResult['precision'], 'recall': ourResult['recall'], 'f1-score': ourResult['f1score']})
-
-        #History
         self.historyListWidget.clear()
+        
         for row in self.viewModel.history:
             item = QListWidgetItem(self.historyListWidget)
             itemWidget = QWidget()
@@ -751,7 +777,34 @@ class MainWindow(QMainWindow):
             itemWidget.setLayout(itemLayout)
 
             self.historyListWidget.setItemWidget(item, itemWidget)
-
+        
+        #Chart
+        self.plot()   
+    
+    #Plots bar graph for evaluation
+    def plot(self):
+         metrics = ['Precision', 'Recall', 'F1 Score']
+         x = range(len(metrics))
+         scores = self.viewModel.cleanScores
+         ihcsScores = [scores['ihcs']['precision'], scores['ihcs']['recall'], scores['ihcs']['f1score']]
+         otherScores = [scores['openrefine']['precision'],scores['openrefine']['recall'],scores['openrefine']['f1score']]
+         
+         ax = self.canvas.figure.subplots()
+         
+         barWidth = .35
+         
+         ax.bar([i - .35/2 for i in x], ihcsScores, width=barWidth, label='IHCS', color='#007bff')
+         ax.bar([i + barWidth/2 for i in x], otherScores, width=barWidth, label='Other', color='#00c853')
+         
+         ax.setylim(0,1)
+         ax.set_xticks(x)
+         ax.set_xticklabels(metrics)
+         ax.set_ylabel('Score')
+         ax.set_title("IHCS vs Other Systems")
+         ax.legend()
+         ax.grid(axis='y', linestyle='--', alpha=0.7)
+         
+         self.canvas.draw()
     #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
 
