@@ -33,46 +33,6 @@ def wait_for_new_upload(csv_folder, mln_folder, check_interval=5):
 
         time.sleep(check_interval)
 
-def clean_name(name):
-    titles = {"Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Professor", "PhD", "Esq.", "Esq", "MD", "Miss"}
-    if pd.isna(name):
-        return "", "", "", ""
-
-    name = str(name).strip()
-
-    if "," in name:
-        parts = [p.strip() for p in name.split(",")]
-        if len(parts) == 2:
-            last, first_middle = parts
-            first_middle_parts = first_middle.split()
-            if len(first_middle_parts) == 1:
-                return first_middle_parts[0], "", last, ""
-            elif len(first_middle_parts) == 2:
-                return first_middle_parts[0], first_middle_parts[1], last, ""
-            elif len(first_middle_parts) >= 3:
-                return first_middle_parts[0], " ".join(first_middle_parts[1:-1]), last, first_middle_parts[-1]
-        elif len(parts) == 3:
-            last, title, first = parts
-            return first, "", last, title
-        
-    parts = name.split()
-    title = ""
-    if parts and parts[0] in titles:
-        title = parts[0]
-        parts = parts[1:]
-
-    if len(parts) == 1:
-        return parts[0], "", "", title
-    elif len(parts) == 2:
-        return parts[0], "", parts[1], title
-    elif len(parts) == 3:
-        return parts[0], parts[1], parts[2], title
-    elif len(parts) >= 4:
-        return parts[0], parts[1], " ".join(parts[2:]), title
-    else:
-        return "", "", "", title
-
-
 def clean_salary(salary):
     if pd.isna(salary):
         return None
@@ -195,12 +155,11 @@ def format_employee_id(empid):
 def repair_dataframe(df):
     repaired_rows = []
     for idx, row in df.iterrows():
-        first_name, middle_name, last_name, title = clean_name(row["Name"]) if "Name" in row else ("", "", "", "")
         repaired_row = {
-            "First Name": first_name,
-            "Middle Name": middle_name,
-            "Last Name": last_name,
-            "Title": title,
+            "First Name": row.get("First Name", ""),
+            "Middle Name": row.get("Middle Name", ""),
+            "Last Name": row.get("Last Name", ""),
+            "Title": row.get("Title", ""),
             "EmployeeID": format_employee_id(row.get("EmployeeID", "")),
             "Salary": clean_salary(row.get("Salary")),
             "DOB": clean_date(row.get("DOB")),
@@ -214,8 +173,6 @@ def repair_dataframe(df):
         repaired_rows.append(repaired_row)
 
     df_clean = pd.DataFrame(repaired_rows)
-    df_clean = df_clean.sort_values(by="First Name").reset_index(drop=True)
-    df_clean.index.name = ""
     return df_clean
 
 # Clean any old .csv and .mln files if leftover
