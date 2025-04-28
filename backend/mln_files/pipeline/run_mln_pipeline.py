@@ -239,10 +239,14 @@ def run_pipeline_once():
     df_dirty = annotate_csv(csv_path, "../mln/final.result")
 
     df_repaired = repair_dataframe(df_dirty)
+
+    # Save as CSV
     df_repaired.to_csv("../../results/final_cleaned.csv", index=True)
 
+    # Save as JSON 
+    df_repaired.to_json("../../results/final_cleaned.json", orient="records", indent=2)
 
-    print("Final repaired dataset ready at: ../../results/final_cleaned.csv")
+    print("Final repaired dataset saved at: ../../results/final_cleaned.csv and final_cleaned.json")
 
 def main():
     while True:
