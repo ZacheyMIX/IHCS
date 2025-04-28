@@ -1,15 +1,12 @@
-Markov Logic Network rules consist of pairs of formulas and weights given predicate declarations in the dataset.
+Upload a .mln file for your dataset.
 
-Example:
+Format:
 
-//Predicate declarations
-Sex(person, gender)
-Pclass(person, class)
-MissingAge(person)
-HasAge(person, age)
+List predicates (e.g., HasName(Employee, Name))
 
-// Soft rules (example weights, tweak as needed)
-MissingAge(x) ^ Sex(x, female) ^ Pclass(x, 1) => HasAge(x, 35.0) ^0.9
-MissingAge(x) ^ Sex(x, female) ^ Pclass(x, 3) => HasAge(x, 22.0) ^0.8
-MissingAge(x) ^ Sex(x, male) ^ Pclass(x, 1) => HasAge(x, 40.0) ^0.85
-MissingAge(x) ^ Sex(x, male) ^ Pclass(x, 3) => HasAge(x, 25.0) ^0.7
+List error flags (e.g., BadName(Employee))
+
+Write detection rules (e.g., 0.8 HasName(e, name), RegexMatch(name, ".[0-9]+.") => BadName(e))
+
+Use RegexMatch to validate fields.
+Predicates → Flags → Rules (in that order).
