@@ -6,7 +6,6 @@ from dateutil import parser
 import os
 import time
 
-### ---- Watcher Function ---- ###
 def wait_for_new_upload(csv_folder, mln_folder, check_interval=5):
     print(f"Waiting for new uploads in {csv_folder} and {mln_folder}...")
 
@@ -34,7 +33,7 @@ def wait_for_new_upload(csv_folder, mln_folder, check_interval=5):
 
         time.sleep(check_interval)
 
-### ---- Cleaning Helper Functions ---- ###
+#Cleaning Helper Functions
 def clean_name(name):
     parts = re.split(r'[,\s]+', name.strip())
     parts = [p for p in parts if p]
@@ -88,7 +87,6 @@ def clean_address(address):
     address = re.sub(r'\s+', ' ', address)
     return address.strip()
 
-### ---- Core Pipeline Steps ---- ###
 def csv_to_db(csv_path, db_path):
     df = pd.read_csv(csv_path, quotechar='"')
     df.reset_index(drop=True, inplace=True)
@@ -181,7 +179,6 @@ def repair_dataframe(df):
 
     return pd.DataFrame(repaired_rows)
 
-### ---- Runner ---- ###
 def run_pipeline_once():
     # Watch for new uploads
     csv_path, mln_path = wait_for_new_upload(
@@ -189,29 +186,27 @@ def run_pipeline_once():
         mln_folder="../mln/"
     )
 
-    # Step 1: Create .db from CSV
+
     csv_to_db(
         csv_path=csv_path,
         db_path="../mln/facts.db"
     )
 
-    # Step 2: Run Tuffy
+
     run_tuffy()
 
-    # Step 3: Annotate errors
+
     df_dirty = annotate_csv(
         csv_path=csv_path,
         result_path="../mln/final.result",
         output_csv_path="../../results/final.csv"
     )
 
-    # Step 4: Repair automatically with Python
+
     df_repaired = repair_dataframe(df_dirty)
 
-    # Step 5: Sort by first name
     df_repaired = df_repaired.sort_values(by="FirstName")
 
-    # Step 6: Save final cleaned file
     df_repaired.to_csv("../../results/final_cleaned.csv", index=False)
 
     print("Final cleaned file saved at: ../../results/final_cleaned.csv ✅")
