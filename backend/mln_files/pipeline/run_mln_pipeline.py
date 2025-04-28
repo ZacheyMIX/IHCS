@@ -163,13 +163,13 @@ def annotate_csv(csv_path, result_path, output_csv_path=None):
 
 def run():
     wait_for_files(
-        csv_path="../data/Data.csv",
-        mln_path="../mln/rules.mln"
+        csv_path="../data/final_formatted_data.csv",
+        mln_path="../mln/user_uploaded_rules.mln"
     )
 
     # Step 1: Generate .db
     csv_to_db(
-        csv_path="../data/Data.csv",
+        csv_path="../data/final_formatted_data.csv",
         db_path="../mln/facts.db"
     )
 

@@ -19,7 +19,8 @@ class MainWindow(QMainWindow):
     currentSelectedPage = 0
     formatting = False
     ss = StyleSheets
-    mln_folder = os.path.join(os.path.dirname(__file__), '..', 'backend', 'mln_files', 'mln')
+    current_dir = os.path.dirname(__file__)
+    mln_folder = os.path.join(current_dir, '..', 'backend', 'mln_files', 'mln')
     mln_folder = os.path.abspath(mln_folder)
     mln_folder = mln_folder + "/user_uploaded_rules.mln"
 
@@ -73,7 +74,7 @@ class MainWindow(QMainWindow):
         titleText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         introLabel = QLabel()
-        introLabel.setPixmap(QPixmap('View/Images/intro.png'))
+        introLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'intro.png')))
 
         self.aboutPageButton = QPushButton("About")
         self.aboutPageButton.setStyleSheet(self.ss.selectedButtonStyle())
@@ -91,7 +92,7 @@ class MainWindow(QMainWindow):
         self.acknowledgementPageButton.clicked.connect(lambda: self.movetopage(2))
 
         settingsLabel = QLabel()
-        settingsLabel.setPixmap(QPixmap('View/Images/settings.png'))
+        settingsLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'settings.png')))
 
         self.paramPageButton = QPushButton("Parameter Setting")
         self.paramPageButton.setStyleSheet(self.ss.enabledButtonStyle())
@@ -99,7 +100,7 @@ class MainWindow(QMainWindow):
         self.paramPageButton.clicked.connect(lambda: self.movetopage(3))
 
         cleaningLabel = QLabel()
-        cleaningLabel.setPixmap(QPixmap('View/Images/cleaning.png'))
+        cleaningLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'cleaning.png')))
 
         self.cleaningPageButton = QPushButton("Hybrid Data Cleaning System")
         self.cleaningPageButton.setEnabled(False)
@@ -108,7 +109,7 @@ class MainWindow(QMainWindow):
         self.cleaningPageButton.clicked.connect(lambda: self.movetopage(5))
 
         resultsLabel = QLabel()
-        resultsLabel.setPixmap(QPixmap('View/Images/results.png'))
+        resultsLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'results.png')))
 
         self.resultPageButton = QPushButton("Dataset Interaction")
         self.resultPageButton.setEnabled(False)
@@ -171,7 +172,7 @@ class MainWindow(QMainWindow):
         welcomeText = QLabel("Welcome to IHCS!")
         welcomeText.setFont(self.font)
         welcomeText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
-        aboutText = QLabel(self.outputFile("View/Text/About.txt"))
+        aboutText = QLabel(self.outputFile(os.path.join(self.current_dir, 'Text', 'About.txt')))
         aboutText.setWordWrap(True)
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -188,8 +189,8 @@ class MainWindow(QMainWindow):
         helpTitleWidget = QWidget()
         helpTitleLayout = QVBoxLayout()
         helpTitle = QLabel()
-        helpTitle.setPixmap(QPixmap('View/Images/help page.png'))
-        helpText = QLabel(self.outputFile("View/Text/Help.txt"))
+        helpTitle.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'help page.png')))
+        helpText = QLabel(self.outputFile(os.path.join(self.current_dir, 'Text', 'Help.txt')))
         helpText.setWordWrap(True)
         helpText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -208,8 +209,9 @@ class MainWindow(QMainWindow):
         acknowlegementTitleWidget = QWidget()
         acknowlegementTitleLayout = QVBoxLayout()
         acknowlegementTitle = QLabel()
-        acknowlegementTitle.setPixmap(QPixmap('View/Images/acknowledgements page.png'))
-        acknowledgementText = QLabel(self.outputFile("View/Text/Acknowledgements.txt"))
+        
+        acknowlegementTitle.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'acknowledgements page.png')))
+        acknowledgementText = QLabel(self.outputFile(os.path.join(self.current_dir, 'Text', 'Acknowledgements.txt')))
         acknowledgementText.setWordWrap(True)
         acknowledgementText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
@@ -229,7 +231,7 @@ class MainWindow(QMainWindow):
         chooseWidget = QWidget()
         chooseLayout = QVBoxLayout()
         parameterSettingLabel = QLabel()
-        parameterSettingLabel.setPixmap(QPixmap('View/Images/parameter page.png'))
+        parameterSettingLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'parameter page.png')))
         chooseText = QLabel("Choose the Files")
         chooseText.setStyleSheet("color: blue")
         chooseText.setFixedHeight(20)
@@ -339,7 +341,7 @@ class MainWindow(QMainWindow):
         buttonLayout = QHBoxLayout()
         buttonWidget = QWidget()
         cleaningLabel = QLabel()
-        cleaningLabel.setPixmap(QPixmap('View/Images/cleaning page.png'))
+        cleaningLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'cleaning page.png')))
         self.progress_bar = QProgressBar()
         self.progress_bar.setTextVisible(False)
         self.progress_bar.setStyleSheet(self.ss.progressBarStyle())
@@ -368,7 +370,7 @@ class MainWindow(QMainWindow):
 
 
         resultsLabel = QLabel()
-        resultsLabel.setPixmap(QPixmap('View/Images/result page.png'))
+        resultsLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'results page.png')))
         congratsLabel = QLabel("Congratulations, cleaning finished!")
 
         #Dataset UI stuff
@@ -408,7 +410,7 @@ class MainWindow(QMainWindow):
         evalHeaderWidget = QWidget()
         evalHeaderWidget.setLayout(evalHeaderLayout)
         evalLabel = QLabel()
-        evalLabel.setPixmap(QPixmap("View/Images/evaluation page.png"))
+        evalLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'evaluation page.png')))
         self.chartButton = QPushButton("Chart")
         self.chartButton.setEnabled(False)
         self.chartButton.setStyleSheet(self.ss.disabledPageButtonStyle())
@@ -669,7 +671,7 @@ class MainWindow(QMainWindow):
                 self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
         
         self.movetopage(5)
-        self.viewModel.continue_clean
+        self.viewModel.continue_clean()
 
     #Updates progress bar intermediately
     @pyqtSlot(int)
@@ -705,10 +707,10 @@ class MainWindow(QMainWindow):
     #Starts the evaluation on the dataset
     def evaluate_button_clicked(self):
         #Check if file format is correct
-        # if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-        #                  self.datasetTextBox.text()):
-        #     self.errorDialog("You must input either a csv, xlsx, xls, or json file")
-        #     return
+        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+                         self.datasetTextBox.text()):
+            self.errorDialog("You must input either a csv, xlsx, xls, or json file")
+            return
         #Run Novellas evaluation program
         self.viewModel.startEval()
 
@@ -716,18 +718,21 @@ class MainWindow(QMainWindow):
     def evaluate_finished(self):
         self.chartButton.setEnabled(True)
         self.chartButton.setStyleSheet(self.ss.pageButtonStyle())
-        results = self.viewModel.cleanScores
+        dataset = self.viewModel.cleanScores['dataset']
+        existingResult = self.viewModel.cleanScores['openrefine']
+        ourResult = self.viewModel.cleanScores['ihcs']
+        
 
         #Current Eval
         self.clear_layout(self.resultLayout)
-        self.resultLayout.addWidget(QLabel(results["dataset"]))
-        self.resultLayout.addWidget(QLabel(str(results["runtime"])))
-        self.resultLayout.addWidget(QLabel(results["precision"]))
-        self.resultLayout.addWidget(QLabel(results["recall"]))
-        self.resultLayout.addWidget(QLabel(results["f1-score"]))
+        self.resultLayout.addWidget(QLabel(dataset))
+        self.resultLayout.addWidget(QLabel(str(self.viewModel.cleaningTime)))
+        self.resultLayout.addWidget(QLabel(ourResult["precision"]))
+        self.resultLayout.addWidget(QLabel(ourResult["recall"]))
+        self.resultLayout.addWidget(QLabel(ourResult["f1-score"]))
 
         #History
-        self.viewModel.history.append(results)
+        self.viewModel.history.append({'dataset': dataset, 'runtime': str(self.viewModel.cleaningTime), 'precision':  ourResult['precision'], 'recall': ourResult['recall'], 'f1-score': ourResult['f1score']})
 
         #History
         self.historyListWidget.clear()
@@ -739,10 +744,10 @@ class MainWindow(QMainWindow):
             itemLayout.setContentsMargins(0, 0, 0, 0)
 
             itemLayout.addWidget(QLabel(row['dataset']))
-            itemLayout.addWidget(QLabel(str(results["runtime"])))
-            itemLayout.addWidget(QLabel(results["precision"]))
-            itemLayout.addWidget(QLabel(results["recall"]))
-            itemLayout.addWidget(QLabel(results["f1-score"]))
+            itemLayout.addWidget(QLabel(str(row["runtime"])))
+            itemLayout.addWidget(QLabel(row["precision"]))
+            itemLayout.addWidget(QLabel(row["recall"]))
+            itemLayout.addWidget(QLabel(row["f1-score"]))
             itemWidget.setLayout(itemLayout)
 
             self.historyListWidget.setItemWidget(item, itemWidget)
