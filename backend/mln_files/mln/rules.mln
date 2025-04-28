@@ -1,4 +1,7 @@
+// ===============================
 // Predicates
+// ===============================
+
 HasName(Employee, Name)
 HasEmployeeID(Employee, ID)
 HasSalary(Employee, Salary)
@@ -21,27 +24,50 @@ BadWeight(Employee)
 BadAddress(Employee)
 BadEmail(Employee)
 
+// ===============================
+// Entity Relationship Detection
+// ===============================
+
+SameEmail(Employee, Employee)
+SameNameDOB(Employee, Employee)
+PotentialDuplicate(Employee, Employee)
+
+// ===============================
 // Error detection rules
-0.8 HasEmail(e, email), RegexMatch(email, ".*\\s+.*") => BadEmail(e)
-0.8 HasEmail(e, email), !RegexMatch(email, ".*@.*") => BadEmail(e)
-0.8 HasEmail(e, email), !RegexMatch(email, ".*\\.com|\\.org|\\.edu") => BadEmail(e)
+// ===============================
 
-0.8 HasAddress(e, addr), !RegexMatch(addr, ".*\\d+.*") => BadAddress(e)
-0.8 HasAddress(e, addr), RegexMatch(addr, ".*[!@#$%^&*()]+.*") => BadAddress(e)
+0.8 HasEmail(e, email), RegexMatch(email, ".*\\s+.*") => BadEmail(e).
+0.8 HasEmail(e, email), !RegexMatch(email, ".*@.*") => BadEmail(e).
+0.8 HasEmail(e, email), !RegexMatch(email, ".*\\.com|\\.org|\\.edu") => BadEmail(e).
 
-0.7 HasSalary(e, sal), RegexMatch(sal, ".*[a-zA-Z]+.*") => BadSalary(e)
-0.7 HasSalary(e, sal), RegexMatch(sal, ".*\\$.*") => BadSalary(e)
-0.7 HasSalary(e, sal), RegexMatch(sal, ".*K.*") => BadSalary(e)
+0.8 HasAddress(e, addr), !RegexMatch(addr, ".*\\d+.*") => BadAddress(e).
+0.8 HasAddress(e, addr), RegexMatch(addr, ".*[!@#$%^&*()]+.*") => BadAddress(e).
 
-0.7 HasWeight(e, w), !RegexMatch(w, ".*(kg|lbs|lb).*") => BadWeight(e)
-0.7 HasWeight(e, w), RegexMatch(w, ".*[^0-9.].*") => BadWeight(e)
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*[a-zA-Z]+.*") => BadSalary(e).
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*\\$.*") => BadSalary(e).
+0.7 HasSalary(e, sal), RegexMatch(sal, ".*K.*") => BadSalary(e).
 
-0.7 HasName(e, name), RegexMatch(name, ".*[0-9]+.*") => BadName(e)
-0.7 HasName(e, name), RegexMatch(name, ".*[^a-zA-Z\\s'\\-\\.].*") => BadName(e)
+0.7 HasWeight(e, w), !RegexMatch(w, ".*(kg|lbs|lb).*") => BadWeight(e).
+0.7 HasWeight(e, w), RegexMatch(w, ".*[^0-9.].*") => BadWeight(e).
 
-0.8 HasEmployeeID(e, id), !RegexMatch(id, ".*[0-9]+.*") => BadID(e)
+0.7 HasName(e, name), RegexMatch(name, ".*[0-9]+.*") => BadName(e).
+0.7 HasName(e, name), RegexMatch(name, ".*[^a-zA-Z\\s'\\-\\.].*") => BadName(e).
 
-0.8 HasDOB(e, dob), RegexMatch(dob, ".*[^0-9/\\-.].*") => BadDOB(e)
-0.8 HasJoinDate(e, jd), RegexMatch(jd, ".*[^0-9/\\-.].*") => BadJoinDate(e)
+0.8 HasEmployeeID(e, id), !RegexMatch(id, ".*[0-9]+.*") => BadID(e).
 
-0.8 HasYearsOfService(e, y), RegexMatch(y, ".*[^0-9].*") => BadYearsOfService(e)
+0.8 HasDOB(e, dob), RegexMatch(dob, ".*[^0-9/\\-.].*") => BadDOB(e).
+0.8 HasJoinDate(e, jd), RegexMatch(jd, ".*[^0-9/\\-.].*") => BadJoinDate(e).
+
+0.8 HasYearsOfService(e, y), RegexMatch(y, ".*[^0-9].*") => BadYearsOfService(e).
+
+// ===============================
+// Entity matching rules
+// ===============================
+
+0.9 HasEmail(e1, email1) ^ HasEmail(e2, email2) ^ (email1 = email2) ^ (e1 != e2) => SameEmail(e1, e2).
+
+0.9 HasName(e1, name1) ^ HasName(e2, name2) ^ (name1 = name2)
+    ^ HasDOB(e1, dob1) ^ HasDOB(e2, dob2) ^ (dob1 = dob2) ^ (e1 != e2)
+    => SameNameDOB(e1, e2).
+
+0.8 SameEmail(e1, e2) ^ SameNameDOB(e1, e2) => PotentialDuplicate(e1, e2).
