@@ -1,225 +1,274 @@
+import re
 import pandas as pd
 import numpy as np
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 
-def get_dataset():
-    """ function to get both the messy dataset and the cleaned dataset """
-    messy_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Messy-Data.csv'
-    cleaned_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/results/final_cleaned.csv'
-    gt_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Cleaned-Data.csv'
-    return messy_data_path, cleaned_data_path, gt_data_path
+# Function to standardize EmployeeID format to match the pattern in Cleaned-Data.csv
+def standardize_employee_id(employee_id):
+    # Remove all non-digit characters
+    digits_only = re.sub(r'\D', '', str(employee_id))
+
+    # Check if we have enough digits to format
+    if len(digits_only) >= 10:
+        # If the ID doesn't start with 0, add it
+        if not digits_only.startswith('0'):
+            digits_only = '0' + digits_only
+
+        # Format as XXXX-XXX-XXX or XXXX-XXX-XXXX depending on length
+        return f"{digits_only[:4]}-{digits_only[4:7]}-{digits_only[7:11]}"
+    else:
+        # If not enough digits, pad with zeros at the beginning
+        padded_digits = digits_only.zfill(10)
+        return f"{padded_digits[:4]}-{padded_digits[4:7]}-{padded_digits[7:]}"
+
+def remove_missing_rows_all_columns(missing_rows_df, df_res):
+    """ Identify duplicated rows in the ground truth dataframe that has been cleaned and might not be cleaned in the system result and removed them in the system result for preparation before evaluation """
+
+    # Reset the index of df_res to create a column with the original indices
+    df_res_with_index = df_res.reset_index().rename(columns={'index': 'original_index'})
+
+    # Perform the merge, which will keep the original_index column
+    matching_rows = pd.merge(
+        df_res_with_index,
+        missing_rows_df,
+        on=['First Name', 'Middle Name', 'Last Name', 'Title', 'EmployeeID', 'Year of Service'],
+        how='inner'
+    )
+
+    # Now matching_rows contains the original_index column with the indices from df_res
+    original_indices = matching_rows['original_index'].tolist()
+
+    print(f"The matching rows in df_res have indices: {original_indices}")
+
+    # remove the matching rows in df_res
+    df_res.drop(original_indices, inplace=True)
+
+    return df_res
 
 def identify_modified_columns(original_df, cleaned_df):
     """
     Identify columns that were modified during cleaning
-    
+
     Args:
         original_df: The original messy dataframe
         cleaned_df: The cleaned dataframe
-    
+
     Returns:
         List of column names that were modified
     """
     modified_columns = []
-    
+
     # Ensure both dataframes have the same index for comparison
     original_df = original_df.reset_index(drop=True)
     cleaned_df = cleaned_df.reset_index(drop=True)
-    
+
     # Check each column for differences
     for col in original_df.columns:
         if col in cleaned_df.columns:
             # Check if the column values are different
             if not original_df[col].equals(cleaned_df[col]):
                 modified_columns.append(col)
-    
+
     return modified_columns
 
-# def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
-    """
-    Evaluate the cleaning results against ground truth
-    
-    Args:
-        cleaned_df: The cleaned dataframe
-        gt_df: The ground truth dataframe
-        modified_columns: List of columns to evaluate (if None, evaluate all common columns)
-    
-    Returns:
-        Dictionary with evaluation metrics for each column
-    """
-    results = {}
-    
-    # If no specific columns are provided, use all common columns
-    if modified_columns is None:
-        modified_columns = [col for col in cleaned_df.columns if col in gt_df.columns]
-    
-    # Ensure both dataframes have the same index for comparison
-    cleaned_df = cleaned_df.reset_index(drop=True)
-    gt_df = gt_df.reset_index(drop=True)
-    
-    # Overall statistics
-    total_cells = 0
-    correct_cells = 0
-    
-    for col in modified_columns:
-        if col in gt_df.columns:
-            # For categorical data, calculate precision, recall, f1
-            if cleaned_df[col].dtype == 'object' or gt_df[col].dtype == 'object':
-                # Convert to string to ensure proper comparison
-                cleaned_values = cleaned_df[col].astype(str)
-                gt_values = gt_df[col].astype(str)
-                
-                # Calculate cell-level accuracy
-                accuracy = (cleaned_values == gt_values).mean()
-                
-                # For multi-class metrics, we need to handle each unique value as a class
-                # This is a simplified approach - for more complex scenarios you might need
-                # to adapt this based on your specific data
-                try:
-                    # Create binary indicators for each value
-                    all_values = set(cleaned_values.unique()) | set(gt_values.unique())
-                    
-                    # Calculate metrics for each value and average them
-                    prec_scores = []
-                    rec_scores = []
-                    f1_scores = []
-                    
-                    for value in all_values:
-                        y_true = (gt_values == value).astype(int)
-                        y_pred = (cleaned_values == value).astype(int)
-                        
-                        if sum(y_true) > 0 and sum(y_pred) > 0:
-                            prec = precision_score(y_true, y_pred, zero_division=0)
-                            rec = recall_score(y_true, y_pred, zero_division=0)
-                            f1 = f1_score(y_true, y_pred, zero_division=0)
-                            
-                            prec_scores.append(prec)
-                            rec_scores.append(rec)
-                            f1_scores.append(f1)
-                    
-                    if prec_scores:
-                        precision = np.mean(prec_scores)
-                        recall = np.mean(rec_scores)
-                        f1 = np.mean(f1_scores)
-                    else:
-                        precision = recall = f1 = 0.0
-                        
-                except Exception as e:
-                    precision = recall = f1 = 0.0
-                    print(f"Error calculating metrics for column {col}: {e}")
-            
-            # For numerical data, calculate RMSE and MAE
-            elif pd.api.types.is_numeric_dtype(cleaned_df[col]) and pd.api.types.is_numeric_dtype(gt_df[col]):
-                # Handle potential NaN values
-                valid_mask = ~(cleaned_df[col].isna() | gt_df[col].isna())
-                
-                if valid_mask.sum() > 0:
-                    cleaned_values = cleaned_df.loc[valid_mask, col]
-                    gt_values = gt_df.loc[valid_mask, col]
-                    
-                    # Calculate accuracy as percentage of exact matches
-                    accuracy = (cleaned_values == gt_values).mean()
-                    
-                    # Calculate RMSE and MAE
-                    rmse = np.sqrt(((cleaned_values - gt_values) ** 2).mean())
-                    mae = np.abs(cleaned_values - gt_values).mean()
-                    
-                    # For numerical data, precision/recall/f1 don't apply directly
-                    precision = recall = f1 = None
-                else:
-                    accuracy = rmse = mae = 0
-                    precision = recall = f1 = None
-            
-            # Update overall statistics
-            col_cells = len(cleaned_df[col])
-            total_cells += col_cells
-            correct_cells += sum(cleaned_df[col].astype(str) == gt_df[col].astype(str))
-            
-            # Store results for this column
-            results[col] = {
-                'accuracy': accuracy,
-                'precision': precision,
-                'recall': recall,
-                'f1_score': f1,
-                'type': 'categorical' if cleaned_df[col].dtype == 'object' else 'numerical'
-            }
-            
-            # Add RMSE and MAE for numerical columns
-            if pd.api.types.is_numeric_dtype(cleaned_df[col]) and pd.api.types.is_numeric_dtype(gt_df[col]):
-                results[col]['rmse'] = rmse
-                results[col]['mae'] = mae
-    
-    # Calculate overall accuracy
-    results['overall'] = {
-        'accuracy': correct_cells / total_cells if total_cells > 0 else 0,
-        'modified_columns': len(modified_columns),
-        'total_cells_evaluated': total_cells,
-        'correct_cells': correct_cells
-    }
-    
-    return results
+def convert_to_float(weight):
+    weight = weight.split(' ')[0]
+    w = float(weight)
+    weight = str(w) + ' lbs'
+    return weight
 
-def evaluate_cleaning(cleaned_df, gt_df, modified_columns=None):
+def data_prep_ihcs(ihcs_res, gt, missing_rows_df):
+    # make a copy to keep the original
+    ihcs_res_copy = ihcs_res.copy()
+    gt_copy = gt.copy()
+
+    # Apply the standardization to the EmployeeID column and Weight
+    ihcs_res_copy['EmployeeID'] = ihcs_res_copy['EmployeeID'].apply(standardize_employee_id)
+    gt_copy['Weight'] = gt_copy['Weight'].apply(convert_to_float)
+
+    # sort the ground truth dataframe by first name following the ihcs result
+    gt_fname_sorted = gt_copy.sort_values(by = 'First Name')
+
+    # remove duplicated rows
+    ihcs_result_no_dup = remove_missing_rows_all_columns(missing_rows_df, ihcs_res_copy)
+
+    return gt_fname_sorted, ihcs_result_no_dup
+
+def evaluate_column_with_duplicates(df, gt, col):
+    # Make copies to avoid modifying the original dataframes
+    df = df.copy().reset_index()
+    gt = gt.copy().reset_index()
+
+    # Merge dataframes on EmployeeID to align rows
+    merged = pd.merge(gt[['EmployeeID', col]],
+                     df[['EmployeeID', col]],
+                     on='EmployeeID',
+                     how='left',
+                     suffixes=('_gt', '_cleaned'))
+
+    # Compute correctness
+    merged['correct'] = (merged[f'{col}_gt'] == merged[f'{col}_cleaned']).astype(int)
+
+    # Create mismatch dataframe
+    mismatches = merged[merged['correct'] == 0]
+    mismatch_df = pd.DataFrame({
+        'EmployeeID': mismatches['EmployeeID'],
+        'Cleaned': mismatches[f'{col}_cleaned'],
+        'Solution': mismatches[f'{col}_gt']
+    })
+
+    return merged['correct'].values, mismatch_df
+
+def evaluate_column_with_metrics(df, gt, col):
     """
-    Evaluate the accuracy of data cleaning by comparing cleaned data with ground truth.
-    
-    Parameters:
-    cleaned_df (pd.DataFrame): The cleaned data.
-    gt_df (pd.DataFrame): The ground truth data.
-    modified_columns (list, optional): List of columns to evaluate. If None, all columns are evaluated.
-    
+    Evaluates a column in the cleaned dataframe against the ground truth with detailed metrics.
+
+    Args:
+        df: Cleaned dataframe
+        gt: Ground truth dataframe
+        col: Column name to evaluate
+
     Returns:
-    dict: A dictionary containing evaluation metrics for each column and overall metrics.
+        metrics: Dictionary containing accuracy, precision, recall, and F1 score
+        mismatch_df: DataFrame showing mismatches between cleaned and ground truth
     """
-    
+    # Make copies to avoid modifying the original dataframes
+    df = df.copy().reset_index(drop=True)
+    gt = gt.copy().reset_index(drop=True)
+
+    # Merge dataframes on EmployeeID to align rows
+    merged = pd.merge(gt[['EmployeeID', col]],
+                     df[['EmployeeID', col]],
+                     on='EmployeeID',
+                     how='outer',
+                     suffixes=('_gt', '_cleaned'))
+
+    # Calculate correctness
+    merged['correct'] = (merged[f'{col}_gt'] == merged[f'{col}_cleaned']).astype(int)
+
+    # Fill NaN values for display in the mismatch dataframe
+    merged[f'{col}_cleaned'] = merged[f'{col}_cleaned'].fillna('MISSING')
+    merged[f'{col}_gt'] = merged[f'{col}_gt'].fillna('MISSING')
+
+    # Create mismatch dataframe
+    mismatches = merged[merged['correct'] == 0]
+    mismatch_df = pd.DataFrame({
+        'EmployeeID': mismatches['EmployeeID'],
+        'Cleaned': mismatches[f'{col}_cleaned'],
+        'Solution': mismatches[f'{col}_gt']
+    })
+
+    # Calculate metrics for data cleaning evaluation
+    total_gt = len(gt)
+    total_cleaned = len(df)
+    total_merged = len(merged)
+
+    # Entries present in both datasets
+    common_entries = merged.dropna(subset=[f'{col}_gt', f'{col}_cleaned']).shape[0]
+
+    # Correct entries (where cleaned matches ground truth)
+    correct_entries = merged['correct'].sum()
+
+    # Accuracy: proportion of correct entries among all entries
+    accuracy = correct_entries / total_merged if total_merged > 0 else 0
+
+    # Precision: proportion of correct entries among all entries in cleaned data
+    # (How many of the cleaned values are correct?)
+    precision = correct_entries / total_cleaned if total_cleaned > 0 else 0
+
+    # Recall: proportion of ground truth entries that were correctly cleaned
+    # (How many of the ground truth values did we correctly clean?)
+    recall = correct_entries / total_gt if total_gt > 0 else 0
+
+    # F1 score: harmonic mean of precision and recall
+    f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+
+    metrics = {
+        'accuracy': accuracy,
+        'precision': precision,
+        'recall': recall,
+        'f1score': f1,
+        'total_gt_entries': total_gt,
+        'total_cleaned_entries': total_cleaned,
+        'total_merged_entries': total_merged,
+        'common_entries': common_entries,
+        'correct_entries': correct_entries,
+        'missing_in_cleaned': total_gt - common_entries,
+        'extra_in_cleaned': total_cleaned - common_entries
+    }
+
+    return metrics, mismatch_df, merged['correct'].values
+
+def evaluate_all_modified_columns(df, gt, columns_to_evaluate):
+    res = {'accuracy': [], 'precision': [], 'recall': [], 'f1score': []}
+    for col in columns_to_evaluate:
+        metrics, _, _ = evaluate_column_with_metrics(df, gt, col)
+        print(f'{col}: {metrics}')
+        res['accuracy'].append(metrics['accuracy'])
+        res['precision'].append(metrics['precision'])
+        res['recall'].append(metrics['recall'])
+        res['f1score'].append(metrics['f1score'])
+        print('')
+
+    res['accuracy'] = np.mean(res['accuracy'])
+    res['precision'] = np.mean(res['precision'])
+    res['recall'] = np.mean(res['recall'])
+    res['f1score'] = np.mean(res['f1score'])
+
+    return res
+
+def data_prep_openrefine(openrefine_res, gt):
+    # make a copy to keep the original
+    openrefine_res_copy = openrefine_res.copy()
+    gt_copy = gt.copy()
+
+    # apply standardization to EmployeeID and datetime type columns
+    openrefine_res_copy['EmployeeID'] = openrefine_res_copy['EmployeeID'].apply(standardize_employee_id)
+    gt_copy['DOB'] = pd.to_datetime(gt_copy['DOB']).dt.strftime('%Y-%m-%dT00:00:00Z')
+    gt_copy['JoinDate'] = pd.to_datetime(gt_copy['JoinDate']).dt.strftime('%Y-%m-%dT00:00:00Z')
+
+    # remove the duplicate rows on openrefine res
+    openrefine_res_no_dup = openrefine_res_copy.drop([2, 19], axis=0)
+
+    return gt_copy, openrefine_res_no_dup
 
 def main():
-    """ main function to run the script """
+    messy_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Messy-Data.csv'
+    cleaned_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/results/final_cleaned.csv'
+    openrefine_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/formatted_data_openrefine.csv'
+    gt_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Cleaned-Data.csv'
+    gt_w_dup_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/cleaned_data_w_duplicates.csv'
 
-    # messy data and gt data
-    messy_data_path, cleaned_data_path, gt_data_path = get_dataset()
+    # Load the files
+    messy_data = pd.read_csv(messy_data_path)
+    ground_truth = pd.read_csv(gt_data_path, index_col=0)
+    ihcs_result = pd.read_csv(cleaned_data_path, index_col=0)
+    openrefine_result = pd.read_csv(openrefine_data_path)
+    gt_w_dup = pd.read_csv(gt_w_dup_data_path, index_col=0)
     
-    # create dataframe from the uploaded file
-    messy_df = pd.read_csv(messy_data_path)
-    cleaned_df = pd.read_csv(cleaned_data_path)  
-    gt_df = pd.read_csv(gt_data_path)
-    
-    print(f"messy_df: {messy_df.info()}")
-    print(f"cleaned_df: {cleaned_df.info()}")
-    print(f"gt_df: {gt_df.info()}")
-    
-    # Identify which columns were modified during cleaning
-    modified_columns = identify_modified_columns(messy_df, cleaned_df)
-    print(f"Modified columns: {modified_columns}")
-    
-    # Evaluate only the modified columns
-    evaluation_results = evaluate_cleaning(cleaned_df, gt_df, modified_columns)
-    
-    # Print evaluation results
-    print("\nEvaluation Results:")
-    print("===================")
-    
-    for col, metrics in evaluation_results.items():
-        if col != 'overall':
-            print(f"\nColumn: {col} ({metrics['type']})")
-            print(f"  Accuracy: {metrics['accuracy']:.4f}")
-            
-            if metrics['type'] == 'categorical':
-                if metrics['precision'] is not None:
-                    print(f"  Precision: {metrics['precision']:.4f}")
-                    print(f"  Recall: {metrics['recall']:.4f}")
-                    print(f"  F1 Score: {metrics['f1_score']:.4f}")
-            else:
-                if 'rmse' in metrics:
-                    print(f"  RMSE: {metrics['rmse']:.4f}")
-                    print(f"  MAE: {metrics['mae']:.4f}")
-    
-    # Print overall results
-    print("\nOverall Results:")
-    print(f"  Accuracy: {evaluation_results['overall']['accuracy']:.4f}")
-    print(f"  Modified Columns: {evaluation_results['overall']['modified_columns']}")
-    print(f"  Total Cells Evaluated: {evaluation_results['overall']['total_cells_evaluated']}")
-    print(f"  Correct Cells: {evaluation_results['overall']['correct_cells']}")
+    # gtdup.index = 2 : ihcs_res.index = 1
+    # gtdup.index = 19 : ihcs_res.index = 21
+    missing_rows_df = gt_w_dup.iloc[[2,19]][['First Name', 'Middle Name', 'Last Name', 'Title', 'EmployeeID', 'Year of Service']]
 
-if __name__ == "__main__":
-    main()
+    gt_fname_sorted, ihcs_result_no_dup = data_prep_ihcs(ihcs_result, ground_truth, missing_rows_df)
+    gt_modified, openrefine_res_no_dup = data_prep_openrefine(openrefine_result, ground_truth)
+
+    ihcs_columns_modified = identify_modified_columns(messy_data, ihcs_result_no_dup)
+    openrefine_columns_modified = identify_modified_columns(messy_data, openrefine_result)
+
+    print("Columns modified in system result:", ihcs_columns_modified)
+    print("Columns modified in openrefine result:", openrefine_columns_modified)
+
+    # remove EmployeeID from modified columns
+    ihcs_columns_modified.remove('EmployeeID')
+
+    # evaluate each modified columns
+    ihcs_res = evaluate_all_modified_columns(ihcs_result_no_dup, gt_fname_sorted, ihcs_columns_modified)
+    openrefine_res = evaluate_all_modified_columns(openrefine_res_no_dup, gt_modified, openrefine_columns_modified)
+    
+    print(f'ihcs res: {ihcs_res}')
+    print(f'openrefine res: {openrefine_res}')
+    
+    res_frontend = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': ihcs_res, 'openrefine': openrefine_res}
+    print(res_frontend)
+
+main()
