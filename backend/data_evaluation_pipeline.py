@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import numpy as np
+import os
 
 # Function to standardize EmployeeID format to match the pattern in Cleaned-Data.csv
 def standardize_employee_id(employee_id):
@@ -231,12 +232,11 @@ def data_prep_openrefine(openrefine_res, gt):
 
     return gt_copy, openrefine_res_no_dup
 
-def main():
-    messy_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Messy-Data.csv'
-    cleaned_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/results/final_cleaned.csv'
-    openrefine_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/formatted_data_openrefine.csv'
-    gt_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/Cleaned-Data.csv'
-    gt_w_dup_data_path = '/Users/novellaalvina/Documents/US/UTAH/Lessons/MS/Spring2025/CS 6964/project/IHCS/backend/data/cleaned_data_w_duplicates.csv'
+def main(messy_data_path, gt_data_path):
+    current_dir = os.path.dirname(__file__)
+    cleaned_data_path = os.path.join(current_dir, 'results', 'final_cleaned.csv')
+    openrefine_data_path = os.path.join(current_dir, 'data', 'formatted_data_openrefine.csv')
+    gt_w_dup_data_path = os.path.join(current_dir, 'data', 'cleaned_data_w_duplicates.csv')
 
     # Load the files
     messy_data = pd.read_csv(messy_data_path)
@@ -270,5 +270,3 @@ def main():
     
     res_frontend = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': ihcs_res, 'openrefine': openrefine_res}
     print(res_frontend)
-
-main()

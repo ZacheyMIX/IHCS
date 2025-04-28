@@ -10,7 +10,10 @@ The visual interface allows users to upload datasets and rules, monitor the clea
 
 This project was built as part of the CS 4964/CS 6964: Manage Data for & with ML course at the University of Utah.
 
-Reference: [Original IHCS Paper (VLDB 2019)](https://www.vldb.org/pvldb/vol12/p1874-ge.pdf).
+**Reference:** 
+
+- **Paper:** [Original IHCS Paper (VLDB 2019)](https://www.vldb.org/pvldb/vol12/p1874-ge.pdf).
+- **Tuffy:** [Tuffy Source](https://github.com/HazyResearch/tuffy.git).
 
 ---
 
@@ -67,9 +70,10 @@ dir_working = C:/Users/<your_username>/Desktop/IHCS/backend/mln_files/tuffy/temp
 ### Backend Pipeline:
 
 - Detects new uploads automatically.
-- Converts the dataset into a .db facts file.
+- Formats the uploaded dataset partially using Dataprep.
+- Converts the formatted dataset into a .db facts file.
 - Runs MLN-based probabilistic error detection using Tuffy.
-- Repairs flagged fields automatically with Python-based logic.
+- Repairs erroneous fields automatically with Python-based logic.
 - Evaluates cleaning performance using F1 score, precision, and recall.
 
 ### Outputs:

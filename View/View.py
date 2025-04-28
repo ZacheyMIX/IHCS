@@ -266,6 +266,7 @@ class MainWindow(QMainWindow):
         browseRulesButton = QPushButton("Browse...")
         browseRulesButton.setStyleSheet(self.ss.browseButtonStyle())
         browseRulesButton.clicked.connect(lambda: self.openFileDialog("rules"))
+        browseRulesButton.setToolTip(self.outputFile(os.path.join(self.current_dir, 'Text', 'MLNRules.txt')))
         formatLayout = QHBoxLayout()
         formatWidget = QWidget()
         formatButton = QPushButton("Next")
