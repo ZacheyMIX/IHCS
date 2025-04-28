@@ -67,9 +67,10 @@ dir_working = C:/Users/<your_username>/Desktop/IHCS/backend/mln_files/tuffy/temp
 ### Backend Pipeline:
 
 - Detects new uploads automatically.
-- Converts the dataset into a .db facts file.
+- Formats the uploaded dataset partially using Dataprep.
+- Converts the formatted dataset into a .db facts file.
 - Runs MLN-based probabilistic error detection using Tuffy.
-- Repairs flagged fields automatically with Python-based logic.
+- Repairs erroneous fields automatically with Python-based logic.
 - Evaluates cleaning performance using F1 score, precision, and recall.
 
 ### Outputs:
