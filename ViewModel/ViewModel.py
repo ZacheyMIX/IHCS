@@ -38,7 +38,6 @@ class ViewModel(QObject):
     cleanDatasetPath = ""
     groundTruthFile = ""
     cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'recall': '.9955', 'f1-score': '.9834'}
-    dirtyScores = {'dataset': 'dirtydata.csv', 'runtime': cleaningTime, 'precision': '.8723', 'recall': '.9435', 'f1-score': '.8398'}
     history = []
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
@@ -77,9 +76,8 @@ class ViewModel(QObject):
         self.cleanDatasetDict = final_data
         
     def continue_clean(self):
-        if self.changedTypes:
-            self.worker.update_types = self.changedTypes
-            self.worker.continue_pipeline()
+        self.worker.update_types = self.changedTypes
+        self.worker.continue_pipeline()
 
     def startEval(self):
         self.thread = QThread()
@@ -119,28 +117,30 @@ class WorkerThread(QObject):
         self.formatter = data_formatting_pipeline
         self.progress.emit(10)
         types, preview_data = self.formatter.main(self.path)
-        self.progress.emit(20)
+        self.progress.emit(30)
         self.format_ready.emit(types, preview_data)
 
         self._wait_for_continue()
         
 
     def _wait_for_continue(self):
+        self.paused = True
         self.format_start.emit()
-        while self.update_types is None:
-            QThread.msleep(100)
+        while self.paused:
+            time.sleep(.1)
         
-        self.finish_cleaning
+        self.finish_cleaning()
 
     #Called by viewmodel when user updates formated types
     def continue_pipeline(self):
-        pass
+        self.paused = False
 
     def finish_cleaning(self):
-        self.progress.emit(20)
+        
+        self.progress.emit(30)
         #Sends new updated types to Novella
         self.formatter.main_cont(self.update_types)
-        self.progress.emit(20)
+        self.progress.emit(30)
 
         #Starts Graces pipeline
         final_data = run_mln_pipeline.run()
