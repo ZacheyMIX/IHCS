@@ -708,7 +708,7 @@ class MainWindow(QMainWindow):
             if name == "joindate":
                 name = "join_date"
             data = items[1].currentText()
-            if name == "datetime" and items[2].isChecked():
+            if data == "datetime" and items[2].isChecked():
                 
                 minyear = items[3].text()
                 maxyear = items[4].text()
