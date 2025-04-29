@@ -201,9 +201,11 @@ def evaluate_column_with_metrics(df, gt, col):
 
 def evaluate_all_modified_columns(df, gt, columns_to_evaluate):
     res = {'accuracy': [], 'precision': [], 'recall': [], 'f1score': []}
+    metrics_dict = {}
     for col in columns_to_evaluate:
         metrics, _, _ = evaluate_column_with_metrics(df, gt, col)
         print(f'{col}: {metrics}')
+        metrics_dict[col] = metrics
         res['accuracy'].append(metrics['accuracy'])
         res['precision'].append(metrics['precision'])
         res['recall'].append(metrics['recall'])
@@ -215,7 +217,7 @@ def evaluate_all_modified_columns(df, gt, columns_to_evaluate):
     res['recall'] = np.mean(res['recall'])
     res['f1score'] = np.mean(res['f1score'])
 
-    return res
+    return res, metrics_dict
 
 def data_prep_openrefine(openrefine_res, gt):
     # make a copy to keep the original
@@ -231,6 +233,28 @@ def data_prep_openrefine(openrefine_res, gt):
     openrefine_res_no_dup = openrefine_res_copy.drop([2, 19], axis=0)
 
     return gt_copy, openrefine_res_no_dup
+
+def create_res_df(res_dict):
+    res_col = []
+    res_accuracy = []
+    res_precision = []
+    res_recall = []
+    res_f1 = []
+    
+    res_data = {'column_name': res_col, 'accuracy': res_accuracy, 'precision': res_precision, 'recall': res_recall, 'f1score': res_f1}
+    for col, met in res_dict.items():
+        col_name = col
+        acc = met['accuracy']
+        prec = met['precision']
+        rec = met['recall']
+        f1 = met['f1score']
+        res_col.append(col_name)
+        res_accuracy.append(acc)
+        res_precision.append(prec)
+        res_recall.append(rec)
+        res_f1.append(f1)
+    
+    return pd.DataFrame(res_data)
 
 def main():
     current_dir = os.path.dirname(__file__)
@@ -264,11 +288,17 @@ def main():
     ihcs_columns_modified.remove('EmployeeID')
 
     # evaluate each modified columns
-    ihcs_res = evaluate_all_modified_columns(ihcs_result_no_dup, gt_fname_sorted, ihcs_columns_modified)
-    openrefine_res = evaluate_all_modified_columns(openrefine_res_no_dup, gt_modified, openrefine_columns_modified)
+    ihcs_res, ihcs_metric_dict = evaluate_all_modified_columns(ihcs_result_no_dup, gt_fname_sorted, ihcs_columns_modified)
+    openrefine_res, openrefine_metric_dict = evaluate_all_modified_columns(openrefine_res_no_dup, gt_modified, openrefine_columns_modified)
     
+    ihcs_res_df = create_res_df(ihcs_metric_dict)
+    openrefine_res_df = create_res_df(openrefine_metric_dict)
+    print(ihcs_res_df)
+    print(openrefine_res_df)
     print(f'ihcs res: {ihcs_res}')
     print(f'openrefine res: {openrefine_res}')
     
     res_frontend = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': ihcs_res, 'openrefine': openrefine_res}
     return(res_frontend)
+
+main()
