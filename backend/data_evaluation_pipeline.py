@@ -300,5 +300,3 @@ def main():
     
     res_frontend = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': ihcs_res, 'openrefine': openrefine_res}
     return(res_frontend)
-
-main()
