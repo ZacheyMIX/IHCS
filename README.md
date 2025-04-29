@@ -33,14 +33,26 @@ To update the environment later:
 ```
 conda env update --file environment.yml
 ```
-### 3. Install PostgreSQL
+### 3. Set up Tuffy
+Because the tuffy/ folder is empty after cloning (Git does not track cloned repo contents), you must:
+
+- Download the tuffy.zip file provided separately.
+- Unzip it manually inside:
+```
+backend/mln_files/tuffy/
+```
+- Make sure the folder contains tuffy.jar, the temp/ folder, and other necessary files.
+
+### 4. Install PostgreSQL
 
 - Install PostgreSQL (recommended version: 14 or compatible).
 - Open pgAdmin and create a new database named:
 ```
 tuffydb
 ```
-### 3. Configure tuffy.conf
+- Create a user account and password if not already set.
+
+### 5. Configure tuffy.conf
 
 - Navigate to backend/mln_files/tuffy/.
 - Edit the tuffy.conf file:
@@ -52,7 +64,7 @@ dir_working = C:/Users/<your_username>/Desktop/IHCS/backend/mln_files/tuffy/temp
 ```
 - **Important:** Make sure PostgreSQL is running before starting IHCS.
 
-### 4. Java Requirement
+### 6. Java Requirement
 
 - Make sure Java (version 8 or higher) is installed.
 
@@ -90,7 +102,8 @@ dir_working = C:/Users/<your_username>/Desktop/IHCS/backend/mln_files/tuffy/temp
 
 ## Important Notes
 
-- The system automatically monitors the data/ and mln/ folders.
-- Uploading new files automatically triggers the backend cleaning process, no manual restart needed.
-- A prompt guides users on how to structure their .mln rule files correctly.
-- PostgreSQL server must be running whenever IHCS is active.
+- The backend monitors the folders data/ (datasets) and mln/ (rules).
+- Uploading a new dataset and rule file automatically triggers the cleaning pipeline.
+- PostgreSQL must be running when you start the backend.
+- Tuffy requires PostgreSQL credentials to be set correctly.
+- No manual server restarts are needed between uploads.
