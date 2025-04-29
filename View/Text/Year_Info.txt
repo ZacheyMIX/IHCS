@@ -1,0 +1,10 @@
+year_format` checkbox with `max_year` and `min_year` fill-in box
+      
+this is needed to identify the year of the form YY that might be ambigous. if the range is between 1900s and 2000s and the year is 22, the system will automatically recognized it as 2022, unless this checkbox is checked.
+
+if the `year_format` checkbox is checked, the system will ask the user to specify the range of years that the dataset covers (the minimum(`min_year`) and maximum(`max_year`) year of the date column covers). The gap or difference between the `min_year` and `max_year` less than 100 years. If both `min_year` and `max_year` are None (no input), then it is considered an invalid input and the system will ask the user to specify the year range again. If `min_year` year has no input but the `max_year` has input, then the default value for the `min_year` is `max_year`-99 and vice versa. 
+
+For example
+      
+- `min_year` = 1900 and `max_year` = 2000, this will result in warning and make the user to input the correct range of years.
+- `min_year` = 1926 and `max_year` = 2025, then if YY <= 25, then YYYY = (2000-2025) and if YY > 25, then YYYY = (1926-1999). i.e YY=22 will be converted to 2022 and YY=30 will be converted to 1930.

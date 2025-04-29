@@ -563,8 +563,9 @@ class MainWindow(QMainWindow):
         evalButton.setStyleSheet(self.ss.pageButtonStyle())
         evalButton.setMaximumWidth(150)
         evalButton.clicked.connect(self.eval_page_button_clicked)
+        infoText = QLabel("These systems are evaluated based on the columns that are modified only. IHCS is being evaluated on 'Salary', 'DOB', 'JoinDate', 'Year of Service', 'Weight', 'Address', 'Email' columns (6 out of 9 columns). OpenRefine is being evaluated on 'Salary', 'DOB', 'JoinDate', 'Email' columns (4 out of 9 columns)")
         
-        self.canvas = FigureCanvas(Figure(figsize=(8, 5)))
+        self.canvas = FigureCanvas(Figure(figsize=(7, 5)))
         
         
         
@@ -574,6 +575,7 @@ class MainWindow(QMainWindow):
         headerLayout.addWidget(evalButton)
         self.chartsLayout.addWidget(QLabel("Here you can view how scores compare to other cleaning systems"))
         self.chartsLayout.addWidget(self.canvas)
+        self.chartsLayout.addWidget(infoText)
         
         self.chartPageWidget.setLayout(self.chartsLayout)
         
@@ -652,7 +654,7 @@ class MainWindow(QMainWindow):
             colText = QLabel(colName)
             colText.setFixedWidth(100)
             comboBox = QComboBox()
-            comboBox.addItems(["string", "date/time", "email", 'country', 'phone number', "text", 'address', 'URL', 'ISBN numbers'])
+            comboBox.addItems(["string", "date/time", "Email", 'country', 'phone number', "US currency", 'US address', 'URL', 'ISBN numbers'])
             comboBox.setCurrentText(semantic)
             comboBox.setFixedWidth(150)
             comboBox.setStyleSheet("background-color: white")
@@ -664,6 +666,7 @@ class MainWindow(QMainWindow):
             yearLayout = QHBoxLayout()
             yearLayout.setContentsMargins(0, 0, 0, 0)
             yearFormat = QCheckBox("Year format")
+            yearFormat.setToolTip(self.outputFile(os.path.join(self.current_dir, "Text", "Year_Info.txt")))
             min_year_input = QLineEdit()
             min_year_input.setPlaceholderText("Min Year")
             min_year_input.setStyleSheet("background-color: white")
