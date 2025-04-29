@@ -654,7 +654,7 @@ class MainWindow(QMainWindow):
             colText = QLabel(colName)
             colText.setFixedWidth(100)
             comboBox = QComboBox()
-            comboBox.addItems(["string", "name", "datetime", "Email", 'country', 'phone number', "US currency", 'US address', 'URL', 'ISBN numbers'])
+            comboBox.addItems(["string", "name", "datetime", "Email", 'country', 'phone number', "US currency", 'address', 'URL', 'ISBN numbers'])
             comboBox.setCurrentText(semantic)
             comboBox.setFixedWidth(150)
             comboBox.setStyleSheet("background-color: white")
@@ -700,10 +700,16 @@ class MainWindow(QMainWindow):
     # Returns new formating changes if any, and continues cleaning process and sets up clean page
     def format_button_clicked(self):
         self.formatting = False
+        self.viewModel.changedTypes.clear()
 
         #Adds changed types to list if any
         for items in self.formatItemsList:
-            if items[1].currentText() == "datetime" and items[2].isChecked():
+            name = items[0].lower()
+            if name == 'joindate':
+                name = 'join_date'
+            data = items[1].currentText()
+            if name == "datetime" and items[2].isChecked():
+                
                 minyear = items[3].text()
                 maxyear = items[4].text()
                 if minyear == '' and maxyear == '':
@@ -718,11 +724,14 @@ class MainWindow(QMainWindow):
                     maxyear = int(minyear) + 99
                 else:
                     maxyear = int(maxyear)
-                self.viewModel.changedTypes[items[0]] = {"data_type": "datetime_w_year_format", "min_year": minyear, "max_year": maxyear}
-            elif self.originalTypes[items[0]] == items[1].currentText():
+                self.viewModel.changedTypes[items[0].lower()] = {"data_type": "datetime_w_year_format", "min_year": minyear, "max_year": maxyear}
+            elif self.originalTypes[items[0]] == data:
                 continue
             else:
-                self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
+                if data == 'address':
+                    self.viewModel.changedTypes[name] = {"data_type": 'US address'}
+                else:
+                    self.viewModel.changedTypes[name] = {"data_type": items[1].currentText()}
         print(self.viewModel.changedTypes)
         self.movetopage(5)
         self.viewModel.continue_clean()
