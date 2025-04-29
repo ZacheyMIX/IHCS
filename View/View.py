@@ -566,9 +566,7 @@ class MainWindow(QMainWindow):
         infoText = QLabel("These systems are evaluated based on the columns that are modified only. IHCS is being evaluated on 'Salary', 'DOB', 'JoinDate', 'Year of Service', 'Weight', 'Address', 'Email' columns (6 out of 9 columns). OpenRefine is being evaluated on 'Salary', 'DOB', 'JoinDate', 'Email' columns (4 out of 9 columns)")
         
         self.canvas = FigureCanvas(Figure(figsize=(7, 5)))
-        
-        
-        
+          
         #Setup
         self.chartsLayout.addWidget(headerWidget)
         headerLayout.addWidget(headerLabel)
@@ -583,13 +581,15 @@ class MainWindow(QMainWindow):
     def clean_button_clicked(self):
 
         #Check if file and rules are set correctly
-        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-                         self.datasetTextBox.text()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.datasetTextBox.text()):
+        data_win_match = re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+                         self.datasetTextBox.text())
+        data_mac_match = re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.datasetTextBox.text())
+        if not bool(data_win_match) ^ bool(data_mac_match):
             self.errorDialog("You must input either a csv, xlsx, xls, or json file")
             return
-        if not re.search(
-                r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.mln$',
-                self.rulesTextBox.text()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.mln$', self.rulesTextBox.text()):
+        rules_win_match = re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.mln$', self.rulesTextBox.text())
+        rules_mac_match = re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.mln$', self.rulesTextBox.text())
+        if not bool(rules_win_match) ^ bool(rules_mac_match):
             self.errorDialog("Must put in mln rules")
             return
         
@@ -749,8 +749,10 @@ class MainWindow(QMainWindow):
     #Starts the evaluation on the dataset
     def evaluate_button_clicked(self):
         #Check if file format is correct
-        if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-                         self.datasetTextBox.text()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.datasetTextBox.text()):
+        data_win_match = re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
+                         self.groundTruthTextBox.text())
+        data_mac_match = re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.groundTruthTextBox.text())
+        if not bool(data_win_match) ^ bool(data_mac_match):
             self.errorDialog("You must input either a csv, xlsx, xls, or json file")
             return
         #Run Novellas evaluation program
