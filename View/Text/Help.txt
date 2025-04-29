@@ -1,10 +1,8 @@
-Parameter Setting: Input a dataset file in the form of a .csv, .xlsx, xls, and json.  Then input valid data quality rules or let the program generate them automatically for you. Then hit the format button to start the process
+Parameter Setting: Input a dataset file in the form of a .csv, .xlsx, xls, and json.  The input a .mln file that represents the mln rules and relationship you want the program to focus on.  Once thats all set, you can start the cleaning system.
 
-Format Setting: Once the format button is pressed, format settings will unlock, here the program will provide you the formated version of your dataset and you will check to see if all the column types are correct.  If they aren't just simply change it to the correct type you want.  After thats done click the clean button to continue the process.
+Cleaning: Once the clean button is pressed, this tab will unlock. A progress bar that shows the current state of the cleaning process will display.  After some time, the page will switch to a format page where you can confirm or change any of the columns datatypes produced by our system.  After confirming, the cleaning process will continue. Once the process is done, Dataset Interaction and Result Analysis will unlock.
 
-Cleaning: Once the clean button is pressed, this tab will unlock. Here you will get to see the cleaning process in two forms.  A progress bar that shows the current state of the cleaning process. And a progress tab that shows the current task executed and the results produced by each step.  Once the process is done, Dataset Interaction and Result Analysis will unlock.
+Dataset Interaction: On this page you can view the final cleaned dataset produced by our system to ensure any errors made.  Then once you are ready, you can click the download button and download the newly cleaned dataset onto your machine.
 
-Dataset Interaction: On this page you will be able to view modifications between the dirty dataset and the final cleaned result. You can then perform value correction using either the tuple-based perspective or attribute-based perspective. And you can decide to keep the changed or old value within the tuple or attribute.  Duplicates will also aggregate, and you can decide to keep those as well.
-
-Result Analysis: On this page you can evalutate the runtime and accuracy of the cleaning result as well as view past results.
+Result Analysis: On this page you can evalutate the dataset given a ground truth file.  Once the evaluation is complete the system will run an analysis and produce the runtime, precision, recall, and f1-score. You can also view a history of previous evaluations made in the past.  And you can also switch over to the charts page that compares the results of our system vs other systems in the market. 
 

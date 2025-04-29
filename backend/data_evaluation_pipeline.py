@@ -232,9 +232,11 @@ def data_prep_openrefine(openrefine_res, gt):
 
     return gt_copy, openrefine_res_no_dup
 
-def main(messy_data_path, gt_data_path):
+def main():
     current_dir = os.path.dirname(__file__)
+    messy_data_path = os.path.join(current_dir, 'data', 'Messy-Data.csv')
     cleaned_data_path = os.path.join(current_dir, 'results', 'final_cleaned.csv')
+    gt_data_path = os.path.join(current_dir, 'data', 'Cleaned-Data.csv')
     openrefine_data_path = os.path.join(current_dir, 'data', 'formatted_data_openrefine.csv')
     gt_w_dup_data_path = os.path.join(current_dir, 'data', 'cleaned_data_w_duplicates.csv')
 
@@ -269,4 +271,4 @@ def main(messy_data_path, gt_data_path):
     print(f'openrefine res: {openrefine_res}')
     
     res_frontend = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': ihcs_res, 'openrefine': openrefine_res}
-    print(res_frontend)
+    return(res_frontend)

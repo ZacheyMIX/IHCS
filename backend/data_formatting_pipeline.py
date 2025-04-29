@@ -153,8 +153,9 @@ def format_data_columns(formatted_df: pd.DataFrame, columns_to_format: typing.Di
                 formatted_df[col] = pd.to_datetime(formatted_df[col])
                 formatted_df[col] = formatted_df[col].apply(lambda x: x.replace(year=x.year-100) if x.year > columns_to_format[col]['max_year'] else x)
             else: raise Exception("The year range is too large. Please check the year format.")
-        # elif data_type == 'name':
-        #     formatted_df[col] = formatted_df[col].apply(format_name)
+        elif data_type == 'name':
+            # formatted_df[col] = formatted_df[col].apply(format_name)
+            continue
         elif data_type == 'email':
                 formatted_df[col] = clean_email(formatted_df, col, errors='ignore', remove_whitespace=True, report=True, progress=True)[f'{col}_clean']
         elif data_type == 'US_address':
@@ -206,6 +207,8 @@ def main(data_path):
  
      # send to frontend
      inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
+     
+     print(inferred_dtypes_frontend)
 
      return inferred_dtypes_frontend, formatted_df_frontend
  

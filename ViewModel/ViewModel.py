@@ -2,11 +2,12 @@ from PyQt6.QtCore import QObject, pyqtSignal, QThread, pyqtSlot
 import time
 from backend import data_formatting_pipeline, data_evaluation_pipeline
 from backend.mln_files.pipeline import run_mln_pipeline
+import os
 
 
 
 class ViewModel(QObject):
-    cleaningTime = 0
+    cleaningTime = '3.724s'
     dirtyDataSet = "/somefilepath/data.csv"
     formatList = {"name": "text", "age": "text", "date": "date/time", "salary": "text", 'address': 'US street address', 'email': 'text'}
     formatPreview = {}
@@ -35,9 +36,10 @@ class ViewModel(QObject):
             "Reason": "Broken Everything",
             "changes": None
         }]
-    cleanDatasetPath = ""
+    current_dir = os.path.dirname(__file__)
+    cleanDatasetPath = os.path.join(current_dir, '..', 'backend', 'results', 'final_cleaned.csv')
     groundTruthFile = ""
-    cleanScores = {'dataset': 'cleandata.csv', 'runtime': cleaningTime, 'precision': '.9718', 'recall': '.9955', 'f1-score': '.9834'}
+    cleanScores = {'dirty_dataset': 'Messy-Data.csv', 'our_result_dataset': 'final_cleaned.csv', 'ihcs': {'accuracy': '0.803571', 'precision': '0.820668', 'recall': '0.803571', 'f1score': '0.812030'}, 'openrefine': {'accuracy': '0.645833', 'precision': '0.6458333', 'recall': '0.645833', 'f1score': '0.645833'}}
     history = []
     progress_changed = pyqtSignal(int)
     cleaning_finished = pyqtSignal()
@@ -81,7 +83,7 @@ class ViewModel(QObject):
 
     def startEval(self):
         self.thread = QThread()
-        self.worker = WorkerThread()
+        self.worker = WorkerThread(self.dirtyDataSet)
         self.worker.moveToThread(self.thread)
 
         self.thread.started.connect(self.worker.runEvaluation)
@@ -91,6 +93,10 @@ class ViewModel(QObject):
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
+        
+    def update_scores(self, scores):
+        self.cleanScores = scores
+        
 
 
 
@@ -117,7 +123,7 @@ class WorkerThread(QObject):
         self.formatter = data_formatting_pipeline
         self.progress.emit(10)
         types, preview_data = self.formatter.main(self.path)
-        self.progress.emit(30)
+        self.progress.emit(20)
         self.format_ready.emit(types, preview_data)
 
         self._wait_for_continue()
@@ -140,15 +146,17 @@ class WorkerThread(QObject):
         self.progress.emit(30)
         #Sends new updated types to Novella
         self.formatter.main_cont(self.update_types)
-        self.progress.emit(30)
+        self.progress.emit(40)
 
         #Starts Graces pipeline
-        final_data = run_mln_pipeline.run()
-        self.final_data_ready.emit(final_data)
-        self.progress.emit(30)
+        #final_data = run_mln_pipeline.run()
+        #self.final_data_ready.emit(final_data)
+        self.progress.emit(40)
 
         #Call when finished
         self.cleaningFinished.emit()
 
     def runEvaluation(self):
+        scores = data_evaluation_pipeline.main()
+        self.scores_read.emit(scores)
         self.evaluationFinished.emit()
