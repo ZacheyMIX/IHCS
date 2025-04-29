@@ -206,6 +206,8 @@ def main(data_path):
  
      # send to frontend
      inferred_dtypes_frontend, formatted_df_frontend = send_overall_formatted_df(inferred_dtypes, formatted_df)
+     
+     print(inferred_dtypes_frontend)
 
      return inferred_dtypes_frontend, formatted_df_frontend
  

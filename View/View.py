@@ -654,7 +654,7 @@ class MainWindow(QMainWindow):
             colText = QLabel(colName)
             colText.setFixedWidth(100)
             comboBox = QComboBox()
-            comboBox.addItems(["string", "date/time", "Email", 'country', 'phone number', "US currency", 'US address', 'URL', 'ISBN numbers'])
+            comboBox.addItems(["string", "name", "datetime", "Email", 'country', 'phone number', "US currency", 'US address', 'URL', 'ISBN numbers'])
             comboBox.setCurrentText(semantic)
             comboBox.setFixedWidth(150)
             comboBox.setStyleSheet("background-color: white")
@@ -680,10 +680,10 @@ class MainWindow(QMainWindow):
             yearLayout.addWidget(max_year_input)
             yearWidget.setLayout(yearLayout)
 
-            yearWidget.setVisible(semantic == "date/time")
+            yearWidget.setVisible(semantic == "datetime")
 
             def onTypeChanged(text, yearWidget=yearWidget):
-                yearWidget.setVisible(text == "date/time")
+                yearWidget.setVisible(text == "datetime")
 
             comboBox.currentTextChanged.connect(onTypeChanged)
 
@@ -703,13 +703,27 @@ class MainWindow(QMainWindow):
 
         #Adds changed types to list if any
         for items in self.formatItemsList:
-            if items[1].currentText() == "date/time" and items[2].isChecked():
-                self.viewModel.changedTypes[items[0]] = {"data_type": "date_time_w_year_format", "min_year": items[3].text(), "max_year": items[4].text()}
+            if items[1].currentText() == "datetime" and items[2].isChecked():
+                minyear = items[3].text()
+                maxyear = items[4].text()
+                if minyear == '' and maxyear == '':
+                    self.errorDialog('please put in a year for date/time')
+                    self.viewModel.changedTypes.clear()
+                    return
+                if minyear == '':
+                    minyear = int(maxyear) - 99
+                else:
+                    minyear = int(minyear)
+                if maxyear == '':
+                    maxyear = int(minyear) + 99
+                else:
+                    maxyear = int(maxyear)
+                self.viewModel.changedTypes[items[0]] = {"data_type": "datetime_w_year_format", "min_year": minyear, "max_year": maxyear}
             elif self.originalTypes[items[0]] == items[1].currentText():
                 continue
             else:
                 self.viewModel.changedTypes[items[0]] = {"data_type": items[1].currentText()}
-        
+        print(self.viewModel.changedTypes)
         self.movetopage(5)
         self.viewModel.continue_clean()
 
