@@ -642,7 +642,6 @@ class MainWindow(QMainWindow):
         for column in self.viewModel.formatList:
             colName = column['column_name']
             semantic = column['semantic_data_type']
-            atomic = column['atomic_data_type']
             self.originalTypes[colName] = semantic
             item = QListWidgetItem(self.listWidget)
             itemWidget = QWidget()
@@ -658,7 +657,6 @@ class MainWindow(QMainWindow):
             comboBox.setCurrentText(semantic)
             comboBox.setFixedWidth(150)
             comboBox.setStyleSheet("background-color: white")
-            typeText = QLabel(atomic)
             
 
 
@@ -689,7 +687,6 @@ class MainWindow(QMainWindow):
 
             itemLayout.addWidget(colText)
             itemLayout.addWidget(comboBox)
-            itemLayout.addWidget(typeText)
             itemLayout.addWidget(yearWidget)
             itemWidget.setLayout(itemLayout)
 
