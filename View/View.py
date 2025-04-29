@@ -584,12 +584,12 @@ class MainWindow(QMainWindow):
 
         #Check if file and rules are set correctly
         if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-                         self.datasetTextBox.text()):
+                         self.datasetTextBox.text()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.datasetTextBox.text()):
             self.errorDialog("You must input either a csv, xlsx, xls, or json file")
             return
         if not re.search(
                 r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.mln$',
-                self.rulesTextBox.text()):
+                self.rulesTextBox.text()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.mln$', self.rulesTextBox.text()):
             self.errorDialog("Must put in mln rules")
             return
         
@@ -750,7 +750,8 @@ class MainWindow(QMainWindow):
     def evaluate_button_clicked(self):
         #Check if file format is correct
         if not re.search(r'^(?:[a-zA-Z]:[\\/])?(?:[\w\s()-]+[\\/])*[\w\s()-]+\.(csv|xlsx|xls|json)$',
-                         self.datasetTextBox.text()):
+                         self.datasetTextBox.text()
+                         re.search()) or not re.search(r'^\/(?:[\w\s()\[\]-]+\/)*[\w\s()\[\]-]+\.(csv|xlsx|xls|json)$', self.datasetTextBox.text():
             self.errorDialog("You must input either a csv, xlsx, xls, or json file")
             return
         #Run Novellas evaluation program
