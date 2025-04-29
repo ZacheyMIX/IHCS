@@ -156,7 +156,7 @@ def format_data_columns(formatted_df: pd.DataFrame, columns_to_format: typing.Di
         elif data_type == 'name':
             # formatted_df[col] = formatted_df[col].apply(format_name)
             continue
-        elif data_type == 'email':
+        elif data_type == 'Email':
                 formatted_df[col] = clean_email(formatted_df, col, errors='ignore', remove_whitespace=True, report=True, progress=True)[f'{col}_clean']
         elif data_type == 'US_address':
                 formatted_df[col] = clean_address(formatted_df, col, errors='ignore', report=True, progress=True)[f'{col}_clean']
@@ -226,7 +226,8 @@ def main_cont(columns_to_format):
      if not columns_to_format:
          final_formatted_df = formatted_df
      else:
-         final_formatted_df = format_data_columns(formatted_df, columns_to_format)
+        final_formatted_df = format_data_columns(formatted_df, columns_to_format)
+        print(f'Email column: {final_formatted_df["email"]}')
  
      # send finalized formatted df to be mln processed
      final_formatted_df.to_csv('mln_files/data/final_formatted_data.csv', index=False)
