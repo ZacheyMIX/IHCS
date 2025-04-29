@@ -705,8 +705,8 @@ class MainWindow(QMainWindow):
         #Adds changed types to list if any
         for items in self.formatItemsList:
             name = items[0].lower()
-            if name == 'joindate':
-                name = 'join_date'
+            if name == "joindate":
+                name = "join_date"
             data = items[1].currentText()
             if name == "datetime" and items[2].isChecked():
                 
@@ -728,7 +728,7 @@ class MainWindow(QMainWindow):
             elif self.originalTypes[items[0]] == data:
                 continue
             else:
-                if data == 'address':
+                if data == "address":
                     self.viewModel.changedTypes[name] = {"data_type": 'US address'}
                 else:
                     self.viewModel.changedTypes[name] = {"data_type": items[1].currentText()}
