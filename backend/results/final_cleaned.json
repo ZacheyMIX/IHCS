@@ -12,7 +12,7 @@
     "Weight":"150.0 lbs",
     "Address":"123 Elm St Apt 5, New York, NY 10001",
     "Email":"aishwarya.menon@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight"
   },
   {
     "First Name":"Ahmed",
@@ -27,7 +27,7 @@
     "Weight":"151.0 lbs",
     "Address":"456 Maple Ave Apt 101, Los Angeles, CA 90210",
     "Email":"ahmed.alfarsi@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes": null
   },
   {
     "First Name":"Ahmed",
@@ -42,7 +42,7 @@
     "Weight":"151.0 lbs",
     "Address":"456 Maple Ave Apt 101, Los Angeles, CA 90210",
     "Email":"ahmed.alfarsi@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Ahmed",
@@ -57,7 +57,7 @@
     "Weight":"165.8 lbs",
     "Address":"987 Pine Blvd, San Francisco, CA 94102",
     "Email":"ahmed.m.alfarsi@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadID, BadAddress"
   },
   {
     "First Name":"Alice",
@@ -72,7 +72,7 @@
     "Weight":"200.0 lbs",
     "Address":"654 Birch Rd, Apt 305, Boston, MA 02108",
     "Email":"alice.brown@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight"
   },
   {
     "First Name":"Alice",
@@ -87,7 +87,7 @@
     "Weight":"199.1 lbs",
     "Address":"321 Cedar Dr, Seattle, WA 98101",
     "Email":"alice.88-brown@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Mei",
@@ -102,7 +102,7 @@
     "Weight":"160.0 lbs",
     "Address":"111 Willow Cir Apt 7, Houston, TX 77002",
     "Email":"mei.chen@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadEmail"
   },
   {
     "First Name":"Mei",
@@ -117,7 +117,7 @@
     "Weight":"160.1 lbs",
     "Address":"222 Spruce Ct, Atlanta, GA 30301",
     "Email":"mei.chen@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Meera",
@@ -132,7 +132,7 @@
     "Weight":"145.0 lbs",
     "Address":"333 Fir Pl, Miami, FL 33101",
     "Email":"meera.choudhary-smith@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Chris",
@@ -147,7 +147,7 @@
     "Weight":"144.8 lbs",
     "Address":"444 Poplar Ln, Unit 12, Dallas, TX 75201",
     "Email":"chris.davis.esq@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Maria",
@@ -162,7 +162,7 @@
     "Weight":"185.0 lbs",
     "Address":"555 Sycamore Ave Apt 201, Washington, DC 20001",
     "Email":"maria.da.silva@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Arjun",
@@ -177,7 +177,7 @@
     "Weight":"185.2 lbs",
     "Address":"666 Ash St, Phoniex, AZ 85001",
     "Email":"arjun.desai@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadJoinDate"
   },
   {
     "First Name":"Robert",
@@ -192,7 +192,7 @@
     "Weight":"170.0 lbs",
     "Address":"777 Redwood Rd, Denver, CO 80202",
     "Email":"dr.robert.johnson@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadTitle, BadJoinDate"
   },
   {
     "First Name":"Javier",
@@ -222,7 +222,7 @@
     "Weight":"155.0 lbs",
     "Address":"999 Cedar St, Detroit, MI 48201",
     "Email":"javier.garcia202@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Hui",
@@ -237,7 +237,7 @@
     "Weight":"154.8 lbs",
     "Address":"101 Oakwood Dr Apt 305, Las Vegas, NV 89101",
     "Email":"hui.yang@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Siddharth",
@@ -252,7 +252,7 @@
     "Weight":"195.0 lbs",
     "Address":"202 Birch Ave, San Antonio, TX 78201",
     "Email":"siddharth.iyer.esq@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight"
   },
   {
     "First Name":"Jamal",
@@ -267,7 +267,7 @@
     "Weight":"195.1 lbs",
     "Address":"303 Maple Rd, Orlando, FL 32801",
     "Email":"jamal.williams@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Jane",
@@ -282,7 +282,7 @@
     "Weight":"140.0 lbs",
     "Address":"404 Willow Ln Apt 8, San Diego, CA 92101",
     "Email":"jane.smith@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Jane",
@@ -297,7 +297,7 @@
     "Weight":"140.0 lbs",
     "Address":"404 Willow Ln Apt 8, San Diego, CA 92101",
     "Email":"jane.smith@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadID, BadAddress"
   },
   {
     "First Name":"John",
@@ -312,7 +312,7 @@
     "Weight":"175.0 lbs",
     "Address":"606 Cedar Pl, Apt 502, New Orleans, LA 70112",
     "Email":"john.doe@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight"
   },
   {
     "First Name":"Ananya",
@@ -327,7 +327,7 @@
     "Weight":"175.9 lbs",
     "Address":"707 Elm Ct Apt 3, St. Louis, MO 63101",
     "Email":"ananya.kapoor.phd@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Ananya",
@@ -342,7 +342,7 @@
     "Weight":"150.0 lbs",
     "Address":"808 Redwood Dr, Indianapolis, IN 46201",
     "Email":"ananya.kapoor.phd@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadEmail"
   },
   {
     "First Name":"Li",
@@ -357,7 +357,7 @@
     "Weight":"150.1 lbs",
     "Address":"909 Oakwood Blvd, Minneapolis, MN 55401",
     "Email":"li.ying@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Mary",
@@ -372,7 +372,7 @@
     "Weight":"190.0 lbs",
     "Address":"210 Pine St Apt 4, Baltimore, MD 21201",
     "Email":"mary.ann.white@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Meera",
@@ -387,7 +387,7 @@
     "Weight":"190.5 lbs",
     "Address":"321 Spruce Ln, Tampa, FL 33601",
     "Email":"meera.choudhary-smith@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"William",
@@ -402,7 +402,7 @@
     "Weight":"165.0 lbs",
     "Address":"432 Birch Rd Apt 15B, Cleveland, OH 44101",
     "Email":"mr.william.turner.jr@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Fatima",
@@ -417,7 +417,7 @@
     "Weight":"165.1 lbs",
     "Address":"543 Cedar Ave, Pittsburgh, PA 15201",
     "Email":"fatima.nkosi@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Fatima",
@@ -432,7 +432,7 @@
     "Weight":"205.0 lbs",
     "Address":"654 Elm Cir, Milwaukeee, WI 53201",
     "Email":"fatima.s.nkosi@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Priya",
@@ -447,7 +447,7 @@
     "Weight":"205.0 lbs",
     "Address":"765 Sycamore Pl, Cincinnati, OH 45201",
     "Email":"dr.priya.patel@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Michael",
@@ -462,7 +462,7 @@
     "Weight":"135.0 lbs",
     "Address":"876 Maple Blvd, Portland, OR 97201",
     "Email":"professor.michael.williams@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Michael",
@@ -477,7 +477,7 @@
     "Weight":"135.1 lbs",
     "Address":"987 Willow Rd, Kansas City, MO 64101",
     "Email":"professor.michael.williams@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Kavita",
@@ -492,7 +492,7 @@
     "Weight":"210.0 lbs",
     "Address":"108 Pine Dr Apt 205, Charlotte, NC 28201",
     "Email":"kavita.reddy@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Diego",
@@ -507,7 +507,7 @@
     "Weight":"211.0 lbs",
     "Address":"219 Redwood Ln, Salt Lake City, UT 84101",
     "Email":"diego.rodriguez@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Diego",
@@ -522,7 +522,7 @@
     "Weight":"130.0 lbs",
     "Address":"320 Oak Ave, Raleigh, NC 27601",
     "Email":"diego.rodriguez@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadJoinDate"
   },
   {
     "First Name":"Diego",
@@ -537,7 +537,7 @@
     "Weight":"130.1 lbs",
     "Address":"431 Cedar Blvd Apt 7, Nashville, TN 37201",
     "Email":"diego.j.rodriguez@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Samantha",
@@ -552,7 +552,7 @@
     "Weight":"220.0 lbs",
     "Address":"542 Birch St, Sacramento, CA 95801",
     "Email":"samantha.taylor-smith@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Sara",
@@ -582,7 +582,7 @@
     "Weight":"125.0 lbs",
     "Address":"764 Sycamore Cir, Phladelphia, PA 19101",
     "Email":"rahul.sharma@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Vikram",
@@ -597,7 +597,7 @@
     "Weight":"125.2 lbs",
     "Address":"875 Pine Pl, San Diego, CA 92101",
     "Email":"vikram.singh@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadTitle, BadJoinDate"
   },
   {
     "First Name":"Akira",
@@ -612,7 +612,7 @@
     "Weight":"225.0 lbs",
     "Address":"986 Spruce Ln, Jacksonvill, FL 32201",
     "Email":"akira.takahashi@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight, BadEmail, BadID"
   },
   {
     "First Name":"Akira",
@@ -627,7 +627,7 @@
     "Weight":"225.1 lbs",
     "Address":"109 Elm Dr Apt 302, Charleston, SC 29401",
     "Email":"akira.takahashi@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Tao",
@@ -642,7 +642,7 @@
     "Weight":"120.0 lbs",
     "Address":"210 Maple Rd, Memphs, TN 38101",
     "Email":"tao.xu@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Rajiv",
@@ -657,7 +657,7 @@
     "Weight":"120.2 lbs",
     "Address":"321 Oakwood Ave, Oklahma City, OK 73101",
     "Email":"mr.rajiv.verma@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Wei",
@@ -672,7 +672,7 @@
     "Weight":"230.0 lbs",
     "Address":"432 Birch Pl, Apt 6D, Richmond, VA 23201",
     "Email":"wei.chen@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"William",
@@ -687,7 +687,7 @@
     "Weight":"231.0 lbs",
     "Address":"543 Sycamore Blvd, Newark, NJ 07001",
     "Email":"william.turner.jr@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadWeight, BadAddress"
   },
   {
     "First Name":"Jamal",
@@ -702,7 +702,7 @@
     "Weight":"115.0 lbs",
     "Address":"654 Willow Cir Apt 9, Hartford, CT 06101",
     "Email":"jamal.williams@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadEmail, BadID, BadAddress"
   },
   {
     "First Name":"Jamal",
@@ -717,7 +717,7 @@
     "Weight":"115.1 lbs",
     "Address":"765 Redwood Dr, Bufflo, NY 14201",
     "Email":"jamal.williams@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   },
   {
     "First Name":"Sara",
@@ -732,7 +732,7 @@
     "Weight":"235.0 lbs",
     "Address":"876 Cedar Ln, Rochestor, NY 14601",
     "Email":"sara.xavier@gmail.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":"BadID"
   },
   {
     "First Name":"Ying",
@@ -747,6 +747,6 @@
     "Weight":"237.0 lbs",
     "Address":"987 Elm Ave Apt 205, Virginia Beach, VA 23401",
     "Email":"ying.zhao@yahoo.com",
-    "Changes":"BadWeight, BadEmail, BadID, BadAddress"
+    "Changes":null
   }
 ]
