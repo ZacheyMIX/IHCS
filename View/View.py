@@ -15,6 +15,7 @@ from ViewModel import ViewModel
 from View import StyleSheets
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import json
 
 
 class MainWindow(QMainWindow):
@@ -177,15 +178,24 @@ class MainWindow(QMainWindow):
         welcomeText = QLabel("Welcome to IHCS!")
         welcomeText.setFont(self.font)
         welcomeText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        textLayout = QVBoxLayout()
+        textWidget = QWidget()
+        textWidget.setLayout(textLayout)
+        aboutScrollArea = QScrollArea()
+        aboutScrollArea.setWidgetResizable(True)
         aboutText = QLabel(self.outputFile(os.path.join(self.current_dir, 'Text', 'About.txt')))
         aboutText.setWordWrap(True)
         aboutText.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
 
         # About Page Setup
         aboutLayout = QVBoxLayout(self.aboutPageWidget)
+        aboutLayout.addSpacing(75)
         aboutLayout.addWidget(welcomeText)
-        aboutLayout.addWidget(aboutText)
-        aboutLayout.addSpacing(150)
+        aboutLayout.addSpacing(50)
+        aboutLayout.addWidget(aboutScrollArea)
+        aboutScrollArea.setWidget(textWidget)
+        textLayout.addWidget(aboutText)
+        aboutLayout.addSpacing(50)
 
     #Static help page UI
     def helpLayout(self):
@@ -376,7 +386,7 @@ class MainWindow(QMainWindow):
 
 
         resultsLabel = QLabel()
-        resultsLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'results page.png')))
+        resultsLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'result page.png')))
         congratsLabel = QLabel("Congratulations, cleaning finished!")
 
         #Dataset UI stuff
@@ -549,9 +559,10 @@ class MainWindow(QMainWindow):
         
         headerLabel = QLabel()
         headerLabel.setPixmap(QPixmap(os.path.join(self.current_dir, 'Images', 'evaluation page.png')))
-        evalButton = QPushButton()
-        evalButton.setStyleSheet = self.ss.pageButtonStyle
+        evalButton = QPushButton("Evaluation Page")
+        evalButton.setStyleSheet(self.ss.pageButtonStyle())
         evalButton.setMaximumWidth(150)
+        evalButton.clicked.connect(self.eval_page_button_clicked)
         
         self.canvas = FigureCanvas(Figure(figsize=(8, 5)))
         
@@ -566,7 +577,6 @@ class MainWindow(QMainWindow):
         
         self.chartPageWidget.setLayout(self.chartsLayout)
         
-
     # Clean button will reset pages for next dataset stuff, and initiate the cleaning process
     def clean_button_clicked(self):
 
@@ -603,12 +613,11 @@ class MainWindow(QMainWindow):
         self.finishButton.setStyleSheet(self.ss.disabledPageButtonStyle())
 
         #reset data
-        self.viewModel.cleaningTime = 0
+        #self.viewModel.cleaningTime = 0
         self.viewModel.formatList.clear()
         self.viewModel.changedTypes.clear()
         self.viewModel.cleanDatasetDict.clear()
-        self.viewModel.cleanScores.clear()
-        self.viewModel.dirtyScores.clear()
+        #self.viewModel.cleanScores.clear()
 
         #Clear widgets on repeat iterations
         self.listWidget.clear()        
@@ -704,10 +713,12 @@ class MainWindow(QMainWindow):
     #Updates progress bar intermediately
     @pyqtSlot(int)
     def update_progress(self, value):
-        self.progress_bar.setValue(value)
+        newValue = self.progress_bar.value() + value
+        self.progress_bar.setValue(newValue)
 
     #Sets up the final data for the rest of the pages
     def cleaning_finished(self):
+        self.setup_json()
         self.resultSetup()
         
         self.finishButton.setEnabled(True)
@@ -746,8 +757,7 @@ class MainWindow(QMainWindow):
     def evaluate_finished(self):
         self.chartButton.setEnabled(True)
         self.chartButton.setStyleSheet(self.ss.pageButtonStyle())
-        dataset = self.viewModel.cleanScores['dataset']
-        existingResult = self.viewModel.cleanScores['openrefine']
+        dataset = self.viewModel.cleanScores['dirty_dataset']
         ourResult = self.viewModel.cleanScores['ihcs']
         
 
@@ -757,7 +767,7 @@ class MainWindow(QMainWindow):
         self.resultLayout.addWidget(QLabel(str(self.viewModel.cleaningTime)))
         self.resultLayout.addWidget(QLabel(ourResult["precision"]))
         self.resultLayout.addWidget(QLabel(ourResult["recall"]))
-        self.resultLayout.addWidget(QLabel(ourResult["f1-score"]))
+        self.resultLayout.addWidget(QLabel(ourResult["f1score"]))
 
         #History
         self.viewModel.history.append({'dataset': dataset, 'runtime': str(self.viewModel.cleaningTime), 'precision':  ourResult['precision'], 'recall': ourResult['recall'], 'f1-score': ourResult['f1score']})
@@ -787,8 +797,8 @@ class MainWindow(QMainWindow):
          metrics = ['Precision', 'Recall', 'F1 Score']
          x = range(len(metrics))
          scores = self.viewModel.cleanScores
-         ihcsScores = [scores['ihcs']['precision'], scores['ihcs']['recall'], scores['ihcs']['f1score']]
-         otherScores = [scores['openrefine']['precision'],scores['openrefine']['recall'],scores['openrefine']['f1score']]
+         ihcsScores = [float(scores['ihcs']['precision']), float(scores['ihcs']['recall']), float(scores['ihcs']['f1score'])]
+         otherScores = [float(scores['openrefine']['precision']),float(scores['openrefine']['recall']),float(scores['openrefine']['f1score'])]
          
          ax = self.canvas.figure.subplots()
          
@@ -797,15 +807,16 @@ class MainWindow(QMainWindow):
          ax.bar([i - .35/2 for i in x], ihcsScores, width=barWidth, label='IHCS', color='#007bff')
          ax.bar([i + barWidth/2 for i in x], otherScores, width=barWidth, label='Other', color='#00c853')
          
-         ax.setylim(0,1)
          ax.set_xticks(x)
          ax.set_xticklabels(metrics)
          ax.set_ylabel('Score')
          ax.set_title("IHCS vs Other Systems")
          ax.legend()
          ax.grid(axis='y', linestyle='--', alpha=0.7)
+         ax.set_ylim(0,1)
          
          self.canvas.draw()
+                
     #Downloads the clean dataset to the users choosing
     def download_button_clicked(self):
 
@@ -880,7 +891,7 @@ class MainWindow(QMainWindow):
 
         #Add header
         for key in self.viewModel.cleanDatasetDict[0].keys():
-            if key != "changes":
+            if key != "Changes":
                 label = QLabel(f"<b>{key}<b>")
                 label.setFixedWidth(120)
                 self.datasetHeader.addWidget(label, alignment=Qt.AlignmentFlag.AlignLeft)
@@ -894,9 +905,9 @@ class MainWindow(QMainWindow):
         for row in self.viewModel.cleanDatasetDict:
             row_layout = QHBoxLayout()
 
-            if row["changes"]:
+            if row["Changes"]:
                 icon_label = QLabel("🛈")
-                icon_label.setToolTip(row["changes"])
+                icon_label.setToolTip(row["Changes"])
             else:
                 icon_label = QLabel("")
 
@@ -905,8 +916,11 @@ class MainWindow(QMainWindow):
             row_layout.addWidget(QLabel("|"))
 
             for key, value in row.items():
-                if key != "changes":
-                    lbl = QLabel(str(value))
+                if key != "Changes":
+                    if value is None:
+                        lbl = QLabel("N/A")
+                    else:
+                        lbl = QLabel(str(value))
                     lbl.setFixedWidth(120)
                     row_layout.addWidget(lbl)
                     if key != list(row.keys())[len(row) - 2]:
@@ -931,6 +945,13 @@ class MainWindow(QMainWindow):
             elif child.layout():
                 self.clear_layout(child.layout())
 
+    def setup_json(self):
+        clean_path = os.path.join(self.current_dir, '..', 'backend', 'results', 'final_cleaned.json')
+        clean_path = os.path.abspath(clean_path)
+        
+        with open(clean_path, 'r') as file:
+            self.viewModel.cleanDatasetDict = json.load(file)
+        
     # Reads a file and returns the text
     def outputFile(self, file):
         f = open(file, "r")
@@ -950,7 +971,7 @@ class MainWindow(QMainWindow):
                 self.rulesTextBox.setText(file_dialog.selectedFiles()[0])
             elif type == "ground_truth":
                 self.groundTruthTextBox.setText(file_dialog.selectedFiles()[0])
-            
+                       
     # Provides a popup error given an error message
     def errorDialog(self, error):
         msgBox = QMessageBox()
