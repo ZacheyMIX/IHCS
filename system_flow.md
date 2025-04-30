@@ -13,11 +13,11 @@ Data Standardizing and Formatting System:
   - url, 
   - ISBN numbers
 
-If there are some values that are recognized as invalid parsing values, meaning they are not part of the anticipated error pattern, then the system will ask the user on how to handle the invalid parsing. Then, we can start sort out for duplicated values.
+<!-- If there are some values that are recognized as invalid parsing values, meaning they are not part of the anticipated error pattern, then the system will ask the user on how to handle the invalid parsing. Then, we can start sort out for duplicated values.
 
 If the incorrect columns are not part of the mentioned types, then have user input the desired pattern for those columns and detected the non-matching pattern values for those columns and asks the user on how to correct them. 
 
-If there exists any invalid parsing in the automatic clean up, then the system will accumulate the errors and asked the users on how to handle the invalid parsing.
+If there exists any invalid parsing in the automatic clean up, then the system will accumulate the errors and asked the users on how to handle the invalid parsing. -->
 
 Note on columns options:
 1. date
